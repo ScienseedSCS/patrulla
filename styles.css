@@ -140,3 +140,4 @@ textarea{min-height:90px;resize:vertical}
 @media(min-width:700px){
   body{max-width:460px;margin:0 auto;box-shadow:0 0 30px rgba(0,0,0,.12);min-height:100vh}
 }
+.modal[hidden]{ display:none !important; }
