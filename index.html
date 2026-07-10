@@ -270,4 +270,27 @@ function renderProgress(){
   box.innerHTML=`<div class="card"><div class="level-name">${cur.name}</div><div class="small">${pts} puntos</div><div class="bar"><div class="fill" style="width:${pct}%"></div></div>${next?`<div class="small">Faltan <b>${next.min-pts} pts</b> para ${next.name}</div>`:'<div class="small">¡Nivel máximo alcanzado! 🏆</div>'}<div class="stats"><div class="stat"><b id="stReports">–</b><span>Reportes</span></div><div class="stat"><b id="stTips">–</b><span>Tips leídos</span></div><div class="stat"><b id="stReviews">–</b><span>Revisiones</span></div></div></div>`;
   loadStats();
 }
-async function loadStats(){const{count:r}=await db.from('reports').select('*',{count:'exact',head:true}).eq('user
+async function loadStats(){
+  const{count:r}=await db.from('reports').select('*',{count:'exact',head:true}).eq('user_id',CURRENT_USER.id);
+  const{count:t}=await db.from('tip_reads').select('*',{count:'exact',head:true}).eq('user_id',CURRENT_USER.id);
+  const{count:rv}=await db.from('report_reviews').select('*',{count:'exact',head:true}).eq('reviewer_id',CURRENT_USER.id);
+  const set=(id,v)=>{const e=$(id);if(e)e.textContent=v||0;};
+  set('stReports',r);set('stTips',t);set('stReviews',rv);
+}
+async function loadLeaderboard(){
+  const{data}=await db.from('profiles').select('username,points,city').order('points',{ascending:false}).limit(10);
+  const box=$('leaderboard');if(!box)return;if(!data){box.innerHTML='';return;}
+  box.innerHTML=data.map((u,i)=>`<div class="card lb-item ${u.username===PROFILE.username?'me':''}"><span class="lb-pos">${i+1}</span><span style="flex:1">${u.username}</span><b>${u.points} pts</b></div>`).join('');
+}
+function openModal(){$('modal').hidden=false;}
+function closeModal(){$('modal').hidden=true;}
+function setModal(html){$('modalContent').innerHTML=html;}
+
+$('btnLogin').addEventListener('click',login);
+$('modalClose').addEventListener('click',closeModal);
+$('cardTips').addEventListener('click',openTips);
+$('cardQuizzes').addEventListener('click',openQuizzes);
+document.querySelectorAll('.backLearn').forEach(b=>b.addEventListener('click',backToLearn));
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.view)));
+</script>
+</body
