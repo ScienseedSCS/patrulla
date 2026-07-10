@@ -95,10 +95,12 @@ textarea{min-height:90px;resize:vertical}
 
 <section id="authScreen" class="screen card">
   <h2>Sumate a la Patrulla</h2>
-  <p>Ingresá tu email y te enviamos un enlace para entrar.</p>
+  <p>Creá tu cuenta o iniciá sesión para empezar.</p>
   <input type="email" id="email" placeholder="tu@email.com">
+  <input type="password" id="password" placeholder="Tu contraseña (mín. 6 caracteres)">
   <input type="text" id="cityInput" placeholder="Tu ciudad (ej: San Vicente)">
-  <button class="btn-primary" id="btnLogin">Enviar enlace mágico</button>
+  <button class="btn-primary" id="btnRegister">Crear cuenta</button>
+  <button class="btn-outline" id="btnLogin">Ya tengo cuenta · Entrar</button>
   <div id="authMsg" class="msg"></div>
 </section>
 
@@ -163,14 +165,25 @@ const REVIEWER_MIN=350;
 let CURRENT_USER=null,PROFILE=null,ACTIONS=[],reportState={},dailyRead=0;
 const $=id=>document.getElementById(id);
 
-async function login(){
-  const email=$('email').value.trim(),city=$('cityInput').value.trim();
-  if(!email)return showAuthMsg('Ingresá tu email.');
-  localStorage.setItem('pa_city',city);
-  const {error}=await db.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.href}});
-  showAuthMsg(error?error.message:'✅ Revisá tu email para entrar.');
-}
 function showAuthMsg(t){$('authMsg').textContent=t;}
+async function register(){
+  const email=$('email').value.trim(),password=$('password').value,city=$('cityInput').value.trim();
+  if(!email||!password)return showAuthMsg('Completá email y contraseña.');
+  if(password.length<6)return showAuthMsg('La contraseña debe tener al menos 6 caracteres.');
+  localStorage.setItem('pa_city',city);
+  const {data,error}=await db.auth.signUp({email,password});
+  if(error)return showAuthMsg(error.message);
+  if(data.session){startApp(data.session.user);}
+  else{showAuthMsg('✅ Cuenta creada. Tocá "Ya tengo cuenta · Entrar".');}
+}
+async function login(){
+  const email=$('email').value.trim(),password=$('password').value,city=$('cityInput').value.trim();
+  if(!email||!password)return showAuthMsg('Completá email y contraseña.');
+  localStorage.setItem('pa_city',city);
+  const {data,error}=await db.auth.signInWithPassword({email,password});
+  if(error)return showAuthMsg(error.message);
+  if(data.session)startApp(data.session.user);
+}
 db.auth.onAuthStateChange((_e,s)=>{if(s)startApp(s.user);});
 (async()=>{const{data}=await db.auth.getSession();if(data.session)startApp(data.session.user);})();
 
@@ -281,16 +294,3 @@ async function loadLeaderboard(){
   const{data}=await db.from('profiles').select('username,points,city').order('points',{ascending:false}).limit(10);
   const box=$('leaderboard');if(!box)return;if(!data){box.innerHTML='';return;}
   box.innerHTML=data.map((u,i)=>`<div class="card lb-item ${u.username===PROFILE.username?'me':''}"><span class="lb-pos">${i+1}</span><span style="flex:1">${u.username}</span><b>${u.points} pts</b></div>`).join('');
-}
-function openModal(){$('modal').hidden=false;}
-function closeModal(){$('modal').hidden=true;}
-function setModal(html){$('modalContent').innerHTML=html;}
-
-$('btnLogin').addEventListener('click',login);
-$('modalClose').addEventListener('click',closeModal);
-$('cardTips').addEventListener('click',openTips);
-$('cardQuizzes').addEventListener('click',openQuizzes);
-document.querySelectorAll('.backLearn').forEach(b=>b.addEventListener('click',backToLearn));
-document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.view)));
-</script>
-</body
