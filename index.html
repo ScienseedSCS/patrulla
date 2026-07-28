@@ -23,7 +23,16 @@
   <input type="text" id="cityInput" placeholder="Tu ciudad (ej: San Vicente)">
   <button class="btn-primary" id="btnRegister">Crear cuenta</button>
   <button class="btn-outline" id="btnLogin">Ya tengo cuenta · Entrar</button>
+  <button class="btn-back" id="btnForgot" style="width:100%">¿Olvidaste tu contraseña?</button>
   <div id="authMsg" class="msg"></div>
+</section>
+
+<section id="resetScreen" class="screen card" hidden>
+  <h2>Nueva contraseña</h2>
+  <p>Escribí tu nueva contraseña para entrar.</p>
+  <input type="password" id="newPassword" placeholder="Nueva contraseña (mín. 6 caracteres)">
+  <button class="btn-primary" id="btnSetPassword">Guardar contraseña</button>
+  <div id="resetMsg" class="msg"></div>
 </section>
 
 <main id="appMain" hidden>
@@ -103,3 +112,4 @@
 <script src="app.js"></script>
 </body>
 </html>
+
