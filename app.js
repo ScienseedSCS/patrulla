@@ -1,7 +1,7 @@
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const LEVELS=[{min:0,name:'🥚 Vigilante Novato'},{min:50,name:'🐛 Rastreador'},{min:150,name:'🦟 Cazador de Criaderos'},{min:350,name:'🛡️ Guardián del Barrio'},{min:700,name:'🏆 Héroe Antimosquito'},{min:1200,name:'⭐ Referente Comunitario'}];
 const REVIEWER_MIN=350;
-let CURRENT_USER=null,PROFILE=null,ACTIONS=[],reportState={},dailyRead=0;
+let CURRENT_USER=null,PROFILE=null,ACTIONS=[],reportState={},dailyRead=0,RECOVERING=false;
 const $=id=>document.getElementById(id);
 
 function showAuthMsg(t){$('authMsg').textContent=t;}
@@ -23,12 +23,35 @@ async function login(){
   if(error)return showAuthMsg(error.message);
   if(data.session)startApp(data.session.user);
 }
-db.auth.onAuthStateChange((_e,s)=>{if(s)startApp(s.user);});
-(async()=>{const{data}=await db.auth.getSession();if(data.session)startApp(data.session.user);})();
+async function forgotPassword(){
+  const email=$('email').value.trim();
+  if(!email)return showAuthMsg('Escribí tu email arriba y volvé a tocar "¿Olvidaste tu contraseña?".');
+  const{error}=await db.auth.resetPasswordForEmail(email,{redirectTo:window.location.href});
+  showAuthMsg(error?error.message:'✅ Te enviamos un email para restablecer tu contraseña.');
+}
+async function setNewPassword(){
+  const np=$('newPassword').value;
+  if(!np||np.length<6)return void($('resetMsg').textContent='La contraseña debe tener al menos 6 caracteres.');
+  const{error}=await db.auth.updateUser({password:np});
+  if(error){$('resetMsg').textContent=error.message;return;}
+  $('resetMsg').textContent='✅ Contraseña actualizada. Entrando…';
+  RECOVERING=false;
+  const{data}=await db.auth.getUser();
+  if(data&&data.user)startApp(data.user);
+}
+db.auth.onAuthStateChange((event,s)=>{
+  if(event==='PASSWORD_RECOVERY'){
+    RECOVERING=true;
+    $('authScreen').hidden=true;$('resetScreen').hidden=false;
+    return;
+  }
+  if(s&&!RECOVERING)startApp(s.user);
+});
+(async()=>{const{data}=await db.auth.getSession();if(data.session&&!RECOVERING)startApp(data.session.user);})();
 
 async function startApp(user){
   CURRENT_USER=user;
-  $('authScreen').hidden=true;$('appMain').hidden=false;$('bottomNav').hidden=false;
+  $('authScreen').hidden=true;$('resetScreen').hidden=true;$('appMain').hidden=false;$('bottomNav').hidden=false;
   await ensureProfile();loadIncidence();loadActions();renderProgress();refreshLearnCounters();
 }
 async function ensureProfile(){
@@ -140,6 +163,8 @@ function setModal(html){$('modalContent').innerHTML=html;}
 
 $('btnRegister').addEventListener('click',register);
 $('btnLogin').addEventListener('click',login);
+$('btnForgot').addEventListener('click',forgotPassword);
+$('btnSetPassword').addEventListener('click',setNewPassword);
 $('modalClose').addEventListener('click',closeModal);
 $('cardTips').addEventListener('click',openTips);
 $('cardQuizzes').addEventListener('click',openQuizzes);
