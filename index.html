@@ -11,7 +11,10 @@
 <body>
 <header class="app-header">
   <img src="logo_mosquito.png" alt="Patrulla Antimosquito" class="app-logo">
-  <div class="app-title"><h1>Patrulla Antimosquito</h1><span>Prevención de enfermedades por mosquitos</span></div>
+  <div class="app-title">
+    <h1>Patrulla Antimosquito</h1>
+    <span>Prevención de enfermedades por mosquitos</span>
+  </div>
   <span id="pointsCounter" class="points">0 pts</span>
 </header>
 
@@ -56,16 +59,19 @@
     <h2 class="view-title">🧠 Aprender</h2>
     <div id="learnMenu" class="grid-2">
       <div class="card menu-card" id="cardTips">
-        <div class="menu-ico">📖</div><h3>Tips</h3>
+        <div class="menu-ico">📖</div>
+        <h3>Tips</h3>
         <p>Leé tu tanda diaria y sumá puntos</p>
         <span class="counter" id="tipsCount">0 leídos</span>
       </div>
       <div class="card menu-card" id="cardQuizzes">
-        <div class="menu-ico">❓</div><h3>Quizzes</h3>
+        <div class="menu-ico">❓</div>
+        <h3>Quizzes</h3>
         <p>Poné a prueba lo que sabés</p>
         <span class="counter" id="quizCount">0 resueltos</span>
       </div>
     </div>
+
     <div id="tipsView" hidden>
       <button class="btn-back backLearn">← Volver</button>
       <div class="card daily-card">
@@ -76,6 +82,7 @@
       </div>
       <div id="tipsList" class="stack"></div>
     </div>
+
     <div id="quizzesView" hidden>
       <button class="btn-back backLearn">← Volver</button>
       <div id="quizzesList" class="stack"></div>
