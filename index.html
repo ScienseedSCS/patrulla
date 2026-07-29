@@ -70,7 +70,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 /* App container */
 .app-shell{padding:0}
 .phone{max-width:600px;margin:0 auto;background:var(--background);position:relative;overflow:hidden;height:100vh;height:100dvh;display:flex;flex-direction:column}
-.header{background:var(--primary);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 18px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;z-index:10}
+.header{background:var(--primary);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 18px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:-16px -14px 16px;z-index:10}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .brand-logo{width:44px;height:auto;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
 .brand-text{min-width:0}
@@ -130,10 +130,28 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .btn-secondary:hover{background:var(--primary);color:#fff}
 .btn-accent{background:linear-gradient(135deg,var(--accent),var(--secondary));color:var(--primary)}
 .btn-accent:hover{filter:brightness(1.05)}
-.photo-drop{border:2px dashed var(--primary-soft);border-radius:14px;padding:26px 14px;text-align:center;background:#FBF7EF;cursor:pointer;transition:background .2s;margin-bottom:12px}
+.photo-drop{display:block;border:2px dashed var(--primary-soft);border-radius:14px;padding:24px 14px;text-align:center;background:#FBF7EF;cursor:pointer;transition:background .2s;margin-bottom:12px}
 .photo-drop:hover{background:#F4EBDA}
 .photo-drop-icon{font-size:44px;margin-bottom:6px}
 .photo-drop-text{font-size:13px;color:var(--muted);line-height:1.4}
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.mode-btn{background:#fff;border:2px solid #E5D9E8;border-radius:12px;padding:12px 8px;font-family:inherit;font-size:12px;font-weight:800;color:var(--primary);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.15;transition:border-color .15s,background .15s}
+.mode-btn span{font-size:10px;font-weight:700;color:#8A6A1E;background:var(--secondary);padding:2px 7px;border-radius:999px}
+.mode-btn.active{border-color:var(--accent-2);background:#EAF4F0}
+.mode-hint{font-size:11px;color:var(--muted);text-align:center;line-height:1.4;margin:0 0 12px}
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.slot-label{font-size:11px;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;text-align:center}
+.photo-drop.small{padding:16px 8px;margin-bottom:0}
+.photo-drop.small .photo-drop-icon{font-size:30px;margin-bottom:4px}
+.photo-drop.small .photo-drop-text{font-size:11px}
+.photo-preview.small{height:120px;margin-bottom:0}
+.modal-ba{display:grid;grid-template-columns:1fr 1fr;gap:3px;width:100%}
+.modal-ba figure{margin:0;position:relative;background:#DDD1BD;height:200px;overflow:hidden}
+.modal-ba figure:first-child{border-top-left-radius:20px}
+.modal-ba figure:last-child{border-top-right-radius:20px}
+.modal-ba img{width:100%;height:100%;object-fit:cover;display:block}
+.modal-ba figcaption{position:absolute;bottom:6px;left:6px;background:rgba(20,10,25,.72);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.3px}
+.ba-badge{position:absolute;top:6px;right:6px;background:var(--accent-2);color:#fff;font-size:9px;font-weight:800;padding:3px 7px;border-radius:999px;z-index:2}
 .photo-preview{border-radius:14px;height:170px;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;margin-bottom:12px;overflow:hidden;background:linear-gradient(135deg,#EFE6D8,#DDD1BD)}
 .photo-preview img{width:100%;height:100%;object-fit:cover;border-radius:14px}
 .photo-preview .check{position:absolute;top:8px;right:8px;background:var(--ok);color:#fff;font-size:11px;font-weight:800;padding:4px 9px;border-radius:999px;z-index:2}
@@ -319,6 +337,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 <!-- ===================== APP ===================== -->
 <div class="app-shell hide" id="appScreen">
   <main class="phone" id="phone">
+    <div class="content">
     <header class="header">
       <div class="brand">
         <svg class="brand-logo" viewBox="0 0 100 135" xmlns="http://www.w3.org/2000/svg" aria-label="Logo">
@@ -337,7 +356,6 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       </div>
     </header>
 
-    <div class="content">
       <!-- INCIDENCIA -->
       <section class="section active" id="sec-incidencia">
         <h2 class="section-title">📍 Incidencia local</h2>
@@ -471,7 +489,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   var BUCKET = 'reports';
 
   // Puntos por acción
-  var PTS_TIP = 2, PTS_QUIZ = 5, PTS_REVIEW = 3, REVIEWER_MIN = 350;
+  var PTS_TIP = 2, PTS_QUIZ = 5, PTS_REVIEW = 3, REVIEWER_MIN = 350, PTS_BA_BONUS = 5;
 
   var LEVELS = [
     { emoji: '🥚', name: 'Vigilante Novato',      min: 0,    max: 49,   lvl: 1 },
@@ -754,7 +772,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   // =====================================================================
   //  REPORTAR
   // =====================================================================
-  var currentAction=null, pickedFile=null;
+  var currentAction=null, reportMode='simple', pickedAfter=null, pickedBefore=null;
 
   function actionById(id){ for(var i=0;i<S.actions.length;i++){ if(S.actions[i].id===id) return S.actions[i]; } return null; }
 
@@ -775,8 +793,9 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     });
   }
 
-  function startFlow(a){ currentAction=a; pickedFile=null; $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide'); renderStep(1); }
-  function cancelFlow(){ $('reportar-grid-view').classList.remove('hide'); var f=$('reportar-flow-view'); f.classList.add('hide'); f.innerHTML=''; currentAction=null; pickedFile=null; }
+  function startFlow(a){ currentAction=a; reportMode='simple'; pickedAfter=null; pickedBefore=null; $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide'); renderStep(1); }
+  function cancelFlow(){ $('reportar-grid-view').classList.remove('hide'); var f=$('reportar-flow-view'); f.classList.add('hide'); f.innerHTML=''; currentAction=null; reportMode='simple'; pickedAfter=null; pickedBefore=null; }
+  function reportPoints(){ return currentAction.points + (reportMode==='ba'?PTS_BA_BONUS:0); }
 
   function renderStep(step){
     var a=currentAction, flow=$('reportar-flow-view');
@@ -792,57 +811,124 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     } else if(step===2){
       flow.innerHTML =
         '<div class="flow-header"><button class="flow-back" id="fB2">← Volver</button><span class="step-pill">2 de 3</span></div>'+
-        '<div class="step-card"><div class="step-title" style="font-size:19px">📷 Sacá una foto</div>'+
-        '<div class="step-desc">Sacá una foto que muestre la acción completada.</div>'+
-        '<div id="photoZone"><label class="photo-drop" for="photoInput"><div class="photo-drop-icon">📷</div><div class="photo-drop-text">Tocá para sacar o subir una foto</div></label><input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none"></div>'+
+        '<div class="step-card"><div class="step-title" style="font-size:19px">📷 Documentá la acción</div>'+
+        '<div class="step-desc" style="margin-bottom:12px">Elegí cómo mostrar lo que hiciste.</div>'+
+        '<div class="mode-row">'+
+          '<button class="mode-btn" data-mode="simple" id="modeSimple">📷 Foto simple<span>+'+a.points+' pts</span></button>'+
+          '<button class="mode-btn" data-mode="ba" id="modeBA">🔄 Antes y después<span>+'+(a.points+PTS_BA_BONUS)+' pts</span></button>'+
+        '</div>'+
+        '<div class="mode-hint" id="modeHint"></div>'+
+        '<div id="photoZone"></div>'+
         '<div class="btn-row"><button class="btn btn-secondary" id="fB2b">← Volver</button><button class="btn" id="fN2" disabled>Continuar →</button></div></div>';
       $('fB2').onclick=function(){renderStep(1);}; $('fB2b').onclick=function(){renderStep(1);}; $('fN2').onclick=function(){renderStep(3);};
-      var input=$('photoInput');
-      input.addEventListener('change', function(){
-        var f=input.files&&input.files[0]; if(!f) return; pickedFile=f;
-        $('photoZone').innerHTML='<div class="photo-preview"><img src="'+URL.createObjectURL(f)+'" alt=""><span class="check">✔ Foto lista</span></div>';
-        $('fN2').disabled=false;
-      });
-      if(pickedFile){ $('photoZone').innerHTML='<div class="photo-preview"><img src="'+URL.createObjectURL(pickedFile)+'" alt=""><span class="check">✔ Foto lista</span></div>'; $('fN2').disabled=false; }
+      $('modeSimple').addEventListener('click', function(){ setMode('simple'); });
+      $('modeBA').addEventListener('click', function(){ setMode('ba'); });
+      setMode(reportMode);
     } else {
-      var pv = pickedFile ? URL.createObjectURL(pickedFile) : null;
+      var pvA = pickedAfter ? URL.createObjectURL(pickedAfter) : null;
+      var pvB = pickedBefore ? URL.createObjectURL(pickedBefore) : null;
+      var previewHtml;
+      if(reportMode==='ba'){
+        previewHtml = '<div class="ba-grid">'+
+          '<div><div class="slot-label">Antes</div><div class="photo-preview small">'+(pvB?'<img src="'+pvB+'" alt="">':'📷')+'</div></div>'+
+          '<div><div class="slot-label">Después</div><div class="photo-preview small">'+(pvA?'<img src="'+pvA+'" alt="">':'📷')+'</div></div></div>';
+      } else {
+        previewHtml = '<div class="photo-preview">'+(pvA?'<img src="'+pvA+'" alt=""><span class="check">✔</span>':esc(a.icon||'📍'))+'</div>';
+      }
       flow.innerHTML =
         '<div class="flow-header"><button class="flow-back" id="fB3">← Volver</button><span class="step-pill">3 de 3</span></div>'+
         '<div class="step-card"><div class="step-title" style="font-size:19px">📝 Contexto y enviar</div>'+
-        '<div class="photo-preview">'+(pv?'<img src="'+pv+'" alt=""><span class="check">✔</span>':esc(a.icon||'📍'))+'</div>'+
-        '<div class="step-desc" style="text-align:left;font-size:13px;margin-bottom:8px"><b>Contá algo sobre este reporte (opcional):</b></div>'+
+        previewHtml+
+        '<div class="step-desc" style="text-align:left;font-size:13px;margin:12px 0 8px"><b>Contá algo sobre este reporte (opcional):</b></div>'+
         '<textarea class="txt-area" id="reportNote" placeholder="Ej: Di vuelta 3 baldes del patio, ahora están secos"></textarea>'+
-        '<button class="btn btn-accent" id="fSubmit">Enviar reporte (+'+a.points+' pts)</button></div>';
+        '<button class="btn btn-accent" id="fSubmit">Enviar reporte (+'+reportPoints()+' pts)</button></div>';
       $('fB3').onclick=function(){renderStep(2);}; $('fSubmit').onclick=submitReport;
     }
   }
 
+  // Selector de modo de foto (simple / antes-después)
+  function setMode(mode){
+    reportMode = mode;
+    var sBtn=$('modeSimple'), bBtn=$('modeBA');
+    if(sBtn) sBtn.classList.toggle('active', mode==='simple');
+    if(bBtn) bBtn.classList.toggle('active', mode==='ba');
+    $('modeHint').textContent = mode==='ba'
+      ? 'Una foto del criadero y otra ya resuelto. Suma '+PTS_BA_BONUS+' pts extra y es más fácil de revisar.'
+      : 'Una sola foto que muestre la acción completada.';
+    renderPhotoSlots(mode);
+    updateContinue();
+  }
+
+  function renderPhotoSlots(mode){
+    var zone=$('photoZone');
+    if(mode==='ba'){
+      zone.innerHTML =
+        '<div class="ba-grid">'+
+          '<div><div class="slot-label">Antes</div><div id="slotBefore"></div></div>'+
+          '<div><div class="slot-label">Después</div><div id="slotAfter"></div></div>'+
+        '</div>';
+      renderSlot('slotBefore', 'before');
+      renderSlot('slotAfter', 'after');
+    } else {
+      zone.innerHTML = '<div id="slotAfter"></div>';
+      renderSlot('slotAfter', 'after', true);
+    }
+  }
+
+  function renderSlot(containerId, which, big){
+    var cont=$(containerId);
+    var file = which==='before' ? pickedBefore : pickedAfter;
+    var inputId = 'photoInput_'+which;
+    if(file){
+      cont.innerHTML = '<label class="photo-preview'+(big?'':' small')+'" for="'+inputId+'" style="cursor:pointer"><img src="'+URL.createObjectURL(file)+'" alt=""><span class="check">✔</span></label>'+
+        '<input type="file" id="'+inputId+'" accept="image/*" capture="environment" style="display:none">';
+    } else {
+      cont.innerHTML = '<label class="photo-drop'+(big?'':' small')+'" for="'+inputId+'"><div class="photo-drop-icon">📷</div><div class="photo-drop-text">Tocá para '+(which==='before'?'la foto de antes':(big?'sacar o subir una foto':'la foto de después'))+'</div></label>'+
+        '<input type="file" id="'+inputId+'" accept="image/*" capture="environment" style="display:none">';
+    }
+    $(inputId).addEventListener('change', function(){
+      var f=this.files&&this.files[0]; if(!f) return;
+      if(which==='before') pickedBefore=f; else pickedAfter=f;
+      renderSlot(containerId, which, big);
+      updateContinue();
+    });
+  }
+
+  function updateContinue(){
+    var ok = reportMode==='ba' ? (!!pickedAfter && !!pickedBefore) : !!pickedAfter;
+    var btn=$('fN2'); if(btn) btn.disabled = !ok;
+  }
+
+  function uploadPhoto(file, suffix){
+    var ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+    var path = S.user.id+'/'+Date.now()+'_'+suffix+'.'+ext;
+    return db.storage.from(BUCKET).upload(path, file, { cacheControl:'3600', upsert:false, contentType:file.type||'image/jpeg' })
+      .then(function(up){ if(up.error) throw up.error; return db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl; });
+  }
+
   function submitReport(){
     var a=currentAction, note=($('reportNote')&&$('reportNote').value.trim())||null;
+    var total=reportPoints();
     var btn=$('fSubmit'); btn.disabled=true; btn.textContent='Enviando…';
-    var chain = Promise.resolve(null);
 
-    if(pickedFile){
-      var ext=(pickedFile.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
-      var path = S.user.id+'/'+Date.now()+'.'+ext;
-      chain = db.storage.from(BUCKET).upload(path, pickedFile, { cacheControl:'3600', upsert:false, contentType:pickedFile.type||'image/jpeg' })
-        .then(function(up){ if(up.error) throw up.error; return db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl; });
-    }
+    var uploads=[ pickedAfter ? uploadPhoto(pickedAfter,'despues') : Promise.resolve(null) ];
+    uploads.push( (reportMode==='ba' && pickedBefore) ? uploadPhoto(pickedBefore,'antes') : Promise.resolve(null) );
 
-    chain.then(function(photoUrl){
+    Promise.all(uploads).then(function(urls){
       return db.from('reports').insert({
         user_id:S.user.id, action_type:a.id, city:S.profile.city||null,
-        photo_url:photoUrl, note:note, status:'pendiente', points_awarded:a.points
+        photo_url:urls[0], photo_before_url:urls[1], note:note,
+        status:'pendiente', points_awarded:total
       });
     }).then(function(ins){
       if(ins.error) throw ins.error;
-      return awardPoints(a.points);
+      return awardPoints(total);
     }).then(function(){
       S.stats.reports+=1; $('statReports').textContent=S.stats.reports;
-      cancelFlow(); toast('¡Reporte enviado! +'+a.points+' pts 🎉');
+      cancelFlow(); toast('¡Reporte enviado! +'+total+' pts 🎉');
     }).catch(function(e){
       console.error(e); showErr('No se pudo enviar el reporte: '+(e.message||e));
-      btn.disabled=false; btn.textContent='Enviar reporte (+'+a.points+' pts)';
+      btn.disabled=false; btn.textContent='Enviar reporte (+'+total+' pts)';
     });
   }
 
@@ -872,7 +958,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       '<div id="reviewList"><div class="loading">Cargando…</div></div>';
 
     return db.from('reports')
-      .select('id,note,photo_url,city,action_type,user_id')
+      .select('id,note,photo_url,photo_before_url,city,action_type,user_id')
       .eq('status','pendiente').neq('user_id', S.user.id)
       .order('created_at',{ascending:false}).limit(40)
       .then(function(res){
@@ -889,9 +975,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           pend.forEach(function(r){
             var a=actionById(r.action_type)||{};
             var thumb = r.photo_url ? '<img src="'+esc(r.photo_url)+'" alt="">' : (a.icon||'📷');
+            var baBadge = r.photo_before_url ? '<span class="ba-badge">A/D</span>' : '';
             var item=el('div','review-item');
             item.innerHTML =
-              '<div class="review-thumb">'+thumb+'</div>'+
+              '<div class="review-thumb" style="position:relative">'+baBadge+thumb+'</div>'+
               '<div class="review-body"><div class="review-author">'+esc(names[r.user_id]||'Vecino/a')+'</div>'+
               '<div class="review-action">'+esc(a.icon||'')+' '+esc(a.title||'Acción')+'</div>'+
               '<div class="review-city">📍 '+esc(r.city||'—')+'</div></div>'+
@@ -906,7 +993,15 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function openReview(r){
     currentReview=r; var a=actionById(r.action_type)||{};
-    $('modalPhoto').innerHTML = r.photo_url ? '<img src="'+esc(r.photo_url)+'" alt="">' : (a.icon||'📷');
+    if(r.photo_before_url){
+      $('modalPhoto').innerHTML =
+        '<div class="modal-ba">'+
+          '<figure><img src="'+esc(r.photo_before_url)+'" alt=""><figcaption>Antes</figcaption></figure>'+
+          '<figure><img src="'+esc(r.photo_url||'')+'" alt=""><figcaption>Después</figcaption></figure>'+
+        '</div>';
+    } else {
+      $('modalPhoto').innerHTML = r.photo_url ? '<img src="'+esc(r.photo_url)+'" alt="">' : (a.icon||'📷');
+    }
     $('modalAuthor').textContent = r._author||'Vecino/a';
     $('modalCity').textContent = '📍 '+(r.city||'—');
     $('modalActionIcon').textContent = a.icon||'🔄';
