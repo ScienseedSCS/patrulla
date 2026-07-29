@@ -12,14 +12,16 @@ App instalable de prevención del dengue para Fundación Mundo Sano. Esta versi�
 
 | Archivo | Qué es | ¿Lo tocás? |
 |---|---|---|
-| `index.html` | La app completa (todo embebido). | No |
+| `index.html` | La app completa. **El logo va embebido adentro**, no depende de ningún archivo. | No |
 | `config.js` | Tus credenciales de Supabase. | **Ya viene con las tuyas** |
-| `supabase-fix.sql` | El parche que arregla el bug (RLS + storage). | Se corre una vez |
+| `supabase-fix.sql` | El parche que arregla el bug (RLS + storage + columnas). | Se corre una vez |
 | `manifest.webmanifest` | Hace la app instalable. | No |
 | `sw.js` | Service worker (instalación + carga rápida). | No |
-| `icons/` | Íconos de la app + logo. | Reemplazá el de Mundo Sano por el oficial |
+| `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` | Íconos para instalar la PWA (pantalla de inicio). | No |
 
-> Nota: tus viejos `app.js` y `styles.css` quedaron obsoletos — todo está dentro de `index.html`. Podés borrarlos del repo.
+**Todos los archivos van en la raíz del repo — no hay ninguna carpeta.** El logo que se ve dentro de la app está incrustado en `index.html`, así que aunque no subas los `icon-*.png`, la app funciona igual (solo que el ícono de "instalar en el teléfono" quedaría genérico).
+
+> Nota: tus viejos `app.js`, `styles.css` y la carpeta `icons/` quedaron obsoletos — todo está dentro de `index.html`. Podés borrarlos del repo.
 
 ---
 
@@ -37,15 +39,19 @@ Ese script **no borra nada**: agrega las políticas de lectura que faltaban (el 
 
 ### Paso 2 · Subir los archivos al repo
 
-Subí al repositorio **ScienseedSCS/patrulla** (podés arrastrarlos en *Add file → Upload files*), respetando la carpeta `icons/`:
+Subí estos archivos **a la raíz** del repositorio **ScienseedSCS/patrulla** (arrastrándolos en *Add file → Upload files*). **No hay carpetas**: van todos sueltos, uno al lado del otro.
 
 ```
 index.html
 config.js
 manifest.webmanifest
 sw.js
-icons/  (icon-192.png, icon-512.png, icon-maskable-512.png, mundo-sano-logo.svg)
+icon-192.png
+icon-512.png
+icon-maskable-512.png
 ```
+
+Si antes tenías una carpeta `icons/`, ya no hace falta (podés borrarla). El logo de la app ahora está adentro de `index.html`.
 
 `config.js` **ya trae tus credenciales**, así que no hace falta editarlo. GitHub Pages ya está activo en `https://scienseedscs.github.io/patrulla/`; en un minuto vas a ver los cambios.
 
@@ -115,4 +121,4 @@ Para ajustar la precisión, cambiá `GEO_PRECISION` en `index.html` (3 = ~110 m;
 
 ---
 
-*El logo de la app vive en `icons/logo.png` (versión con fondo transparente, para que se vea bien sobre la cabecera y el login). Los íconos de instalación (`icon-192.png`, `icon-512.png`, `icon-maskable-512.png`) se generaron con tu logo sobre el fondo berenjena del tema. Si cambiás el logo, reemplazá `icons/logo.png` (y regenerá los íconos) y **subí el número de versión en `sw.js`** — de `patrulla-v2` a `patrulla-v3` — para que la caché no siga mostrando el viejo.*
+*El logo que se ve dentro de la app (cabecera y login) está **incrustado en `index.html`** como dato embebido, así no depende de ningún archivo. Los `icon-*.png` de la raíz son solo para el ícono de instalación en el teléfono. Si algún día cambiás el logo o los íconos, **subí el número de versión en `sw.js`** (ej. de `patrulla-v4` a `patrulla-v5`) para que la caché no siga mostrando el viejo.*
