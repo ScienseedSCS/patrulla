@@ -75,6 +75,27 @@ En tu diseño, los puntos los suma la app actualizando `profiles.points`. Es sim
 
 ---
 
+## Metadata de los reportes y privacidad
+
+La app puede adjuntar a cada reporte, **de forma opcional y con consentimiento**, datos que ayudan a mapear y validar focos:
+
+- **Ubicación aproximada** (`reports.lat` / `reports.lng`): sólo si la persona activa el interruptor "Adjuntar ubicación" y acepta el aviso. Las coordenadas se guardan con **precisión reducida a ~100 m** (3 decimales), no la dirección exacta. La precisión informada por el GPS queda en `reports.geo_accuracy`.
+- **Fecha y hora del dispositivo** (`reports.captured_at`).
+- **Huella de la foto** (`reports.photo_hash`, SHA-256): detecta si una misma imagen se reutiliza en varios reportes. En Revisar, si una foto aparece en más de un reporte, se muestra una alerta.
+
+Decisiones de privacidad tomadas (alineadas con GDPR / LGPD de Brasil / Ley 25.326 de Argentina):
+
+- **Consentimiento explícito, opt-in.** La ubicación está desactivada hasta que la persona la activa y acepta un aviso claro (qué se recoge, para qué, quién lo administra). El consentimiento se guarda en `profiles.geo_consent` y se puede revocar en cualquier reporte. **Reportar funciona igual sin ubicación.**
+- **Minimización.** Precisión a nivel de barrio; no se guarda la dirección exacta.
+- **Se quitan los metadatos EXIF de las fotos.** Antes de subir, la imagen se re-codifica en el navegador (canvas), lo que elimina el GPS y demás metadatos que la cámara incrusta. Así la única ubicación almacenada es la consentida, con la precisión que definimos. De paso, las fotos quedan más livianas.
+- **Transparencia.** El aviso está a un toque desde el reporte ("¿Qué datos se recogen?").
+
+> Para producción: sumá una **política de privacidad** enlazada, definí **plazo de retención** de reportes/fotos y un mecanismo de **acceso y borrado** (borrar la cuenta y sus datos). Si va a haber datos de personas de la UE, conviene revisión de un responsable de protección de datos. Los revisores ven la ubicación aproximada de los reportes que revisan; si querés restringirlo, se puede limitar la lectura de `reports` sólo a revisores. Esto es orientación de diseño, no asesoramiento legal.
+
+Para ajustar la precisión, cambiá `GEO_PRECISION` en `index.html` (3 = ~110 m; 2 = ~1,1 km).
+
+---
+
 ## Si algo no aparece
 
 - **Reportar/Tips/Quizzes vacíos** → casi seguro falta correr `supabase-fix.sql` (Paso 1), o correrlo de nuevo.
