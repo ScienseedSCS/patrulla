@@ -2,375 +2,1131 @@
 <html lang="es-AR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>Patrulla Antimosquito · Fundación Mundo Sano</title>
+
 <meta name="theme-color" content="#331F3A">
-<title>Patrulla Antimosquito</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="description" content="Sumate a la prevención del dengue en tu barrio. Reportá acciones, aprendé y ganá puntos con la Patrulla Antimosquito de Fundación Mundo Sano.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Patrulla Antimosquito">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-:root{--violeta:#331F3A;--dorado:#F4D18B;--dorado2:#F5CA73;--crema:#F2E9DA;--texto:#331F3A;--rojo:#C0392B;--amarillo:#E1A100;--verde:#3E8E5A}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Raleway',sans-serif}
-body{background:var(--crema);color:var(--texto);padding-bottom:110px}
-h1,h2,h3,.view-title{font-family:'DM Serif Display',serif;font-weight:400}
-#errBar{display:none;background:#fbe6e3;color:#8a1f14;padding:10px 14px;font-size:.85rem;border-bottom:2px solid var(--rojo)}
-.app-header{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;background:var(--violeta);color:#fff;padding:10px 14px}
-.app-logo{height:44px;width:auto;border-radius:8px;background:#fff;padding:2px}
-.app-title h1{font-size:1.15rem;line-height:1.1;color:#fff}
-.app-title span{font-size:.68rem;opacity:.8}
-.points{margin-left:auto;background:var(--dorado);color:var(--violeta);font-weight:700;padding:6px 12px;border-radius:20px;white-space:nowrap}
-.screen{max-width:520px;margin:20px auto;padding:0 14px}
-.view{max-width:640px;margin:0 auto;padding:14px}
-.view-title{font-size:1.5rem;margin:6px 0 4px}
-.view-sub{font-size:.9rem;opacity:.75;margin-bottom:12px}
-.sub-h{margin:22px 0 10px;font-size:1.2rem}
-.card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 12px rgba(51,31,58,.08);margin-bottom:12px}
-.stack>*{margin-bottom:12px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-button{cursor:pointer;border:0;font-size:1rem}
-.btn-primary{background:var(--dorado);color:var(--violeta);font-weight:700;padding:13px;border-radius:12px;width:100%;margin-top:8px}
-.btn-outline{background:#fff;border:2px solid var(--violeta);color:var(--violeta);padding:11px;border-radius:12px;width:100%;font-weight:600;margin-top:6px}
-.btn-back{background:none;color:var(--violeta);font-weight:600;margin-bottom:10px}
-input,textarea,select{width:100%;padding:12px;margin:6px 0;border:1px solid #d8ccc0;border-radius:10px;font-size:1rem;background:#fcfbf8}
-textarea{min-height:90px;resize:vertical}
-.incidence-item{border-left:6px solid #ccc;padding-left:12px}
-.risk-alto,.risk-critico{border-color:var(--rojo)}.risk-medio{border-color:var(--amarillo)}.risk-bajo{border-color:var(--verde)}
-.risk-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.75rem;font-weight:700;color:#fff}
-.risk-alto .risk-badge,.risk-critico .risk-badge{background:var(--rojo)}.risk-medio .risk-badge{background:var(--amarillo)}.risk-bajo .risk-badge{background:var(--verde)}
-.action-card{background:#fff;border-radius:14px;padding:14px;box-shadow:0 3px 10px rgba(51,31,58,.08);text-align:center;cursor:pointer;position:relative}
-.action-card.star{border:2px solid var(--dorado)}
-.action-ico{font-size:2.2rem}
-.action-card h4{font-family:'Raleway';font-weight:700;font-size:.95rem;margin:6px 0}
-.badge{display:inline-block;font-size:.62rem;padding:2px 7px;border-radius:10px;margin:2px 2px 0;background:var(--crema);color:var(--violeta)}
-.pts{display:inline-block;margin-top:8px;background:var(--dorado);color:var(--violeta);font-weight:700;padding:3px 10px;border-radius:12px;font-size:.82rem}
-.star-tag{position:absolute;top:8px;right:8px;background:var(--dorado);color:var(--violeta);font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:8px}
-.step-ind{font-size:.75rem;color:var(--dorado2);font-weight:700;margin-bottom:6px}
-.step-ico{font-size:3rem;text-align:center}
-.thumb{width:100%;max-height:200px;object-fit:cover;border-radius:12px;margin:8px 0}
-.review-item{display:flex;align-items:center;gap:12px}
-.review-thumb{width:60px;height:60px;border-radius:10px;background:var(--crema);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
-.vote-row{display:flex;gap:8px;margin-top:14px}
-.vote-row button{flex:1;padding:12px 4px;border-radius:10px;font-weight:700;font-size:.85rem}
-.v-ok{background:#e5f4ea;color:var(--verde)}.v-doubt{background:#fdf3d7;color:#a06f00}.v-no{background:#fbe6e3;color:var(--rojo)}
-.modal-photo{width:100%;height:220px;background:var(--crema);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:12px}
-.note-box{background:var(--crema);border-radius:10px;padding:12px;margin:10px 0;font-style:italic}
-.locked{text-align:center;padding:30px 16px}.locked .big{font-size:3rem}
-.tip{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(51,31,58,.07);overflow:hidden;margin-bottom:8px}
-.tip-head{padding:14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-.tip-head h4{font-family:'Raleway';font-weight:600;font-size:.95rem}
-.tip-body{padding:0 14px 14px;font-size:.9rem;opacity:.85;display:none}
-.tip.open .tip-body{display:block}
-.tip.read .tip-head h4::before{content:'\2714 ';color:var(--verde)}
-.cat-title{margin:16px 0 8px;font-family:'DM Serif Display';font-size:1.15rem}
-.quiz-opt{display:block;width:100%;text-align:left;background:#fff;border:1px solid #e0d6ca;padding:12px;border-radius:10px;margin:6px 0}
-.quiz-opt.correct{background:#e5f4ea;border-color:var(--verde)}.quiz-opt.wrong{background:#fbe6e3;border-color:var(--rojo)}
-.quiz-feedback{margin-top:10px;padding:12px;border-radius:10px;background:var(--crema);font-size:.88rem}
-.level-name{font-family:'DM Serif Display';font-size:1.6rem}
-.bar{background:var(--crema);border-radius:10px;height:16px;overflow:hidden;margin:10px 0}
-.fill{background:var(--dorado);height:100%;width:0;transition:width .5s}
-.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;text-align:center}
-.stat b{display:block;font-size:1.4rem;color:var(--violeta)}.stat span{font-size:.72rem;opacity:.7}
-.lb-item{display:flex;align-items:center;gap:10px}.lb-item.me{background:var(--dorado);border-radius:10px}
-.lb-pos{font-weight:700;width:26px;text-align:center}
-.small{font-size:.78rem;opacity:.7}
-.counter{display:inline-block;margin-top:6px;font-size:.75rem;color:var(--dorado2);font-weight:700}
-.menu-card{text-align:center;cursor:pointer}.menu-ico{font-size:2.6rem}
-.daily-card{background:var(--violeta);color:#fff}.daily-card p{opacity:.85;font-size:.85rem;margin:4px 0}
-.modal{position:fixed;inset:0;background:rgba(51,31,58,.6);display:flex;align-items:flex-end;justify-content:center;z-index:100}
-.modal-box{background:#fff;width:100%;max-width:600px;border-radius:20px 20px 0 0;padding:22px;max-height:90vh;overflow-y:auto;position:relative}
-.modal-close{position:absolute;top:14px;right:16px;background:none;font-size:1.3rem;color:var(--violeta)}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#fff;box-shadow:0 -2px 12px rgba(51,31,58,.1);z-index:60}
-.nav-btn{flex:1;background:none;padding:8px 2px;font-size:1.15rem;color:#9a8fa0;display:flex;flex-direction:column;align-items:center;gap:2px}
-.nav-btn span{font-size:.62rem;font-weight:600}.nav-btn.active,.nav-btn.active span{color:var(--violeta)}
-.app-footer{text-align:center;padding:16px;font-size:.8rem;opacity:.7}
-.msg{margin-top:10px;font-size:.85rem}
-.hide{display:none!important}
-@media(min-width:700px){body{max-width:460px;margin:0 auto;box-shadow:0 0 30px rgba(0,0,0,.12);min-height:100vh}}
+:root{
+  --primary:#331F3A; --primary-soft:#4A2F54;
+  --secondary:#F4D18B; --accent:#F5CA73;
+  --accent-1:#6DBE4A; --accent-2:#1E8069;
+  --background:#F2E9DA; --text:#2B1A32; --muted:#7A6E82;
+  --white:#FFFFFF; --card:#FFFFFF;
+  --danger:#C2372F; --warn:#E29B2E; --ok:#3E8F4A; --crit:#8E1B16;
+  --shadow:0 8px 24px rgba(51,31,58,0.08);
+  --shadow-lg:0 20px 50px rgba(51,31,58,0.25);
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Raleway',system-ui,sans-serif;background:linear-gradient(135deg,#3d2445 0%,#251327 100%);color:var(--text);min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:.2px}
+.hide{display:none !important}
+
+/* Barra de error visible */
+#errBar{position:fixed;top:0;left:0;right:0;z-index:900;background:var(--danger);color:#fff;font-size:13px;font-weight:700;padding:10px 40px 10px 14px;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.3);display:none}
+#errBar.show{display:block}
+#errBar button{position:absolute;top:6px;right:8px;background:rgba(255,255,255,.2);border:none;color:#fff;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer}
+
+/* Boot */
+.boot{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#F5E9D6;font-weight:700;font-size:13px}
+.boot .spin{width:34px;height:34px;border:3px solid rgba(245,233,214,.25);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Auth */
+.auth-wrap{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 18px}
+.auth-card{background:var(--background);width:100%;max-width:400px;border-radius:28px;box-shadow:var(--shadow-lg);padding:30px 24px 26px;text-align:center}
+.auth-logo{width:74px;height:auto;margin:0 auto 12px;display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.2))}
+.auth-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--primary);line-height:1.05}
+.auth-tag{font-size:12px;color:var(--accent-2);font-weight:700;letter-spacing:.3px;margin-top:4px;text-transform:uppercase}
+.auth-intro{font-size:13px;color:var(--muted);line-height:1.5;margin:14px 4px 20px}
+.auth-form{display:flex;flex-direction:column;gap:12px;text-align:left}
+.field label{display:block;font-size:11px;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
+.field input,.field select{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid #DFD3E1;font-family:inherit;font-size:14px;color:var(--text);background:#fff}
+.field input:focus,.field select:focus{outline:none;border-color:var(--primary)}
+.auth-msg{font-size:12.5px;font-weight:700;padding:10px 12px;border-radius:10px;line-height:1.4;display:none}
+.auth-msg.show{display:block}
+.auth-msg.err{background:#F9E4E2;color:var(--danger)}
+.auth-msg.ok{background:#E1F0E4;color:var(--ok)}
+.auth-links{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.auth-link{background:none;border:none;color:var(--primary-soft);font-weight:800;font-family:inherit;font-size:13px;cursor:pointer;text-decoration:underline}
+.auth-switch{font-size:13px;color:var(--muted);margin-top:6px}
+.auth-ftr{margin-top:20px;font-size:10px;color:var(--muted)}
+.auth-ftr img{height:22px;margin-top:6px;opacity:.85;display:inline-block}
+
+/* Top nav */
+.topnav{position:sticky;top:0;z-index:50;background:rgba(51,31,58,.85);backdrop-filter:blur(10px);border-radius:14px;margin:0 auto 18px;max-width:420px;padding:10px 14px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.topnav::-webkit-scrollbar{display:none}
+.topnav a{color:#F5E9D6;text-decoration:none;font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;white-space:nowrap;flex-shrink:0;transition:background .2s,color .2s;cursor:pointer}
+.topnav a:hover{background:var(--secondary);color:var(--primary)}
+
+/* Phone */
+.app-shell{padding:24px 12px}
+.phone{max-width:420px;margin:0 auto;background:var(--background);border-radius:36px;box-shadow:var(--shadow-lg);overflow:hidden;position:relative;border:10px solid #1a0f1e;min-height:820px;display:flex;flex-direction:column}
+.header{background:var(--primary);color:#fff;padding:18px 18px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:10}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-logo{width:44px;height:auto;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
+.brand-text{min-width:0}
+.brand-name{font-family:'DM Serif Display',serif;font-size:19px;line-height:1.05;color:#fff}
+.brand-tag{font-size:10px;color:#F4D18B;font-weight:600;letter-spacing:.3px;margin-top:2px;opacity:.9}
+.header-right{display:flex;align-items:center;gap:8px}
+.points-pill{background:linear-gradient(135deg,var(--secondary),var(--accent));color:var(--primary);font-weight:800;font-size:14px;padding:8px 12px;border-radius:999px;display:flex;align-items:center;gap:5px;box-shadow:0 3px 8px rgba(0,0,0,.15);white-space:nowrap}
+.logout-btn{background:rgba(255,255,255,.12);border:none;color:#F5E9D6;width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logout-btn:hover{background:rgba(255,255,255,.22)}
+
+.content{flex:1;padding:16px 14px 96px;overflow-y:auto}
+.section{display:none}
+.section.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.section-title{font-size:22px;color:var(--primary);margin-bottom:4px}
+.section-sub{color:var(--muted);font-size:13px;margin-bottom:14px;line-height:1.4}
+.loading{text-align:center;color:var(--muted);font-size:13px;padding:30px 0}
+.empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 12px;line-height:1.5}
+.card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+
+/* Incidencia */
+.risk-card{display:flex;align-items:center;gap:12px;border-left:5px solid;padding-left:12px}
+.risk-card.bajo{border-color:var(--ok)} .risk-card.medio{border-color:var(--warn)}
+.risk-card.alto{border-color:var(--danger)} .risk-card.critico{border-color:var(--crit)}
+.risk-card.mine{outline:2px solid var(--accent);outline-offset:2px}
+.risk-city{font-family:'DM Serif Display',serif;font-size:18px;color:var(--primary)}
+.risk-cases{font-size:12px;color:var(--muted);margin-top:2px}
+.risk-msg{font-size:12px;color:var(--text);margin-top:8px;line-height:1.4}
+.risk-badge{font-size:10px;font-weight:800;padding:5px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px;color:#fff}
+.risk-badge.bajo{background:var(--ok)} .risk-badge.medio{background:var(--warn)}
+.risk-badge.alto{background:var(--danger)} .risk-badge.critico{background:var(--crit)}
+
+/* Reportar */
+.actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.action-card{background:var(--card);border-radius:var(--radius);padding:12px 10px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s;display:flex;flex-direction:column;gap:6px;position:relative;border:2px solid transparent}
+.action-card:hover{transform:translateY(-2px)}
+.action-card.star{border-color:var(--accent);background:linear-gradient(180deg,#fff 60%,#FFF7E4)}
+.action-star-badge{position:absolute;top:-8px;right:-6px;background:var(--accent);color:var(--primary);font-size:9px;font-weight:800;padding:3px 7px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.15);text-transform:uppercase;letter-spacing:.4px}
+.action-icon{font-size:30px;line-height:1}
+.action-title{font-size:13px;font-weight:700;color:var(--primary);line-height:1.15;min-height:32px}
+.action-tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:9px;font-weight:700;padding:3px 6px;border-radius:6px;background:#EFE6F0;color:var(--primary-soft)}
+.tag.type{background:#E8DFEA}
+.pts{font-size:12px;font-weight:800;color:#8A6A1E;background:var(--secondary);padding:3px 8px;border-radius:999px;align-self:flex-start;margin-top:2px}
+.flow-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.flow-back{background:none;border:none;color:var(--primary);font-weight:700;font-size:13px;cursor:pointer;padding:6px 4px}
+.step-pill{background:var(--primary);color:#fff;font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px}
+.step-card{background:var(--card);border-radius:var(--radius);padding:20px 16px;box-shadow:var(--shadow)}
+.step-icon-big{font-size:56px;text-align:center;margin-bottom:10px}
+.step-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--primary);text-align:center;margin-bottom:10px;line-height:1.15}
+.step-desc{font-size:14px;color:var(--text);line-height:1.5;text-align:center;margin-bottom:14px}
+.step-meta{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.btn{width:100%;background:var(--primary);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{background:var(--primary-soft)}
+.btn:disabled{background:#B8AEB8;cursor:not-allowed}
+.btn-secondary{background:transparent;color:var(--primary);border:2px solid var(--primary)}
+.btn-secondary:hover{background:var(--primary);color:#fff}
+.btn-accent{background:linear-gradient(135deg,var(--accent),var(--secondary));color:var(--primary)}
+.btn-accent:hover{filter:brightness(1.05)}
+.photo-drop{border:2px dashed var(--primary-soft);border-radius:14px;padding:26px 14px;text-align:center;background:#FBF7EF;cursor:pointer;transition:background .2s;margin-bottom:12px}
+.photo-drop:hover{background:#F4EBDA}
+.photo-drop-icon{font-size:44px;margin-bottom:6px}
+.photo-drop-text{font-size:13px;color:var(--muted);line-height:1.4}
+.photo-preview{border-radius:14px;height:170px;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;margin-bottom:12px;overflow:hidden;background:linear-gradient(135deg,#EFE6D8,#DDD1BD)}
+.photo-preview img{width:100%;height:100%;object-fit:cover;border-radius:14px}
+.photo-preview .check{position:absolute;top:8px;right:8px;background:var(--ok);color:#fff;font-size:11px;font-weight:800;padding:4px 9px;border-radius:999px;z-index:2}
+.txt-area{width:100%;min-height:90px;padding:12px;border-radius:12px;border:1.5px solid #DFD3E1;font-family:inherit;font-size:13px;color:var(--text);resize:vertical;background:#fff;margin-bottom:14px}
+.txt-area:focus{outline:none;border-color:var(--primary)}
+.btn-row{display:flex;gap:8px;margin-top:8px}
+.btn-row .btn{flex:1}
+
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:12px 20px;border-radius:999px;font-weight:700;font-size:13px;box-shadow:var(--shadow-lg);z-index:400;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+
+/* Revisar */
+.role-badge{background:var(--accent-1);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;margin-bottom:12px;text-transform:uppercase;letter-spacing:.3px}
+.review-info{background:linear-gradient(135deg,#FBF3E0,#F5E4C0);padding:12px 14px;border-radius:var(--radius);margin-bottom:12px}
+.review-info-title{font-weight:800;color:var(--primary);font-size:13px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.review-info-text{font-size:12px;color:var(--text);line-height:1.4}
+.review-item{display:flex;gap:12px;align-items:center;padding:12px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:10px;transition:opacity .3s}
+.review-thumb{width:56px;height:56px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#DDD1BD,#EFE6D8);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden}
+.review-thumb img{width:100%;height:100%;object-fit:cover}
+.review-body{flex:1;min-width:0}
+.review-author{font-weight:700;color:var(--primary);font-size:13px;line-height:1.2}
+.review-action{font-size:12px;color:var(--text);margin-top:2px;line-height:1.3}
+.review-city{font-size:11px;color:var(--muted);margin-top:2px}
+.review-open{background:var(--primary);color:#fff;border:none;font-family:inherit;padding:8px 12px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.review-open:hover{background:var(--primary-soft)}
+.lock-card{background:var(--card);border-radius:var(--radius);padding:26px 18px;box-shadow:var(--shadow);text-align:center}
+.lock-emoji{font-size:52px;margin-bottom:8px}
+.lock-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--primary);margin-bottom:6px}
+.lock-text{font-size:13px;color:var(--muted);line-height:1.5}
+.lock-bar-outer{background:#EFE6E8;border-radius:999px;height:12px;overflow:hidden;margin:14px 0 6px}
+.lock-bar-inner{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));height:100%;border-radius:999px;transition:width .4s}
+
+/* Modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(20,10,25,.65);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-backdrop.show{display:flex}
+.modal{background:var(--card);border-radius:20px;max-width:380px;width:100%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg)}
+.modal-close{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.9);border:none;width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer;color:var(--primary);font-weight:800;z-index:2;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+.modal-photo{height:200px;background:linear-gradient(135deg,#DDD1BD,#B8A88E);display:flex;align-items:center;justify-content:center;font-size:80px;border-radius:20px 20px 0 0;overflow:hidden}
+.modal-photo img{width:100%;height:100%;object-fit:cover}
+.modal-body{padding:18px}
+.modal-author{font-family:'DM Serif Display',serif;font-size:20px;color:var(--primary)}
+.modal-city{font-size:12px;color:var(--muted);margin-top:2px}
+.modal-action{background:#F8F1E2;padding:10px 12px;border-radius:12px;margin-top:12px;display:flex;align-items:center;gap:8px}
+.modal-action-icon{font-size:24px}
+.modal-action-text{font-size:13px;font-weight:700;color:var(--primary)}
+.modal-note{background:#FBF7EF;border-left:3px solid var(--accent);padding:12px;border-radius:8px;margin-top:12px;font-size:13px;color:var(--text);line-height:1.5;font-style:italic}
+.vote-title{font-size:12px;font-weight:800;color:var(--primary);text-align:center;margin:16px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.vote-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.vote-btn{background:#fff;border:2px solid #E5D9E8;color:var(--primary);padding:10px 6px;border-radius:12px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .15s,border-color .15s,background .15s}
+.vote-btn .em{font-size:20px}
+.vote-btn.ok:hover{border-color:var(--ok);background:#E9F5EB}
+.vote-btn.mid:hover{border-color:var(--warn);background:#FCF3E1}
+.vote-btn.no:hover{border-color:var(--danger);background:#F9E4E2}
+
+/* Aprender */
+.learn-menu{display:grid;grid-template-columns:1fr;gap:12px}
+.learn-card{background:linear-gradient(135deg,var(--white),#FBF3E0);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);cursor:pointer;display:flex;gap:14px;align-items:center;transition:transform .15s;border:2px solid transparent}
+.learn-card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.learn-icon{font-size:44px;flex-shrink:0}
+.learn-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--primary);line-height:1}
+.learn-sub{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4}
+.learn-count{font-size:11px;color:var(--accent-2);font-weight:800;margin-top:6px}
+.daily-card{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:#fff;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.daily-title{font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:4px}
+.daily-desc{font-size:12px;opacity:.85;margin-bottom:10px;line-height:1.4}
+.progress-outer{background:rgba(255,255,255,.2);border-radius:999px;height:10px;overflow:hidden;margin-bottom:6px}
+.progress-inner{background:linear-gradient(90deg,var(--accent),var(--secondary));height:100%;border-radius:999px;transition:width .4s}
+.progress-txt{font-size:11px;font-weight:700;opacity:.9}
+.tips-category{font-weight:800;color:var(--primary);font-size:12px;text-transform:uppercase;letter-spacing:.4px;margin:14px 0 6px}
+.tip-item{background:var(--card);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);margin-bottom:8px;cursor:pointer}
+.tip-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.tip-title{font-weight:700;color:var(--primary);font-size:13px;line-height:1.3;flex:1}
+.tip-check{font-size:16px;color:#DFD3E1;flex-shrink:0}
+.tip-item.read .tip-check{color:var(--ok)}
+.tip-item.read{background:#F5F7EF}
+.tip-body{font-size:12px;color:var(--text);margin-top:6px;line-height:1.5;display:none}
+.tip-item.open .tip-body{display:block}
+.quiz-card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
+.quiz-q{font-weight:800;color:var(--primary);font-size:14px;line-height:1.35;margin-bottom:10px}
+.quiz-opt{display:block;width:100%;text-align:left;background:#F8F3EA;border:1.5px solid transparent;padding:10px 12px;border-radius:10px;font-family:inherit;font-size:13px;color:var(--text);cursor:pointer;margin-bottom:6px;transition:background .15s,border-color .15s}
+.quiz-opt:hover:not(:disabled){background:#EFE6D8}
+.quiz-opt.correct{background:#E1F0E4;border-color:var(--ok);color:var(--ok);font-weight:700}
+.quiz-opt.wrong{background:#F9E4E2;border-color:var(--danger);color:var(--danger)}
+.quiz-opt:disabled{cursor:default}
+.quiz-feedback{margin-top:8px;font-size:12px;padding:8px 10px;border-radius:8px;background:#E1F0E4;color:var(--ok);font-weight:700;display:none}
+.quiz-feedback.show{display:block}
+.quiz-feedback.err{background:#F9E4E2;color:var(--danger)}
+
+/* Progreso */
+.level-card{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:14px;text-align:center}
+.level-emoji{font-size:44px;margin-bottom:6px}
+.level-name{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:2px}
+.level-pts{font-size:12px;color:var(--secondary);font-weight:700}
+.level-progress-outer{background:rgba(255,255,255,.15);border-radius:999px;height:12px;overflow:hidden;margin-top:12px}
+.level-progress-inner{background:linear-gradient(90deg,var(--accent),var(--secondary));height:100%;border-radius:999px;transition:width .4s}
+.level-next{font-size:11px;opacity:.85;margin-top:6px}
+.levels-list{background:var(--card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);margin-bottom:14px}
+.level-row{display:flex;align-items:center;gap:10px;padding:8px 6px;border-bottom:1px solid #F0E6E8;font-size:12px}
+.level-row:last-child{border-bottom:none}
+.level-row.current{background:linear-gradient(90deg,#FBF3E0,transparent);border-radius:8px;font-weight:700}
+.level-row-emoji{font-size:20px}
+.level-row-name{flex:1;color:var(--text)}
+.level-row-range{color:var(--muted);font-size:11px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.stat-card{background:var(--card);border-radius:12px;padding:12px;text-align:center;box-shadow:var(--shadow)}
+.stat-num{font-family:'DM Serif Display',serif;font-size:24px;color:var(--primary)}
+.stat-label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+.leaderboard{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+.lb-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--primary);margin-bottom:10px}
+.lb-row{display:flex;align-items:center;gap:10px;padding:8px 6px;border-bottom:1px solid #F0E6E8;font-size:13px}
+.lb-row:last-child{border-bottom:none}
+.lb-row.me{background:linear-gradient(90deg,#FBF3E0,transparent);border-radius:8px;font-weight:700;color:var(--primary)}
+.lb-rank{width:22px;font-weight:800;color:var(--muted);text-align:center}
+.lb-name{flex:1}
+.lb-pts{font-weight:800;color:var(--primary)}
+
+.bottomnav{position:absolute;bottom:0;left:0;right:0;background:var(--primary);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 4px 12px;border-top:1px solid rgba(255,255,255,.08)}
+.navbtn{background:none;border:none;color:#B39EBC;font-family:inherit;font-size:10px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;transition:color .2s}
+.navbtn .em{font-size:20px}
+.navbtn:hover{color:#fff}
+.navbtn.active{color:var(--accent)}
+.miniftr{text-align:center;padding:14px 12px 8px;font-size:10px;color:var(--muted)}
+.miniftr img{height:22px;margin-top:4px;opacity:.85}
 </style>
 </head>
 <body>
-<div id="errBar"></div>
-<header class="app-header">
-  <img src="logo_mosquito.png" alt="Patrulla Antimosquito" class="app-logo">
-  <div class="app-title"><h1>Patrulla Antimosquito</h1><span>Prevención de enfermedades por mosquitos</span></div>
-  <span id="pointsCounter" class="points">0 pts</span>
-</header>
-<section id="authScreen" class="screen card">
-  <h2>Sumate a la Patrulla</h2>
-  <p>Creá tu cuenta o iniciá sesión para empezar.</p>
-  <input type="email" id="email" placeholder="tu@email.com">
-  <input type="password" id="password" placeholder="Tu contraseña (mín. 6 caracteres)">
-  <input type="text" id="cityInput" placeholder="Tu ciudad (ej: San Vicente)">
-  <button class="btn-primary" id="btnRegister">Crear cuenta</button>
-  <button class="btn-outline" id="btnLogin">Ya tengo cuenta · Entrar</button>
-  <button class="btn-back" id="btnForgot" style="width:100%">¿Olvidaste tu contraseña?</button>
-  <div id="authMsg" class="msg"></div>
-</section>
-<section id="resetScreen" class="screen card hide">
-  <h2>Nueva contraseña</h2>
-  <p>Escribí tu nueva contraseña para entrar.</p>
-  <input type="password" id="newPassword" placeholder="Nueva contraseña (mín. 6 caracteres)">
-  <button class="btn-primary" id="btnSetPassword">Guardar contraseña</button>
-  <div id="resetMsg" class="msg"></div>
-</section>
-<main id="appMain" class="hide">
-  <section id="view-incidence" class="view"><h2 class="view-title">📍 Incidencia en tu zona</h2><div id="incidenceBox" class="stack">Cargando…</div></section>
-  <section id="view-report" class="view hide"><h2 class="view-title">📸 Reportá una acción</h2><p class="view-sub">Elegí qué hiciste para eliminar criaderos y sumá puntos.</p><div id="actionsGrid" class="grid">Cargando acciones…</div></section>
-  <section id="view-review" class="view hide"><h2 class="view-title">🔍 Revisar reportes</h2><div id="reviewContent"></div></section>
-  <section id="view-learn" class="view hide">
-    <h2 class="view-title">🧠 Aprender</h2>
-    <div id="learnMenu" class="grid-2">
-      <div class="card menu-card" id="cardTips"><div class="menu-ico">📖</div><h3>Tips</h3><p>Leé tu tanda diaria y sumá puntos</p><span class="counter" id="tipsCount">0 leídos</span></div>
-      <div class="card menu-card" id="cardQuizzes"><div class="menu-ico">❓</div><h3>Quizzes</h3><p>Poné a prueba lo que sabés</p><span class="counter" id="quizCount">0 resueltos</span></div>
+
+<!-- Barra de error visible -->
+<div id="errBar"><span id="errText"></span><button id="errClose" aria-label="Cerrar">✕</button></div>
+
+<!-- Boot -->
+<div class="boot" id="boot"><div class="spin"></div><div>Cargando Patrulla Antimosquito…</div></div>
+
+<!-- ===================== AUTH ===================== -->
+<div class="auth-wrap hide" id="authScreen">
+  <div class="auth-card">
+    <svg class="auth-logo" viewBox="0 0 100 135" xmlns="http://www.w3.org/2000/svg" aria-label="Logo">
+      <defs><clipPath id="pc1"><path d="M50 8 C24 8 8 26 8 50 C8 72 28 92 50 128 C72 92 92 72 92 50 C92 26 76 8 50 8 Z"/></clipPath></defs>
+      <path d="M50 8 C24 8 8 26 8 50 C8 72 28 92 50 128 C72 92 92 72 92 50 C92 26 76 8 50 8 Z" fill="#1E8069"/>
+      <circle cx="50" cy="48" r="35" fill="#F5F6EC"/>
+      <g clip-path="url(#pc1)"><ellipse cx="50" cy="76" rx="30" ry="6" fill="#8FC5E8"/><path d="M18 72 Q50 66 82 72" stroke="#6DBE4A" stroke-width="1.5" fill="none"/></g>
+      <circle cx="50" cy="48" r="26" fill="none" stroke="#6DBE4A" stroke-width="1.6" opacity=".85"/>
+      <line x1="50" y1="17" x2="50" y2="21" stroke="#6DBE4A" stroke-width="2"/><line x1="50" y1="75" x2="50" y2="79" stroke="#6DBE4A" stroke-width="2"/>
+      <line x1="17" y1="48" x2="21" y2="48" stroke="#6DBE4A" stroke-width="2"/><line x1="75" y1="48" x2="79" y2="48" stroke="#6DBE4A" stroke-width="2"/>
+      <g transform="translate(50,48) rotate(20)"><ellipse cx="8" cy="0" rx="15" ry="5" fill="#1A1A1A" opacity=".75" transform="rotate(-8 8 0)"/><ellipse cx="9" cy="2" rx="10" ry="3.6" fill="#1A1A1A"/><ellipse cx="-2" cy="0" rx="4" ry="3.2" fill="#1A1A1A"/><circle cx="-7" cy="-1" r="2.8" fill="#1A1A1A"/><line x1="-9" y1="0" x2="-14" y2="6" stroke="#1A1A1A" stroke-width="1" stroke-linecap="round"/></g>
+    </svg>
+    <div class="auth-title">Patrulla Antimosquito</div>
+    <div class="auth-tag">Prevención en tu barrio</div>
+    <p class="auth-intro" id="authIntro">Sumate a cuidar tu barrio del dengue. Reportá acciones, aprendé y ganá puntos.</p>
+
+    <div class="auth-msg err" id="authError"></div>
+    <div class="auth-msg ok" id="authNote"></div>
+
+    <div class="auth-form">
+      <div class="field hide" id="fieldName">
+        <label for="inName">Cómo querés que te vean</label>
+        <input type="text" id="inName" autocomplete="nickname" placeholder="Ej: Camila F." maxlength="40">
+      </div>
+      <div class="field hide" id="fieldCity">
+        <label for="inCity">Tu ciudad</label>
+        <select id="inCity"><option value="">Elegí tu ciudad…</option></select>
+      </div>
+      <div class="field" id="fieldEmail">
+        <label for="inEmail">Email</label>
+        <input type="email" id="inEmail" autocomplete="email" placeholder="tu@email.com">
+      </div>
+      <div class="field" id="fieldPass">
+        <label for="inPass">Contraseña</label>
+        <input type="password" id="inPass" autocomplete="current-password" placeholder="Mínimo 6 caracteres">
+      </div>
+      <button class="btn btn-accent" id="authSubmit">Entrar</button>
     </div>
-    <div id="tipsView" class="hide">
-      <button class="btn-back backLearn">← Volver</button>
-      <div class="card daily-card"><h3>Tu tanda de hoy: 5 tips</h3><p>Leé 5 tips por día y ganá puntos aunque no hagas reportes.</p><div class="bar"><div id="dailyFill" class="fill"></div></div><span id="dailyLabel" class="small">0/5 leídos</span></div>
-      <div id="tipsList" class="stack"></div>
+
+    <div class="auth-links">
+      <button class="auth-link hide" id="forgotBtn">¿Olvidaste tu contraseña?</button>
+      <div class="auth-switch"><span id="switchText">¿Todavía no tenés cuenta?</span> <button class="auth-link" id="switchBtn" style="display:inline">Registrate</button></div>
     </div>
-    <div id="quizzesView" class="hide">
-      <button class="btn-back backLearn">← Volver</button>
-      <div id="quizzesList" class="stack"></div>
+
+    <div class="auth-ftr">Una iniciativa de<br><img src="icons/mundo-sano-logo.svg" alt="Fundación Mundo Sano" onerror="this.style.display='none'"></div>
+  </div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div class="app-shell hide" id="appScreen">
+  <nav class="topnav" aria-label="Navegación rápida">
+    <a data-sec="incidencia">📍 Incidencia</a><a data-sec="reportar">📸 Reportar</a>
+    <a data-sec="revisar">🔍 Revisar</a><a data-sec="aprender">🧠 Aprender</a><a data-sec="progreso">🏆 Progreso</a>
+  </nav>
+
+  <main class="phone" id="phone">
+    <header class="header">
+      <div class="brand">
+        <svg class="brand-logo" viewBox="0 0 100 135" xmlns="http://www.w3.org/2000/svg" aria-label="Logo">
+          <path d="M50 8 C24 8 8 26 8 50 C8 72 28 92 50 128 C72 92 92 72 92 50 C92 26 76 8 50 8 Z" fill="#1E8069"/>
+          <circle cx="50" cy="48" r="35" fill="#F5F6EC"/>
+          <circle cx="50" cy="48" r="26" fill="none" stroke="#6DBE4A" stroke-width="1.6" opacity=".85"/>
+          <line x1="50" y1="17" x2="50" y2="21" stroke="#6DBE4A" stroke-width="2"/><line x1="50" y1="75" x2="50" y2="79" stroke="#6DBE4A" stroke-width="2"/>
+          <line x1="17" y1="48" x2="21" y2="48" stroke="#6DBE4A" stroke-width="2"/><line x1="75" y1="48" x2="79" y2="48" stroke="#6DBE4A" stroke-width="2"/>
+          <g transform="translate(50,48) rotate(20)"><ellipse cx="8" cy="0" rx="15" ry="5" fill="#1A1A1A" opacity=".75" transform="rotate(-8 8 0)"/><ellipse cx="9" cy="2" rx="10" ry="3.6" fill="#1A1A1A"/><ellipse cx="-2" cy="0" rx="4" ry="3.2" fill="#1A1A1A"/><circle cx="-7" cy="-1" r="2.8" fill="#1A1A1A"/><line x1="-9" y1="0" x2="-14" y2="6" stroke="#1A1A1A" stroke-width="1" stroke-linecap="round"/></g>
+        </svg>
+        <div class="brand-text"><div class="brand-name">Patrulla Antimosquito</div><div class="brand-tag" id="brandUser">Prevención en tu barrio</div></div>
+      </div>
+      <div class="header-right">
+        <div class="points-pill">⭐ <span id="pts">0</span></div>
+        <button class="logout-btn" id="logoutBtn" title="Cerrar sesión" aria-label="Cerrar sesión">⎋</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- INCIDENCIA -->
+      <section class="section active" id="sec-incidencia">
+        <h2 class="section-title">📍 Incidencia local</h2>
+        <p class="section-sub">Mapa de riesgo por ciudad. Reforzá la prevención donde más se necesita.</p>
+        <div id="incidenciaList"><div class="loading">Cargando…</div></div>
+      </section>
+
+      <!-- REPORTAR -->
+      <section class="section" id="sec-reportar">
+        <div id="reportar-grid-view">
+          <h2 class="section-title">📸 Reportar acción</h2>
+          <p class="section-sub">Elegí una acción, sacá una foto y ganá puntos por proteger tu barrio.</p>
+          <div class="actions-grid" id="actionsGrid"><div class="loading">Cargando…</div></div>
+        </div>
+        <div id="reportar-flow-view" class="hide"></div>
+      </section>
+
+      <!-- REVISAR -->
+      <section class="section" id="sec-revisar">
+        <h2 class="section-title">🔍 Revisar reportes</h2>
+        <div id="revisarBody"><div class="loading">Cargando…</div></div>
+      </section>
+
+      <!-- APRENDER -->
+      <section class="section" id="sec-aprender">
+        <div id="learn-menu-view">
+          <h2 class="section-title">🧠 Aprender</h2>
+          <p class="section-sub">Sumá conocimiento y puntos, aunque no salgas a reportar.</p>
+          <div class="learn-menu">
+            <div class="learn-card" data-learn="tips"><div class="learn-icon">📖</div><div><div class="learn-title">Tips</div><div class="learn-sub">Leé y sumá puntos.</div><div class="learn-count">+2 pts c/u</div></div></div>
+            <div class="learn-card" data-learn="quizzes"><div class="learn-icon">❓</div><div><div class="learn-title">Quizzes</div><div class="learn-sub">Poné a prueba lo que sabés.</div><div class="learn-count">+5 pts c/u</div></div></div>
+          </div>
+        </div>
+        <div id="learn-tips-view" class="hide">
+          <button class="flow-back" data-learn="menu">← Volver</button>
+          <h2 class="section-title">📖 Tips</h2>
+          <div class="daily-card">
+            <div class="daily-title">Leé y sumá puntos</div>
+            <div class="daily-desc">Cada tip que leés por primera vez te da +2 pts.</div>
+            <div class="progress-outer"><div class="progress-inner" id="tipsProg" style="width:0%"></div></div>
+            <div class="progress-txt"><span id="tipsReadCount">0</span> / <span id="tipsTotal">0</span> tips leídos</div>
+          </div>
+          <div id="tipsList"></div>
+        </div>
+        <div id="learn-quiz-view" class="hide">
+          <button class="flow-back" data-learn="menu">← Volver</button>
+          <h2 class="section-title">❓ Quizzes</h2>
+          <p class="section-sub">Elegí la respuesta correcta y sumá +5 pts.</p>
+          <div id="quizList"></div>
+        </div>
+      </section>
+
+      <!-- PROGRESO -->
+      <section class="section" id="sec-progreso">
+        <h2 class="section-title">🏆 Tu progreso</h2>
+        <p class="section-sub">Cada acción cuenta. Subí de nivel y desbloqueá nuevos roles.</p>
+        <div class="level-card">
+          <div class="level-emoji" id="lvlEmoji">🥚</div>
+          <div class="level-name" id="lvlName">Vigilante Novato</div>
+          <div class="level-pts"><span id="lvlPts">0</span> pts</div>
+          <div class="level-progress-outer"><div class="level-progress-inner" id="lvlBar" style="width:0%"></div></div>
+          <div class="level-next" id="lvlNext"></div>
+        </div>
+        <div class="levels-list" id="levelsList"></div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-num" id="statReports">0</div><div class="stat-label">Reportes</div></div>
+          <div class="stat-card"><div class="stat-num" id="statQuizzes">0</div><div class="stat-label">Quizzes</div></div>
+          <div class="stat-card"><div class="stat-num" id="statTips">0</div><div class="stat-label">Tips leídos</div></div>
+          <div class="stat-card"><div class="stat-num" id="statReviews">0</div><div class="stat-label">Revisiones</div></div>
+        </div>
+        <div class="leaderboard"><div class="lb-title" id="lbTitle">🏙️ Ranking</div><div id="lbList"><div class="loading">Cargando…</div></div></div>
+        <div class="miniftr">Una iniciativa de<br><img src="icons/mundo-sano-logo.svg" alt="Fundación Mundo Sano" onerror="this.style.display='none'"></div>
+      </section>
     </div>
-  </section>
-  <section id="view-progress" class="view hide"><h2 class="view-title">🏆 Tu progreso</h2><div id="progressBox"></div><h3 class="sub-h">Ranking de tu ciudad</h3><div id="leaderboard" class="stack"></div></section>
-</main>
-<div id="modal" class="modal hide"><div class="modal-box"><button class="modal-close" id="modalClose">✕</button><div id="modalContent"></div></div></div>
-<nav class="bottom-nav hide" id="bottomNav">
-  <button class="nav-btn active" data-view="incidence">📍<span>Incidencia</span></button>
-  <button class="nav-btn" data-view="report">📸<span>Reportar</span></button>
-  <button class="nav-btn" data-view="review">🔍<span>Revisar</span></button>
-  <button class="nav-btn" data-view="learn">🧠<span>Aprender</span></button>
-  <button class="nav-btn" data-view="progress">🏆<span>Progreso</span></button>
-</nav>
-<footer class="app-footer">Una iniciativa de <b>Fundación Mundo Sano</b></footer>
+
+    <nav class="bottomnav" aria-label="Navegación principal">
+      <button class="navbtn active" data-sec="incidencia"><span class="em">📍</span>Incidencia</button>
+      <button class="navbtn" data-sec="reportar"><span class="em">📸</span>Reportar</button>
+      <button class="navbtn" data-sec="revisar"><span class="em">🔍</span>Revisar</button>
+      <button class="navbtn" data-sec="aprender"><span class="em">🧠</span>Aprender</button>
+      <button class="navbtn" data-sec="progreso"><span class="em">🏆</span>Progreso</button>
+    </nav>
+  </main>
+</div>
+
+<!-- MODAL REVISAR -->
+<div class="modal-backdrop" id="reviewModal">
+  <div class="modal">
+    <button class="modal-close" id="modalCloseBtn" aria-label="Cerrar">✕</button>
+    <div class="modal-photo" id="modalPhoto">📷</div>
+    <div class="modal-body">
+      <div class="modal-author" id="modalAuthor">—</div>
+      <div class="modal-city" id="modalCity">—</div>
+      <div class="modal-action"><div class="modal-action-icon" id="modalActionIcon">🔄</div><div class="modal-action-text" id="modalActionText">—</div></div>
+      <div class="modal-note" id="modalNote">—</div>
+      <div class="vote-title">¿La acción se hizo bien?</div>
+      <div class="vote-row">
+        <button class="vote-btn ok"  data-vote="correcto"><span class="em">✅</span>Correcto</button>
+        <button class="vote-btn mid" data-vote="dudoso"><span class="em">❓</span>Dudoso</button>
+        <button class="vote-btn no"  data-vote="no_corresponde"><span class="em">⚠️</span>No corresponde</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script>
-const $=id=>document.getElementById(id);
-function showErr(t){const e=$('errBar');e.textContent='⚠ '+t;e.style.display='block';}
-function clearErr(){$('errBar').style.display='none';}
-function show(id){const e=$(id);if(e)e.classList.remove('hide');}
-function hide(id){const e=$(id);if(e)e.classList.add('hide');}
+/* =====================================================================
+   Patrulla Antimosquito · lógica (adaptada al esquema real de Supabase)
+   ===================================================================== */
+(function () {
+  'use strict';
 
-let db;
-try{
-  if(typeof SUPABASE_URL==='undefined'||typeof SUPABASE_ANON_KEY==='undefined') throw new Error('config.js no cargó (falta SUPABASE_URL/KEY).');
-  db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-}catch(e){showErr('No se pudo conectar con Supabase: '+e.message);}
-
-const LEVELS=[{min:0,name:'🥚 Vigilante Novato'},{min:50,name:'🐛 Rastreador'},{min:150,name:'🦟 Cazador de Criaderos'},{min:350,name:'🛡️ Guardián del Barrio'},{min:700,name:'🏆 Héroe Antimosquito'},{min:1200,name:'⭐ Referente Comunitario'}];
-const REVIEWER_MIN=350;
-let CURRENT_USER=null,PROFILE=null,ACTIONS=[],reportState={},dailyRead=0,RECOVERING=false;
-
-function showAuthMsg(t){$('authMsg').textContent=t;}
-
-async function register(){
-  try{clearErr();const email=$('email').value.trim(),password=$('password').value,city=$('cityInput').value.trim();
-  if(!email||!password)return showAuthMsg('Completá email y contraseña.');
-  if(password.length<6)return showAuthMsg('La contraseña debe tener al menos 6 caracteres.');
-  localStorage.setItem('pa_city',city);
-  const{data,error}=await db.auth.signUp({email,password});
-  if(error)return showAuthMsg(error.message);
-  if(data.session){startApp(data.session.user);}else{showAuthMsg('Cuenta creada. Tocá "Ya tengo cuenta · Entrar".');}
-  }catch(e){showErr('Error al crear cuenta: '+e.message);}
-}
-async function login(){
-  try{clearErr();const email=$('email').value.trim(),password=$('password').value,city=$('cityInput').value.trim();
-  if(!email||!password)return showAuthMsg('Completá email y contraseña.');
-  localStorage.setItem('pa_city',city);
-  const{data,error}=await db.auth.signInWithPassword({email,password});
-  if(error)return showAuthMsg(error.message);
-  if(data.session)startApp(data.session.user);
-  }catch(e){showErr('Error al entrar: '+e.message);}
-}
-async function forgotPassword(){
-  try{const email=$('email').value.trim();
-  if(!email)return showAuthMsg('Escribí tu email arriba y volvé a tocar "¿Olvidaste tu contraseña?".');
-  const{error}=await db.auth.resetPasswordForEmail(email,{redirectTo:window.location.href});
-  showAuthMsg(error?error.message:'✅ Te enviamos un email para restablecer tu contraseña.');
-  }catch(e){showErr('Error: '+e.message);}
-}
-async function setNewPassword(){
-  try{const np=$('newPassword').value;
-  if(!np||np.length<6)return void($('resetMsg').textContent='La contraseña debe tener al menos 6 caracteres.');
-  const{error}=await db.auth.updateUser({password:np});
-  if(error){$('resetMsg').textContent=error.message;return;}
-  $('resetMsg').textContent='✅ ¡Contraseña actualizada! Ya podés entrar.';
-  RECOVERING=false;await db.auth.signOut();
-  setTimeout(()=>{hide('resetScreen');show('authScreen');showAuthMsg('Iniciá sesión con tu nueva contraseña.');},1500);
-  }catch(e){showErr('Error: '+e.message);}
-}
-
-if(db){
-  db.auth.onAuthStateChange((event,s)=>{
-    if(event==='PASSWORD_RECOVERY'){RECOVERING=true;hide('authScreen');show('resetScreen');return;}
-    if(s&&!RECOVERING)startApp(s.user);
+  var $ = function (id) { return document.getElementById(id); };
+  function showErr(msg) { $('errText').textContent = msg; $('errBar').classList.add('show'); }
+  $('errClose').addEventListener('click', function () { $('errBar').classList.remove('show'); });
+  window.addEventListener('error', function (e) { showErr('Error: ' + (e.message || e.error)); });
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e.reason || {}; showErr('Error: ' + (r.message || r.error_description || JSON.stringify(r)));
   });
-  (async()=>{try{const{data}=await db.auth.getSession();if(data.session&&!RECOVERING)startApp(data.session.user);}catch(e){showErr('Sesión: '+e.message);}})();
-}
 
-async function startApp(user){
-  try{
-    clearErr();
-    CURRENT_USER=user;
-    hide('authScreen');hide('resetScreen');show('appMain');show('bottomNav');
-    await ensureProfile();
-    loadIncidence();loadActions();renderProgress();refreshLearnCounters();
-  }catch(e){showErr('No se pudo iniciar la app: '+e.message);}
-}
-
-async function ensureProfile(){
-  try{
-    let{data,error}=await db.from('profiles').select('*').eq('id',CURRENT_USER.id).maybeSingle();
-    if(error)throw error;
-    if(!data){
-      const city=localStorage.getItem('pa_city')||'';
-      const ins=await db.from('profiles').insert({id:CURRENT_USER.id,username:CURRENT_USER.email.split('@')[0],city});
-      if(ins.error)throw ins.error;
-      const r=await db.from('profiles').select('*').eq('id',CURRENT_USER.id).maybeSingle();
-      data=r.data;
-    }
-    PROFILE=data||{points:0,level:1,username:CURRENT_USER.email.split('@')[0]};
-    updatePointsUI();
-  }catch(e){
-    showErr('Perfil (revisá RLS de la tabla profiles): '+e.message);
-    PROFILE={points:0,level:1,username:CURRENT_USER.email.split('@')[0]};
-    updatePointsUI();
+  // ---- Config / cliente ------------------------------------------------
+  if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined' || SUPABASE_URL.indexOf('TU-') !== -1) {
+    $('boot').innerHTML = '<div style="max-width:320px;text-align:center;line-height:1.5">⚠️ Falta configurar Supabase en <b>config.js</b> (SUPABASE_URL y SUPABASE_ANON_KEY).</div>';
+    return;
   }
-}
-function updatePointsUI(){$('pointsCounter').textContent=(PROFILE.points||0)+' pts';}
-async function addPoints(pts){
-  try{const np=(PROFILE.points||0)+pts,lvl=LEVELS.filter(l=>np>=l.min).length;
-  await db.from('profiles').update({points:np,level:lvl}).eq('id',CURRENT_USER.id);
-  PROFILE.points=np;PROFILE.level=lvl;updatePointsUI();renderProgress();
-  }catch(e){showErr('Puntos: '+e.message);}
-}
+  var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  var BUCKET = 'reports';
 
-function nav(view){
-  ['incidence','report','review','learn','progress'].forEach(v=>{const el=$('view-'+v);if(el){if(v===view)el.classList.remove('hide');else el.classList.add('hide');}});
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
-  if(view==='review')loadReview();
-  if(view==='learn')backToLearn();
-  if(view==='progress'){renderProgress();loadLeaderboard();}
-}
+  // Puntos por acción
+  var PTS_TIP = 2, PTS_QUIZ = 5, PTS_REVIEW = 3, REVIEWER_MIN = 350;
 
-async function loadIncidence(){
-  try{const{data,error}=await db.from('incidence').select('*').order('updated_at',{ascending:false}).limit(10);
-  if(error)throw error;const box=$('incidenceBox');
-  if(!data||!data.length){box.innerHTML='<div class="card">Sin datos de incidencia por ahora.</div>';return;}
-  box.innerHTML=data.map(i=>'<div class="card incidence-item risk-'+i.risk_level+'"><span class="risk-badge">'+(i.risk_level||'').toUpperCase()+'</span><h3 style="margin:6px 0">'+i.city+'</h3><div class="small">Casos esta semana: <b>'+i.cases_week+'</b></div><p style="margin-top:6px">'+(i.message||'')+'</p></div>').join('');
-  }catch(e){$('incidenceBox').innerHTML='<div class="card">No se pudo cargar la incidencia.</div>';showErr('Incidencia: '+e.message);}
-}
+  var LEVELS = [
+    { emoji: '🥚', name: 'Vigilante Novato',      min: 0,    max: 49,   lvl: 1 },
+    { emoji: '🐛', name: 'Rastreador',            min: 50,   max: 149,  lvl: 2 },
+    { emoji: '🦟', name: 'Cazador de Criaderos',  min: 150,  max: 349,  lvl: 3 },
+    { emoji: '🛡️', name: 'Guardián del Barrio',   min: 350,  max: 699,  lvl: 4 },
+    { emoji: '🏆', name: 'Héroe Antimosquito',    min: 700,  max: 1199, lvl: 5 },
+    { emoji: '⭐', name: 'Referente Comunitario', min: 1200, max: Infinity, lvl: 6 },
+  ];
 
-async function loadActions(){
-  try{const{data,error}=await db.from('action_types').select('*').order('sort_order');
-  if(error)throw error;ACTIONS=data||[];const box=$('actionsGrid');
-  if(!ACTIONS.length){box.innerHTML='<div class="card" style="grid-column:1/-1">No hay acciones cargadas.</div>';return;}
-  box.innerHTML=ACTIONS.map(a=>'<div class="action-card '+(a.id==='house_tour'?'star':'')+'" onclick="startReport(\''+a.id+'\')">'+(a.id==='house_tour'?'<span class="star-tag">★ destacada</span>':'')+'<div class="action-ico">'+a.icon+'</div><h4>'+a.title+'</h4><span class="badge">'+a.location+'</span><span class="pts">+'+a.points+' pts</span></div>').join('');
-  }catch(e){$('actionsGrid').innerHTML='<div class="card" style="grid-column:1/-1">No se pudieron cargar las acciones.</div>';showErr('Acciones: '+e.message);}
-}
+  var S = {
+    user: null, profile: null,
+    cities: [], actions: [], tips: [], quizzes: [],
+    myTipReads: {}, myQuizAnswers: {}, myReviewedReports: {},
+    stats: { reports: 0, quizzes: 0, tips: 0, reviews: 0 },
+    recovery: false,
+  };
 
-function startReport(id){reportState={action:ACTIONS.find(x=>x.id===id),file:null};renderStep1();openModal();}
-function renderStep1(){const a=reportState.action;setModal('<div class="step-ind">Paso 1 de 3</div><div class="step-ico">'+a.icon+'</div><h2 style="text-align:center">'+a.title+'</h2><p style="text-align:center;margin:8px 0">'+a.description+'</p><div style="text-align:center;margin:10px 0"><span class="badge">'+a.location+'</span><span class="badge">'+a.kind+'</span><span class="pts">+'+a.points+' pts</span></div><p class="small" style="text-align:center">Vas a completar esta acción y sacar una foto.</p><button class="btn-primary" onclick="renderStep2()">Entendido, continuar</button>');}
-function renderStep2(){setModal('<div class="step-ind">Paso 2 de 3</div><h2>Sacá la foto</h2><p class="small">Sacá una foto que muestre la acción completada.</p><input type="file" id="reportPhoto" accept="image/*" capture="environment" onchange="onPhoto(event)"><div id="thumbBox"></div><button class="btn-outline" onclick="renderStep1()">← Volver</button><button class="btn-primary" id="toStep3" onclick="renderStep3()" disabled style="opacity:.5">Continuar</button>');}
-function onPhoto(e){const f=e.target.files[0];if(!f)return;reportState.file=f;$('thumbBox').innerHTML='<img src="'+URL.createObjectURL(f)+'" class="thumb"><div class="small">✔ Foto lista</div>';const b=$('toStep3');b.disabled=false;b.style.opacity=1;}
-function renderStep3(){const a=reportState.action,u=reportState.file?URL.createObjectURL(reportState.file):'';setModal('<div class="step-ind">Paso 3 de 3</div><h2>Contexto y enviar</h2>'+(u?'<img src="'+u+'" class="thumb">':'')+'<label class="small">Agregá contexto (opcional)</label><textarea id="reportNote" placeholder="Contá algo sobre este reporte (opcional)."></textarea><button class="btn-outline" onclick="renderStep2()">← Volver</button><button class="btn-primary" onclick="submitReport()">Enviar reporte (+'+a.points+' pts)</button><div id="reportMsg" class="msg"></div>');}
-async function submitReport(){
-  const a=reportState.action,note=$('reportNote').value.trim(),file=reportState.file,msg=$('reportMsg');msg.textContent='Subiendo...';
-  try{let photoUrl=null;if(file){const path=CURRENT_USER.id+'/'+Date.now()+'_'+file.name;const{error:e}=await db.storage.from('reports').upload(path,file);if(e)throw e;photoUrl=db.storage.from('reports').getPublicUrl(path).data.publicUrl;}
-  const ins=await db.from('reports').insert({user_id:CURRENT_USER.id,action_type:a.id,city:PROFILE.city,photo_url:photoUrl,note,points_awarded:a.points,status:'pendiente'});
-  if(ins.error)throw ins.error;
-  await addPoints(a.points);
-  setModal('<div style="text-align:center;padding:20px"><div class="step-ico">🎉</div><h2>¡Reporte enviado!</h2><p>Sumaste <b>+'+a.points+' pts</b>.</p><button class="btn-primary" onclick="closeModal()">Listo</button></div>');
-  }catch(err){msg.textContent='Error: '+err.message;}
-}
-async function loadReview(){
-  try{const box=$('reviewContent');
-  if((PROFILE.points||0)<REVIEWER_MIN){box.innerHTML='<div class="card locked"><div class="big">🔒</div><h3>Rol Revisor bloqueado</h3><p>Alcanzá el nivel <b>🛡️ Guardián del Barrio</b> (350 pts) para desbloquearlo.</p></div>';return;}
-  const{data,error}=await db.from('reports').select('*, action_types(title,icon)').eq('status','pendiente').neq('user_id',CURRENT_USER.id).order('created_at',{ascending:false}).limit(20);
-  if(error)throw error;
-  let html='<div class="card"><span class="badge">✔ Rol Revisor desbloqueado</span><p style="margin-top:8px">Abrí cada reporte, mirá la foto y la nota, y votá. Ganás <b>+3 pts</b> por revisión.</p></div>';
-  if(!data||!data.length){html+='<div class="card">No hay reportes pendientes por ahora.</div>';}
-  else{html+='<div class="stack">'+data.map(r=>'<div class="card review-item"><div class="review-thumb">'+((r.action_types&&r.action_types.icon)||'📷')+'</div><div style="flex:1"><b>'+((r.action_types&&r.action_types.title)||r.action_type)+'</b><div class="small">'+(r.city||'-')+'</div></div><button class="btn-outline" style="width:auto;padding:8px 12px" onclick=\'openReviewModal('+JSON.stringify(r).replace(/'/g,"&#39;")+')\'>Ver</button></div>').join('')+'</div>';}
-  box.innerHTML=html;
-  }catch(e){showErr('Revisar: '+e.message);}
-}
-function openReviewModal(r){setModal('<div class="modal-photo">'+(r.photo_url?'<img src="'+r.photo_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:12px">':'📷')+'</div><h2>'+((r.action_types&&r.action_types.title)||r.action_type)+'</h2><div class="small">👤 '+(r.city||'-')+'</div>'+(r.note?'<div class="note-box">📝 '+r.note+'</div>':'<div class="small" style="margin:10px 0">Sin nota.</div>')+'<div class="vote-row"><button class="v-ok" onclick="voteReport('+r.id+',\'correcto\')">✅ Correcto</button><button class="v-doubt" onclick="voteReport('+r.id+',\'dudoso\')">❓ Dudoso</button><button class="v-no" onclick="voteReport('+r.id+',\'no_corresponde\')">⚠️ No</button></div>');openModal();}
-async function voteReport(id,vote){try{const{error}=await db.from('report_reviews').insert({report_id:id,reviewer_id:CURRENT_USER.id,vote});if(error){alert('Ya revisaste este reporte o hubo un error.');return;}await addPoints(3);closeModal();loadReview();}catch(e){showErr('Voto: '+e.message);}}
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function el(tag, cls, html){ var e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; }
+  function cap(s){ return s? s.charAt(0).toUpperCase()+s.slice(1): s; }
+  function toast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(function(){t.classList.remove('show');},2200); }
 
-function backToLearn(){show('learnMenu');hide('tipsView');hide('quizzesView');}
-async function refreshLearnCounters(){try{const{count:t}=await db.from('tip_reads').select('*',{count:'exact',head:true}).eq('user_id',CURRENT_USER.id);const{count:q}=await db.from('quiz_answers').select('*',{count:'exact',head:true}).eq('user_id',CURRENT_USER.id).eq('is_correct',true);$('tipsCount').textContent=(t||0)+' leídos';$('quizCount').textContent=(q||0)+' resueltos';}catch(e){}}
-async function openTips(){
-  try{hide('learnMenu');show('tipsView');
-  const{data:tips}=await db.from('tips').select('*').order('sort_order');
-  const{data:reads}=await db.from('tip_reads').select('tip_id').eq('user_id',CURRENT_USER.id);
-  const readIds=new Set((reads||[]).map(r=>r.tip_id));
-  updateDailyBar(5-(tips||[]).filter(t=>!readIds.has(t.id)).slice(0,5).length);
-  const cats={};(tips||[]).forEach(t=>{(cats[t.category]=cats[t.category]||[]).push(t);});
-  let html='';Object.keys(cats).forEach(cat=>{html+='<div class="cat-title">'+cat+'</div>';cats[cat].forEach(t=>{html+='<div class="tip '+(readIds.has(t.id)?'read':'')+'" id="tip-'+t.id+'"><div class="tip-head" onclick="toggleTip('+t.id+')"><h4>'+t.title+'</h4><span>+</span></div><div class="tip-body">'+t.content+'</div></div>';});});
-  $('tipsList').innerHTML=html;
-  }catch(e){showErr('Tips: '+e.message);}
-}
-async function toggleTip(id){try{const el=$('tip-'+id);el.classList.toggle('open');if(el.classList.contains('open')&&!el.classList.contains('read')){const{error}=await db.from('tip_reads').insert({user_id:CURRENT_USER.id,tip_id:id});if(!error){el.classList.add('read');await addPoints(2);refreshLearnCounters();bumpDaily();}}}catch(e){showErr('Tip: '+e.message);}}
-function updateDailyBar(n){dailyRead=n;renderDaily();}
-function bumpDaily(){if(dailyRead<5){dailyRead++;renderDaily();}}
-function renderDaily(){const f=$('dailyFill'),l=$('dailyLabel');if(f)f.style.width=(dailyRead/5*100)+'%';if(l)l.textContent=dailyRead+'/5 leídos';}
-async function openQuizzes(){
-  try{hide('learnMenu');show('quizzesView');
-  const{data:quizzes}=await db.from('quizzes').select('*');
-  const{data:answered}=await db.from('quiz_answers').select('quiz_id').eq('user_id',CURRENT_USER.id);
-  const done=new Set((answered||[]).map(a=>a.quiz_id));const pend=(quizzes||[]).filter(q=>!done.has(q.id));
-  const box=$('quizzesList');
-  if(!pend.length){box.innerHTML='<div class="card">¡Completaste todos los quizzes! 🎓</div>';return;}
-  box.innerHTML=pend.map(q=>'<div class="card" id="quiz-'+q.id+'"><h4 style="font-weight:700;margin-bottom:8px">'+q.question+'</h4>'+q.options.map((o,i)=>'<button class="quiz-opt" onclick="answerQuiz('+q.id+','+i+','+q.correct_index+',this)">'+o+'</button>').join('')+'<div class="quiz-feedback" id="qf-'+q.id+'" style="display:none"></div></div>').join('');
-  }catch(e){showErr('Quizzes: '+e.message);}
-}
-async function answerQuiz(qid,chosen,correct,btn){
-  try{const card=$('quiz-'+qid),opts=card.querySelectorAll('.quiz-opt');opts.forEach(o=>o.disabled=true);
-  const ok=chosen===correct;opts[correct].classList.add('correct');if(!ok)btn.classList.add('wrong');
-  const{error}=await db.from('quiz_answers').insert({user_id:CURRENT_USER.id,quiz_id:qid,is_correct:ok});
-  const{data:q}=await db.from('quizzes').select('tip').eq('id',qid).single();
-  const fb=$('qf-'+qid);fb.style.display='block';
-  if(ok&&!error){await addPoints(5);fb.innerHTML='✅ <b>¡Correcto! +5 pts</b><br>'+((q&&q.tip)||'');refreshLearnCounters();}
-  else{fb.innerHTML='❌ <b>Incorrecto.</b><br>'+((q&&q.tip)||'');}
-  }catch(e){showErr('Quiz: '+e.message);}
-}
+  // =====================================================================
+  //  AUTH
+  // =====================================================================
+  var authMode = 'login'; // login | register | recover
 
-function renderProgress(){
-  if(!PROFILE)return;const box=$('progressBox');if(!box)return;
-  const pts=PROFILE.points||0,cur=LEVELS.filter(l=>pts>=l.min).pop(),next=LEVELS.find(l=>l.min>pts);
-  const pct=next?Math.min(100,(pts-cur.min)/(next.min-cur.min)*100):100;
-  box.innerHTML='<div class="card"><div class="level-name">'+cur.name+'</div><div class="small">'+pts+' puntos</div><div class="bar"><div class="fill" style="width:'+pct+'%"></div></div>'+(next?'<div class="small">Faltan <b>'+(next.min-pts)+' pts</b> para '+next.name+'</div>':'<div class="small">¡Nivel máximo alcanzado! 🏆</div>')+'<div class="stats"><div class="stat"><b id="stReports">-</b><span>Reportes</span></div><div class="stat"><b id="stTips">-</b><span>Tips leídos</span></div><div class="stat"><b id="stReviews">-</b><span>Revisiones</span></div></div></div>';
-  loadStats();
-}
-async function loadStats(){
-  try{const{count:r}=await db.from('reports').select('*',{count:'exact',head:true}).eq('user_id',CURRENT_USER.id);
-  const{count:t}=await db.from('tip_reads').select('*',{count:'exact',head:true}).eq('user_id',CURRENT_USER.id);
-  const{count:rv}=await db.from('report_reviews').select('*',{count:'exact',head:true}).eq('reviewer_id',CURRENT_USER.id);
-  const set=(id,v)=>{const e=$(id);if(e)e.textContent=v||0;};
-  set('stReports',r);set('stTips',t);set('stReviews',rv);
-  }catch(e){}
-}
-async function loadLeaderboard(){
-  try{const{data}=await db.from('profiles').select('username,points,city').order('points',{ascending:false}).limit(10);
-  const box=$('leaderboard');if(!box)return;if(!data){box.innerHTML='';return;}
-  box.innerHTML=data.map((u,i)=>'<div class="card lb-item '+(u.username===PROFILE.username?'me':'')+'"><span class="lb-pos">'+(i+1)+'</span><span style="flex:1">'+u.username+'</span><b>'+u.points+' pts</b></div>').join('');
-  }catch(e){}
-}
+  function authMsg(kind, msg){
+    $('authError').classList.remove('show'); $('authNote').classList.remove('show');
+    if(!msg) return;
+    var box = kind==='err' ? $('authError') : $('authNote');
+    box.textContent = msg; box.classList.add('show');
+  }
 
-function openModal(){show('modal');}
-function closeModal(){hide('modal');}
-function setModal(html){$('modalContent').innerHTML=html;}
+  function renderAuthMode(){
+    var isReg = authMode==='register', isRec = authMode==='recover';
+    $('fieldName').classList.toggle('hide', !isReg);
+    $('fieldCity').classList.toggle('hide', !isReg);
+    $('fieldPass').classList.toggle('hide', isRec);      // recover: sólo email
+    $('forgotBtn').classList.toggle('hide', isReg || isRec);
+    $('authSubmit').textContent = isReg ? 'Crear cuenta' : isRec ? 'Enviar enlace' : 'Entrar';
+    $('inPass').setAttribute('autocomplete', isReg ? 'new-password' : 'current-password');
+    $('switchText').textContent = isReg ? '¿Ya tenés cuenta?' : '¿Todavía no tenés cuenta?';
+    $('switchBtn').textContent = isReg ? 'Iniciá sesión' : 'Registrate';
+    $('authIntro').textContent = isReg
+      ? 'Creá tu cuenta para empezar a sumar puntos cuidando tu barrio.'
+      : isRec ? 'Escribí tu email y te mandamos un enlace para restablecer la contraseña.'
+      : 'Sumate a cuidar tu barrio del dengue. Reportá acciones, aprendé y ganá puntos.';
+    if(isRec){ $('switchText').textContent='¿Te acordaste?'; $('switchBtn').textContent='Volver a iniciar sesión'; }
+    authMsg();
+  }
 
-$('btnRegister').addEventListener('click',register);
-$('btnLogin').addEventListener('click',login);
-$('btnForgot').addEventListener('click',forgotPassword);
-$('btnSetPassword').addEventListener('click',setNewPassword);
-$('modalClose').addEventListener('click',closeModal);
-$('cardTips').addEventListener('click',openTips);
-$('cardQuizzes').addEventListener('click',openQuizzes);
-document.querySelectorAll('.backLearn').forEach(b=>b.addEventListener('click',backToLearn));
-document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.view)));
+  function traducir(msg){
+    var m=(msg||'').toLowerCase();
+    if(m.indexOf('invalid login')>=0) return 'Email o contraseña incorrectos.';
+    if(m.indexOf('already registered')>=0||m.indexOf('already been registered')>=0) return 'Ese email ya tiene una cuenta. Iniciá sesión.';
+    if(m.indexOf('email not confirmed')>=0) return 'Todavía no confirmaste tu email.';
+    if(m.indexOf('password')>=0) return 'La contraseña debe tener al menos 6 caracteres.';
+    if(m.indexOf('rate limit')>=0||m.indexOf('too many')>=0) return 'Demasiados intentos. Esperá unos minutos.';
+    return msg || 'No se pudo completar la acción.';
+  }
+
+  function loadCitiesIntoSelect(){
+    return db.from('incidence').select('city').order('city').then(function(res){
+      if(res.error) return;
+      var sel=$('inCity'); var seen={};
+      (res.data||[]).forEach(function(c){
+        if(seen[c.city]) return; seen[c.city]=1;
+        var o=document.createElement('option'); o.value=c.city; o.textContent=c.city; sel.appendChild(o);
+      });
+    });
+  }
+
+  function handleAuthSubmit(){
+    authMsg();
+    var email=$('inEmail').value.trim(), pass=$('inPass').value;
+    var btn=$('authSubmit'); var orig=btn.textContent;
+
+    if(authMode==='recover'){
+      if(!email) return authMsg('err','Escribí tu email.');
+      btn.disabled=true; btn.textContent='Enviando…';
+      db.auth.resetPasswordForEmail(email, { redirectTo: window.location.href.split('#')[0] })
+        .then(function(res){
+          if(res.error) authMsg('err', traducir(res.error.message));
+          else authMsg('ok','Listo. Revisá tu email y seguí el enlace para poner una nueva contraseña.');
+        })
+        .catch(function(){ authMsg('err','Error de conexión.'); })
+        .then(function(){ btn.disabled=false; btn.textContent=orig; });
+      return;
+    }
+
+    if(!email||!pass) return authMsg('err','Completá email y contraseña.');
+    if(pass.length<6) return authMsg('err','La contraseña debe tener al menos 6 caracteres.');
+    btn.disabled=true; btn.textContent='Un momento…';
+
+    if(authMode==='register'){
+      var name=$('inName').value.trim(), city=$('inCity').value;
+      if(!name){ btn.disabled=false; btn.textContent=orig; return authMsg('err','Decinos cómo querés que te vean.'); }
+      if(!city){ btn.disabled=false; btn.textContent=orig; return authMsg('err','Elegí tu ciudad.'); }
+      db.auth.signUp({ email:email, password:pass }).then(function(res){
+        if(res.error){ authMsg('err', traducir(res.error.message)); btn.disabled=false; btn.textContent=orig; return; }
+        if(res.data.session && res.data.user){
+          // crear perfil y entrar
+          return db.from('profiles').insert({ id:res.data.user.id, username:name, city:city, points:0, level:1, is_reviewer:false })
+            .then(function(ins){
+              if(ins.error && ins.error.code!=='23505') throw ins.error;
+              return onAuthenticated(res.data.user);
+            });
+        } else {
+          // confirmación de email activada
+          authMsg('ok','¡Casi listo! Te enviamos un email para confirmar la cuenta. Confirmalo y volvé a iniciar sesión.');
+          authMode='login'; renderAuthMode(); btn.disabled=false; btn.textContent='Entrar';
+        }
+      }).catch(function(e){ authMsg('err', traducir(e.message)); btn.disabled=false; btn.textContent=orig; });
+    } else {
+      db.auth.signInWithPassword({ email:email, password:pass }).then(function(res){
+        if(res.error){ authMsg('err', traducir(res.error.message)); btn.disabled=false; btn.textContent=orig; return; }
+        return onAuthenticated(res.data.user);
+      }).catch(function(e){ authMsg('err', traducir(e.message)); btn.disabled=false; btn.textContent=orig; });
+    }
+  }
+
+  // Nueva contraseña (tras enlace de recuperación)
+  function showRecoveryPrompt(){
+    S.recovery = true;
+    $('boot').classList.add('hide');
+    $('appScreen').classList.add('hide');
+    $('authScreen').classList.remove('hide');
+    authMode='login'; renderAuthMode();
+    $('authIntro').textContent='Ingresá tu nueva contraseña.';
+    $('fieldName').classList.add('hide'); $('fieldCity').classList.add('hide');
+    $('fieldEmail').classList.add('hide'); $('fieldPass').classList.remove('hide');
+    $('forgotBtn').classList.add('hide');
+    $('inPass').value=''; $('inPass').setAttribute('autocomplete','new-password');
+    $('authSubmit').textContent='Guardar contraseña';
+    $('switchText').textContent=''; $('switchBtn').classList.add('hide');
+    authMsg('ok','Escribí tu nueva contraseña y guardala.');
+
+    var btn=$('authSubmit');
+    btn.onclick = function(){
+      var pass=$('inPass').value;
+      if(pass.length<6) return authMsg('err','Mínimo 6 caracteres.');
+      btn.disabled=true; btn.textContent='Guardando…';
+      db.auth.updateUser({ password: pass }).then(function(res){
+        if(res.error){ authMsg('err', traducir(res.error.message)); btn.disabled=false; btn.textContent='Guardar contraseña'; return; }
+        S.recovery=false;
+        authMsg('ok','¡Contraseña actualizada! Ya podés usar la app.');
+        btn.onclick=null; btn.disabled=false;
+        // limpiar hash y entrar
+        history.replaceState(null,'',window.location.pathname+window.location.search);
+        return db.auth.getUser().then(function(u){ if(u.data.user) onAuthenticated(u.data.user); });
+      }).catch(function(e){ authMsg('err', traducir(e.message)); btn.disabled=false; btn.textContent='Guardar contraseña'; });
+    };
+    $('switchBtn').classList.remove('hide');
+  }
+
+  function handleLogout(){ db.auth.signOut().then(function(){ location.reload(); }); }
+
+  // =====================================================================
+  //  CARGA
+  // =====================================================================
+  function onAuthenticated(user){
+    S.user = user;
+    $('authScreen').classList.add('hide');
+    $('boot').classList.remove('hide');
+    // resetear el botón de submit por si venía de recovery
+    $('authSubmit').onclick=null;
+    return loadEverything().then(function(){
+      $('boot').classList.add('hide');
+      $('appScreen').classList.remove('hide');
+    }).catch(function(e){
+      console.error(e);
+      showErr('No se pudieron cargar los datos: ' + (e.message||e) + '. ¿Aplicaste supabase-fix.sql?');
+      $('boot').classList.add('hide');
+      $('appScreen').classList.remove('hide');
+    });
+  }
+
+  function loadEverything(){
+    var uid = S.user.id;
+    return Promise.all([
+      db.from('profiles').select('*').eq('id', uid).single(),
+      db.from('incidence').select('*').order('city'),
+      db.from('action_types').select('*').order('sort_order'),
+      db.from('tips').select('*').order('sort_order'),
+      db.from('quizzes').select('*').order('id'),
+      db.from('tip_reads').select('tip_id').eq('user_id', uid),
+      db.from('quiz_answers').select('quiz_id,is_correct').eq('user_id', uid),
+      db.from('reports').select('id', { count:'exact', head:true }).eq('user_id', uid),
+      db.from('report_reviews').select('report_id').eq('reviewer_id', uid),
+    ]).then(function(r){
+      var prof=r[0], inc=r[1], act=r[2], tp=r[3], qz=r[4], tr=r[5], qa=r[6], rc=r[7], rv=r[8];
+
+      // Si no existe el perfil (caso raro), crearlo mínimamente.
+      if(prof.error || !prof.data){
+        return db.from('profiles').insert({ id:uid, username:(S.user.email||'Vecino/a').split('@')[0], points:0, level:1, is_reviewer:false })
+          .then(function(){ return loadEverything(); });
+      }
+
+      S.profile = prof.data;
+      S.cities  = inc.data || [];
+      S.actions = act.data || [];
+      S.tips    = tp.data || [];
+      S.quizzes = qz.data || [];
+      (tr.data||[]).forEach(function(x){ S.myTipReads[x.tip_id]=1; });
+      (qa.data||[]).forEach(function(x){ S.myQuizAnswers[x.quiz_id]=x; });
+      (rv.data||[]).forEach(function(x){ S.myReviewedReports[x.report_id]=1; });
+
+      S.stats.reports = rc.count||0;
+      S.stats.tips = Object.keys(S.myTipReads).length;
+      S.stats.quizzes = (qa.data||[]).filter(function(a){return a.is_correct;}).length;
+      S.stats.reviews = Object.keys(S.myReviewedReports).length;
+
+      $('brandUser').textContent = S.profile.city ? ('📍 '+S.profile.city) : 'Prevención en tu barrio';
+      applyPoints(S.profile.points||0);
+      renderIncidencia(); renderActions(); renderTips(); renderQuizzes(); renderProgress();
+      return Promise.all([ renderRevisar(), renderLeaderboard() ]);
+    });
+  }
+
+  // =====================================================================
+  //  PUNTOS
+  // =====================================================================
+  function currentLevel(p){ for(var i=0;i<LEVELS.length;i++){ if(p>=LEVELS[i].min && p<=LEVELS[i].max) return LEVELS[i]; } return LEVELS[0]; }
+
+  function applyPoints(points){
+    S.profile.points = points;
+    $('pts').textContent = points; $('lvlPts').textContent = points;
+    var lvl=currentLevel(points), idx=LEVELS.indexOf(lvl), next=LEVELS[idx+1];
+    $('lvlEmoji').textContent=lvl.emoji; $('lvlName').textContent=lvl.name;
+    if(next){
+      var span=lvl.max-lvl.min+1, pct=Math.min(100,Math.max(0,((points-lvl.min)/span)*100));
+      $('lvlBar').style.width=pct+'%';
+      $('lvlNext').textContent='Faltan '+Math.max(0,next.min-points)+' pts para '+next.emoji+' '+next.name;
+    } else { $('lvlBar').style.width='100%'; $('lvlNext').textContent='¡Nivel máximo alcanzado! 🎉'; }
+    document.querySelectorAll('.level-row').forEach(function(row){ row.classList.toggle('current', row.dataset.level===lvl.name); });
+  }
+
+  // Suma puntos en el server (persistente) y refleja en UI + nivel/rol.
+  function awardPoints(delta){
+    var newPts = (S.profile.points||0) + delta;
+    var lvl = currentLevel(newPts);
+    var patch = { points:newPts, level:lvl.lvl };
+    if(newPts>=REVIEWER_MIN && !S.profile.is_reviewer) patch.is_reviewer=true;
+    return db.from('profiles').update(patch).eq('id', S.user.id).then(function(res){
+      if(res.error) throw res.error;
+      if(patch.is_reviewer) S.profile.is_reviewer=true;
+      S.profile.level=lvl.lvl;
+      var wasLocked = (S.profile.points<REVIEWER_MIN);
+      applyPoints(newPts);
+      if(wasLocked && newPts>=REVIEWER_MIN) renderRevisar(); // desbloquea revisar
+    });
+  }
+
+  // =====================================================================
+  //  INCIDENCIA
+  // =====================================================================
+  function renderIncidencia(){
+    var wrap=$('incidenciaList'); wrap.innerHTML='';
+    if(!S.cities.length){ wrap.appendChild(el('div','empty','Todavía no hay datos de incidencia.')); return; }
+    S.cities.forEach(function(c){
+      var mine = S.profile.city===c.city;
+      var risk = c.risk_level||'bajo';
+      var card=el('article','card risk-card '+risk+(mine?' mine':''));
+      card.innerHTML =
+        '<div style="flex:1">'+
+          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+
+            '<div class="risk-city">'+esc(c.city)+'</div>'+
+            '<span class="risk-badge '+risk+'">'+esc(cap(risk))+'</span>'+
+            (mine?'<span class="tag" style="background:var(--accent);color:var(--primary)">Tu ciudad</span>':'')+
+          '</div>'+
+          '<div class="risk-cases">'+(c.cases_week||0)+' casos reportados esta semana</div>'+
+          '<div class="risk-msg">'+esc(c.message||'')+'</div>'+
+        '</div>';
+      wrap.appendChild(card);
+    });
+  }
+
+  // =====================================================================
+  //  REPORTAR
+  // =====================================================================
+  var currentAction=null, pickedFile=null;
+
+  function actionById(id){ for(var i=0;i<S.actions.length;i++){ if(S.actions[i].id===id) return S.actions[i]; } return null; }
+
+  function renderActions(){
+    var grid=$('actionsGrid'); grid.innerHTML='';
+    if(!S.actions.length){ grid.appendChild(el('div','empty','No hay acciones disponibles. ¿Aplicaste supabase-fix.sql?')); return; }
+    S.actions.forEach(function(a){
+      var star = a.id==='house_tour';
+      var card=el('div','action-card'+(star?' star':''));
+      card.innerHTML =
+        (star?'<span class="action-star-badge">⭐ Destacada</span>':'')+
+        '<div class="action-icon">'+esc(a.icon||'📍')+'</div>'+
+        '<div class="action-title">'+esc(a.title)+'</div>'+
+        '<div class="action-tags"><span class="tag">'+esc(a.location||'')+'</span><span class="tag type">'+esc(a.kind||'')+'</span></div>'+
+        '<span class="pts">+'+a.points+' pts</span>';
+      card.addEventListener('click', function(){ startFlow(a); });
+      grid.appendChild(card);
+    });
+  }
+
+  function startFlow(a){ currentAction=a; pickedFile=null; $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide'); renderStep(1); }
+  function cancelFlow(){ $('reportar-grid-view').classList.remove('hide'); var f=$('reportar-flow-view'); f.classList.add('hide'); f.innerHTML=''; currentAction=null; pickedFile=null; }
+
+  function renderStep(step){
+    var a=currentAction, flow=$('reportar-flow-view');
+    if(step===1){
+      flow.innerHTML =
+        '<div class="flow-header"><button class="flow-back" id="fCancel">← Cancelar</button><span class="step-pill">1 de 3</span></div>'+
+        '<div class="step-card"><div class="step-icon-big">'+esc(a.icon||'📍')+'</div>'+
+        '<div class="step-title">'+esc(a.title)+'</div>'+
+        '<div class="step-desc"><b>Qué hacer:</b> '+esc(a.description||'')+'</div>'+
+        '<div class="step-meta"><span class="tag">'+esc(a.location||'')+'</span><span class="tag type">'+esc(a.kind||'')+'</span><span class="pts">+'+a.points+' pts</span></div>'+
+        '<button class="btn" id="fN1">Entendido, continuar →</button></div>';
+      $('fCancel').onclick=cancelFlow; $('fN1').onclick=function(){renderStep(2);};
+    } else if(step===2){
+      flow.innerHTML =
+        '<div class="flow-header"><button class="flow-back" id="fB2">← Volver</button><span class="step-pill">2 de 3</span></div>'+
+        '<div class="step-card"><div class="step-title" style="font-size:19px">📷 Sacá una foto</div>'+
+        '<div class="step-desc">Sacá una foto que muestre la acción completada.</div>'+
+        '<div id="photoZone"><label class="photo-drop" for="photoInput"><div class="photo-drop-icon">📷</div><div class="photo-drop-text">Tocá para sacar o subir una foto</div></label><input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none"></div>'+
+        '<div class="btn-row"><button class="btn btn-secondary" id="fB2b">← Volver</button><button class="btn" id="fN2" disabled>Continuar →</button></div></div>';
+      $('fB2').onclick=function(){renderStep(1);}; $('fB2b').onclick=function(){renderStep(1);}; $('fN2').onclick=function(){renderStep(3);};
+      var input=$('photoInput');
+      input.addEventListener('change', function(){
+        var f=input.files&&input.files[0]; if(!f) return; pickedFile=f;
+        $('photoZone').innerHTML='<div class="photo-preview"><img src="'+URL.createObjectURL(f)+'" alt=""><span class="check">✔ Foto lista</span></div>';
+        $('fN2').disabled=false;
+      });
+      if(pickedFile){ $('photoZone').innerHTML='<div class="photo-preview"><img src="'+URL.createObjectURL(pickedFile)+'" alt=""><span class="check">✔ Foto lista</span></div>'; $('fN2').disabled=false; }
+    } else {
+      var pv = pickedFile ? URL.createObjectURL(pickedFile) : null;
+      flow.innerHTML =
+        '<div class="flow-header"><button class="flow-back" id="fB3">← Volver</button><span class="step-pill">3 de 3</span></div>'+
+        '<div class="step-card"><div class="step-title" style="font-size:19px">📝 Contexto y enviar</div>'+
+        '<div class="photo-preview">'+(pv?'<img src="'+pv+'" alt=""><span class="check">✔</span>':esc(a.icon||'📍'))+'</div>'+
+        '<div class="step-desc" style="text-align:left;font-size:13px;margin-bottom:8px"><b>Contá algo sobre este reporte (opcional):</b></div>'+
+        '<textarea class="txt-area" id="reportNote" placeholder="Ej: Di vuelta 3 baldes del patio, ahora están secos"></textarea>'+
+        '<button class="btn btn-accent" id="fSubmit">Enviar reporte (+'+a.points+' pts)</button></div>';
+      $('fB3').onclick=function(){renderStep(2);}; $('fSubmit').onclick=submitReport;
+    }
+  }
+
+  function submitReport(){
+    var a=currentAction, note=($('reportNote')&&$('reportNote').value.trim())||null;
+    var btn=$('fSubmit'); btn.disabled=true; btn.textContent='Enviando…';
+    var chain = Promise.resolve(null);
+
+    if(pickedFile){
+      var ext=(pickedFile.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+      var path = S.user.id+'/'+Date.now()+'.'+ext;
+      chain = db.storage.from(BUCKET).upload(path, pickedFile, { cacheControl:'3600', upsert:false, contentType:pickedFile.type||'image/jpeg' })
+        .then(function(up){ if(up.error) throw up.error; return db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl; });
+    }
+
+    chain.then(function(photoUrl){
+      return db.from('reports').insert({
+        user_id:S.user.id, action_type:a.id, city:S.profile.city||null,
+        photo_url:photoUrl, note:note, status:'pendiente', points_awarded:a.points
+      });
+    }).then(function(ins){
+      if(ins.error) throw ins.error;
+      return awardPoints(a.points);
+    }).then(function(){
+      S.stats.reports+=1; $('statReports').textContent=S.stats.reports;
+      cancelFlow(); toast('¡Reporte enviado! +'+a.points+' pts 🎉');
+    }).catch(function(e){
+      console.error(e); showErr('No se pudo enviar el reporte: '+(e.message||e));
+      btn.disabled=false; btn.textContent='Enviar reporte (+'+a.points+' pts)';
+    });
+  }
+
+  // =====================================================================
+  //  REVISAR
+  // =====================================================================
+  var currentReview=null;
+
+  function renderRevisar(){
+    var body=$('revisarBody');
+    var points=S.profile.points||0;
+    if(points < REVIEWER_MIN){
+      var pct=Math.min(100, Math.round(points/REVIEWER_MIN*100));
+      body.innerHTML =
+        '<div class="lock-card"><div class="lock-emoji">🔒</div>'+
+        '<div class="lock-title">Rol Revisor bloqueado</div>'+
+        '<div class="lock-text">La revisión comunitaria se desbloquea al llegar a <b>'+REVIEWER_MIN+' pts</b> (nivel 🛡️ Guardián del Barrio). Seguí reportando y aprendiendo para llegar.</div>'+
+        '<div class="lock-bar-outer"><div class="lock-bar-inner" style="width:'+pct+'%"></div></div>'+
+        '<div class="lock-text">'+points+' / '+REVIEWER_MIN+' pts</div></div>';
+      return Promise.resolve();
+    }
+
+    body.innerHTML =
+      '<span class="role-badge">🛡️ Rol Revisor</span>'+
+      '<div class="review-info"><div class="review-info-title">🗳️ Cómo funciona</div>'+
+      '<div class="review-info-text">Abrí cada reporte, mirá la foto y la nota, y votá si la acción se hizo bien. Cuando junta 3 votos correctos, se valida. Ganás <b>+3 pts</b> por cada revisión.</div></div>'+
+      '<div id="reviewList"><div class="loading">Cargando…</div></div>';
+
+    return db.from('reports')
+      .select('id,note,photo_url,city,action_type,user_id')
+      .eq('status','pendiente').neq('user_id', S.user.id)
+      .order('created_at',{ascending:false}).limit(40)
+      .then(function(res){
+        var list=$('reviewList'); if(!list) return;
+        if(res.error){ list.innerHTML='<div class="empty">No se pudieron cargar los reportes.</div>'; throw res.error; }
+        var pend=(res.data||[]).filter(function(r){ return !S.myReviewedReports[r.id]; });
+        if(!pend.length){ list.innerHTML=''; list.appendChild(el('div','empty','🎉 ¡No hay reportes pendientes por ahora!<br>Volvé más tarde para seguir sumando revisiones.')); return; }
+
+        // Traer nombres de los autores (sin FK embed, para no depender del esquema)
+        var ids={}; pend.forEach(function(r){ ids[r.user_id]=1; });
+        return db.from('profiles').select('id,username').in('id', Object.keys(ids)).then(function(p){
+          var names={}; (p.data||[]).forEach(function(x){ names[x.id]=x.username; });
+          list.innerHTML='';
+          pend.forEach(function(r){
+            var a=actionById(r.action_type)||{};
+            var thumb = r.photo_url ? '<img src="'+esc(r.photo_url)+'" alt="">' : (a.icon||'📷');
+            var item=el('div','review-item');
+            item.innerHTML =
+              '<div class="review-thumb">'+thumb+'</div>'+
+              '<div class="review-body"><div class="review-author">'+esc(names[r.user_id]||'Vecino/a')+'</div>'+
+              '<div class="review-action">'+esc(a.icon||'')+' '+esc(a.title||'Acción')+'</div>'+
+              '<div class="review-city">📍 '+esc(r.city||'—')+'</div></div>'+
+              '<button class="review-open">Ver reporte →</button>';
+            r._author = names[r.user_id]||'Vecino/a';
+            item.querySelector('.review-open').addEventListener('click', function(){ openReview(r); });
+            list.appendChild(item);
+          });
+        });
+      });
+  }
+
+  function openReview(r){
+    currentReview=r; var a=actionById(r.action_type)||{};
+    $('modalPhoto').innerHTML = r.photo_url ? '<img src="'+esc(r.photo_url)+'" alt="">' : (a.icon||'📷');
+    $('modalAuthor').textContent = r._author||'Vecino/a';
+    $('modalCity').textContent = '📍 '+(r.city||'—');
+    $('modalActionIcon').textContent = a.icon||'🔄';
+    $('modalActionText').textContent = a.title||'Acción';
+    $('modalNote').textContent = r.note ? ('📝 "'+r.note+'"') : 'Sin nota adicional.';
+    $('reviewModal').classList.add('show');
+  }
+  function closeReviewModal(){ $('reviewModal').classList.remove('show'); currentReview=null; }
+
+  function castVote(vote){
+    if(!currentReview) return;
+    var rid=currentReview.id; closeReviewModal();
+    db.from('report_reviews').insert({ report_id:rid, reviewer_id:S.user.id, vote:vote }).then(function(ins){
+      if(ins.error){ if(ins.error.code==='23505') return; throw ins.error; }
+      S.myReviewedReports[rid]=1; S.stats.reviews+=1; $('statReviews').textContent=S.stats.reviews;
+      return awardPoints(PTS_REVIEW).then(function(){ return renderRevisar(); }).then(function(){
+        var lbl = vote==='correcto'?'✅':vote==='dudoso'?'❓':'⚠️';
+        toast(lbl+' Voto registrado · +'+PTS_REVIEW+' pts');
+      });
+    }).catch(function(e){ console.error(e); showErr('No se pudo registrar el voto: '+(e.message||e)); });
+  }
+
+  // =====================================================================
+  //  APRENDER
+  // =====================================================================
+  function showLearnView(v){
+    $('learn-menu-view').classList.toggle('hide', v!=='menu');
+    $('learn-tips-view').classList.toggle('hide', v!=='tips');
+    $('learn-quiz-view').classList.toggle('hide', v!=='quizzes');
+  }
+
+  function updateTipsProgress(){
+    var total=S.tips.length, read=Object.keys(S.myTipReads).length;
+    $('tipsTotal').textContent=total; $('tipsReadCount').textContent=read;
+    $('tipsProg').style.width = total? Math.round(read/total*100)+'%':'0%';
+    $('statTips').textContent=read;
+  }
+
+  function renderTips(){
+    var list=$('tipsList'); list.innerHTML='';
+    if(!S.tips.length){ list.appendChild(el('div','empty','No hay tips cargados. ¿Aplicaste supabase-fix.sql?')); return; }
+    var lastCat=null;
+    S.tips.forEach(function(tip){
+      if(tip.category!==lastCat){ lastCat=tip.category; list.appendChild(el('div','tips-category', esc(tip.category))); }
+      var read = !!S.myTipReads[tip.id];
+      var item=el('div','tip-item'+(read?' read':''));
+      item.innerHTML='<div class="tip-head"><div class="tip-title">'+esc(tip.title)+'</div><div class="tip-check">✔</div></div><div class="tip-body">'+esc(tip.content)+'</div>';
+      item.addEventListener('click', function(){ onTipClick(tip, item); });
+      list.appendChild(item);
+    });
+    updateTipsProgress();
+  }
+
+  function onTipClick(tip, item){
+    item.classList.toggle('open');
+    if(S.myTipReads[tip.id]) return;
+    S.myTipReads[tip.id]=1; item.classList.add('read');
+    db.from('tip_reads').insert({ user_id:S.user.id, tip_id:tip.id }).then(function(ins){
+      if(ins.error && ins.error.code!=='23505') throw ins.error;
+      updateTipsProgress();
+      return awardPoints(PTS_TIP);
+    }).then(function(){ toast('+'+PTS_TIP+' pts · tip leído 📖'); })
+      .catch(function(e){ console.error(e); showErr('No se pudo registrar el tip: '+(e.message||e)); });
+  }
+
+  function renderQuizzes(){
+    var list=$('quizList'); list.innerHTML='';
+    if(!S.quizzes.length){ list.appendChild(el('div','empty','No hay quizzes cargados. ¿Aplicaste supabase-fix.sql?')); return; }
+    S.quizzes.forEach(function(q,i){
+      var opts = Array.isArray(q.options)? q.options : (function(){ try{return JSON.parse(q.options);}catch(e){return [];} })();
+      q._opts = opts;
+      var prev = S.myQuizAnswers[q.id];
+      var card=el('div','quiz-card');
+      var oh='';
+      opts.forEach(function(o,j){ oh+='<button class="quiz-opt" data-q="'+q.id+'" data-o="'+j+'">'+String.fromCharCode(97+j)+') '+esc(o)+'</button>'; });
+      card.innerHTML='<div class="quiz-q">'+(i+1)+'. '+esc(q.question)+'</div>'+oh+'<div class="quiz-feedback" id="fb-'+q.id+'"></div>';
+      list.appendChild(card);
+      if(prev) markQuiz(q, prev, card);
+    });
+    list.querySelectorAll('.quiz-opt').forEach(function(btn){ btn.addEventListener('click', function(){ answerQuiz(btn); }); });
+  }
+
+  function markQuiz(q, ans, card){
+    var buttons=card.querySelectorAll('.quiz-opt'); buttons.forEach(function(b){ b.disabled=true; });
+    var fb=card.querySelector('.quiz-feedback');
+    // No guardamos el índice elegido; si acertó, marcamos la correcta.
+    if(ans.is_correct){
+      if(buttons[q.correct_index]) buttons[q.correct_index].classList.add('correct');
+      fb.textContent='✅ ¡Correcto! '+(q.tip||''); fb.classList.remove('err'); fb.classList.add('show');
+    } else {
+      if(buttons[q.correct_index]) buttons[q.correct_index].classList.add('correct');
+      fb.textContent='La correcta era: '+esc((q._opts||[])[q.correct_index]||''); fb.classList.add('show','err');
+    }
+  }
+
+  function answerQuiz(btn){
+    var qid=Number(btn.dataset.q), oi=Number(btn.dataset.o);
+    if(S.myQuizAnswers[qid]) return;
+    var q=null; for(var i=0;i<S.quizzes.length;i++){ if(S.quizzes[i].id===qid){ q=S.quizzes[i]; break; } }
+    var card=btn.closest('.quiz-card');
+    var isCorrect = (oi===q.correct_index);
+    var buttons=card.querySelectorAll('.quiz-opt'); buttons.forEach(function(b){ b.disabled=true; });
+    var fb=card.querySelector('.quiz-feedback');
+    if(isCorrect){ btn.classList.add('correct'); fb.textContent='✅ ¡Correcto! '+(q.tip||''); fb.classList.remove('err'); fb.classList.add('show'); }
+    else { btn.classList.add('wrong'); if(buttons[q.correct_index]) buttons[q.correct_index].classList.add('correct'); fb.textContent='❌ La correcta era: '+esc((q._opts||[])[q.correct_index]||''); fb.classList.add('show','err'); }
+
+    S.myQuizAnswers[qid]={ quiz_id:qid, is_correct:isCorrect };
+    db.from('quiz_answers').insert({ user_id:S.user.id, quiz_id:qid, is_correct:isCorrect }).then(function(ins){
+      if(ins.error){ if(ins.error.code==='23505') return; throw ins.error; }
+      if(isCorrect){ S.stats.quizzes+=1; $('statQuizzes').textContent=S.stats.quizzes; return awardPoints(PTS_QUIZ).then(function(){ toast('+'+PTS_QUIZ+' pts 🎉'); }); }
+    }).catch(function(e){ console.error(e); showErr('No se pudo registrar la respuesta: '+(e.message||e)); });
+  }
+
+  // =====================================================================
+  //  PROGRESO
+  // =====================================================================
+  function renderProgress(){
+    var list=$('levelsList'); list.innerHTML='';
+    LEVELS.forEach(function(l){
+      var range = l.max===Infinity ? (l.min+'+') : (l.min+'–'+l.max);
+      var row=el('div','level-row'); row.dataset.level=l.name;
+      row.innerHTML='<div class="level-row-emoji">'+l.emoji+'</div><div class="level-row-name">'+esc(l.name)+(l.lvl===4?' · Revisor':'')+'</div><div class="level-row-range">'+range+'</div>';
+      list.appendChild(row);
+    });
+    $('statReports').textContent=S.stats.reports; $('statQuizzes').textContent=S.stats.quizzes;
+    $('statTips').textContent=S.stats.tips; $('statReviews').textContent=S.stats.reviews;
+    applyPoints(S.profile.points||0);
+  }
+
+  function renderLeaderboard(){
+    var list=$('lbList'), city=S.profile.city;
+    $('lbTitle').textContent = city ? ('🏙️ Ranking '+city) : '🏆 Ranking general';
+    var q=db.from('profiles').select('id,username,points').order('points',{ascending:false}).limit(10);
+    if(city) q=q.eq('city', city);
+    return q.then(function(res){
+      list.innerHTML='';
+      if(res.error || !res.data || !res.data.length){ list.appendChild(el('div','empty','Todavía no hay ranking. ¡Sé el primero en sumar puntos!')); return; }
+      res.data.forEach(function(p,i){
+        var me=p.id===S.user.id;
+        var row=el('div','lb-row'+(me?' me':''));
+        row.innerHTML='<div class="lb-rank">'+(i+1)+'</div><div class="lb-name">'+esc(p.username||'Vecino/a')+(me?' (vos)':'')+'</div><div class="lb-pts">'+(p.points||0)+'</div>';
+        list.appendChild(row);
+      });
+    });
+  }
+
+  // =====================================================================
+  //  NAV
+  // =====================================================================
+  function showSection(sec){
+    document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+    var t=$('sec-'+sec); if(t) t.classList.add('active');
+    document.querySelectorAll('.navbtn').forEach(function(b){ b.classList.toggle('active', b.dataset.sec===sec); });
+    var c=document.querySelector('.content'); if(c) c.scrollTop=0;
+    if(sec!=='reportar') cancelFlow();
+    if(sec==='aprender') showLearnView('menu');
+    if(sec==='revisar') renderRevisar();
+    if(sec==='progreso') renderLeaderboard();
+  }
+
+  // =====================================================================
+  //  EVENTOS
+  // =====================================================================
+  function wire(){
+    $('authSubmit').addEventListener('click', function(){ if(!S.recovery) handleAuthSubmit(); });
+    $('switchBtn').addEventListener('click', function(){
+      if(S.recovery){ S.recovery=false; $('authSubmit').onclick=null; $('fieldEmail').classList.remove('hide'); authMode='login'; renderAuthMode(); return; }
+      authMode = authMode==='register' ? 'login' : 'register'; renderAuthMode();
+    });
+    $('forgotBtn').addEventListener('click', function(){ authMode='recover'; renderAuthMode(); });
+    ['inEmail','inPass','inName'].forEach(function(id){ $(id).addEventListener('keydown', function(e){ if(e.key==='Enter'){ if(S.recovery) $('authSubmit').click(); else handleAuthSubmit(); } }); });
+    $('logoutBtn').addEventListener('click', handleLogout);
+
+    document.querySelectorAll('.navbtn').forEach(function(b){ b.addEventListener('click', function(){ showSection(b.dataset.sec); }); });
+    document.querySelectorAll('.topnav a').forEach(function(a){ a.addEventListener('click', function(e){ e.preventDefault(); showSection(a.dataset.sec); $('phone').scrollIntoView({behavior:'smooth',block:'start'}); }); });
+    document.querySelectorAll('[data-learn]').forEach(function(x){ x.addEventListener('click', function(){ showLearnView(x.dataset.learn); }); });
+
+    $('modalCloseBtn').addEventListener('click', closeReviewModal);
+    document.querySelectorAll('.vote-btn').forEach(function(b){ b.addEventListener('click', function(){ castVote(b.dataset.vote); }); });
+    $('reviewModal').addEventListener('click', function(e){ if(e.target.id==='reviewModal') closeReviewModal(); });
+  }
+
+  // =====================================================================
+  //  ARRANQUE
+  // =====================================================================
+  // Detectar enlace de recuperación de contraseña
+  db.auth.onAuthStateChange(function(event){ if(event==='PASSWORD_RECOVERY') showRecoveryPrompt(); });
+
+  function boot(){
+    wire(); renderAuthMode();
+    loadCitiesIntoSelect();
+
+    var hash = window.location.hash || '';
+    if(hash.indexOf('type=recovery')>=0){ /* onAuthStateChange lo maneja */ }
+
+    db.auth.getSession().then(function(res){
+      if(S.recovery) return; // en medio de recuperación
+      if(res.data && res.data.session){ onAuthenticated(res.data.session.user); }
+      else { $('boot').classList.add('hide'); $('authScreen').classList.remove('hide'); }
+    }).catch(function(e){ showErr('Error de conexión con Supabase: '+(e.message||e)); $('boot').classList.add('hide'); $('authScreen').classList.remove('hide'); });
+  }
+  boot();
+})();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+  }
 </script>
 </body>
 </html>
