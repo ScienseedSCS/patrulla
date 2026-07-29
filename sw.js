@@ -3,12 +3,13 @@
    Supabase (datos/fotos/auth) → siempre red.
    Cambiá el número de versión al actualizar archivos.
 */
-const VERSION = 'patrulla-v1';
+const VERSION = 'patrulla-v2';
 const SHELL = [
   './',
   './index.html',
   './config.js',
   './manifest.webmanifest',
+  './icons/logo.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/mundo-sano-logo.svg',
