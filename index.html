@@ -49,7 +49,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 /* Auth */
 .auth-wrap{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 18px;background:linear-gradient(135deg,#3d2445 0%,#251327 100%)}
 .auth-card{background:var(--background);width:100%;max-width:400px;border-radius:28px;box-shadow:var(--shadow-lg);padding:30px 24px 26px;text-align:center}
-.auth-logo{width:74px;height:auto;margin:0 auto 12px;display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.2))}
+.auth-logo{height:92px;width:auto;margin:0 auto 10px;display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.2))}
 .auth-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--primary);line-height:1.05}
 .auth-tag{font-size:12px;color:var(--accent-2);font-weight:700;letter-spacing:.3px;margin-top:4px;text-transform:uppercase}
 .auth-intro{font-size:13px;color:var(--muted);line-height:1.5;margin:14px 4px 20px}
@@ -72,7 +72,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .phone{max-width:600px;margin:0 auto;background:var(--background);position:relative;overflow:hidden;height:100vh;height:100dvh;display:flex;flex-direction:column}
 .header{background:var(--primary);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 18px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:-16px -14px 16px;z-index:10}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.brand-logo{width:44px;height:auto;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
+.brand-logo{height:46px;width:auto;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
 .brand-text{min-width:0}
 .brand-name{font-family:'DM Serif Display',serif;font-size:19px;line-height:1.05;color:#fff}
 .brand-tag{font-size:10px;color:#F4D18B;font-weight:600;letter-spacing:.3px;margin-top:2px;opacity:.9}
@@ -152,6 +152,26 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .modal-ba img{width:100%;height:100%;object-fit:cover;display:block}
 .modal-ba figcaption{position:absolute;bottom:6px;left:6px;background:rgba(20,10,25,.72);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.3px}
 .ba-badge{position:absolute;top:6px;right:6px;background:var(--accent-2);color:#fff;font-size:9px;font-weight:800;padding:3px 7px;border-radius:999px;z-index:2}
+/* Metadata / privacidad */
+.meta-card{background:#F8F1E2;border-radius:12px;padding:12px 14px;margin:12px 0}
+.meta-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.meta-label{font-size:13px;font-weight:800;color:var(--primary)}
+.meta-sub{font-size:11px;color:var(--muted);line-height:1.4;margin-top:3px}
+.switch{position:relative;width:46px;height:26px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#CDBFD0;border-radius:999px;cursor:pointer;transition:background .2s}
+.slider:before{content:'';position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch input:checked + .slider{background:var(--accent-2)}
+.switch input:checked + .slider:before{transform:translateX(20px)}
+.privacy-link{background:none;border:none;color:var(--primary-soft);font-family:inherit;font-size:11px;font-weight:800;text-decoration:underline;cursor:pointer;padding:8px 0 0}
+.privacy-body{padding:22px 20px}
+.privacy-body h3{font-family:'DM Serif Display',serif;font-size:20px;color:var(--primary);margin-bottom:10px}
+.privacy-body p{font-size:13px;color:var(--text);line-height:1.55;margin-bottom:10px}
+.privacy-body ul{margin:8px 0 12px 18px;font-size:13px;color:var(--text);line-height:1.6}
+.privacy-body li{margin-bottom:5px}
+.meta-line{font-size:12px;color:var(--muted);margin-top:10px;display:flex;flex-wrap:wrap;gap:12px}
+.meta-line a{color:var(--accent-2);font-weight:700;text-decoration:none}
+.dup-flag{background:#F9E4E2;color:var(--danger);font-size:12px;font-weight:800;padding:8px 12px;border-radius:8px;margin-top:12px;display:none;align-items:center;gap:6px}
 .photo-preview{border-radius:14px;height:170px;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;margin-bottom:12px;overflow:hidden;background:linear-gradient(135deg,#EFE6D8,#DDD1BD)}
 .photo-preview img{width:100%;height:100%;object-fit:cover;border-radius:14px}
 .photo-preview .check{position:absolute;top:8px;right:8px;background:var(--ok);color:#fff;font-size:11px;font-weight:800;padding:4px 9px;border-radius:999px;z-index:2}
@@ -288,16 +308,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 <!-- ===================== AUTH ===================== -->
 <div class="auth-wrap hide" id="authScreen">
   <div class="auth-card">
-    <svg class="auth-logo" viewBox="0 0 100 135" xmlns="http://www.w3.org/2000/svg" aria-label="Logo">
-      <defs><clipPath id="pc1"><path d="M50 8 C24 8 8 26 8 50 C8 72 28 92 50 128 C72 92 92 72 92 50 C92 26 76 8 50 8 Z"/></clipPath></defs>
-      <path d="M50 8 C24 8 8 26 8 50 C8 72 28 92 50 128 C72 92 92 72 92 50 C92 26 76 8 50 8 Z" fill="#1E8069"/>
-      <circle cx="50" cy="48" r="35" fill="#F5F6EC"/>
-      <g clip-path="url(#pc1)"><ellipse cx="50" cy="76" rx="30" ry="6" fill="#8FC5E8"/><path d="M18 72 Q50 66 82 72" stroke="#6DBE4A" stroke-width="1.5" fill="none"/></g>
-      <circle cx="50" cy="48" r="26" fill="none" stroke="#6DBE4A" stroke-width="1.6" opacity=".85"/>
-      <line x1="50" y1="17" x2="50" y2="21" stroke="#6DBE4A" stroke-width="2"/><line x1="50" y1="75" x2="50" y2="79" stroke="#6DBE4A" stroke-width="2"/>
-      <line x1="17" y1="48" x2="21" y2="48" stroke="#6DBE4A" stroke-width="2"/><line x1="75" y1="48" x2="79" y2="48" stroke="#6DBE4A" stroke-width="2"/>
-      <g transform="translate(50,48) rotate(20)"><ellipse cx="8" cy="0" rx="15" ry="5" fill="#1A1A1A" opacity=".75" transform="rotate(-8 8 0)"/><ellipse cx="9" cy="2" rx="10" ry="3.6" fill="#1A1A1A"/><ellipse cx="-2" cy="0" rx="4" ry="3.2" fill="#1A1A1A"/><circle cx="-7" cy="-1" r="2.8" fill="#1A1A1A"/><line x1="-9" y1="0" x2="-14" y2="6" stroke="#1A1A1A" stroke-width="1" stroke-linecap="round"/></g>
-    </svg>
+    <img class="auth-logo" src="icons/logo.png" alt="Patrulla Antimosquito">
     <div class="auth-title">Patrulla Antimosquito</div>
     <div class="auth-tag">Prevención en tu barrio</div>
     <p class="auth-intro" id="authIntro">Sumate a cuidar tu barrio del dengue. Reportá acciones, aprendé y ganá puntos.</p>
@@ -340,14 +351,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     <div class="content">
     <header class="header">
       <div class="brand">
-        <svg class="brand-logo" viewBox="0 0 100 135" xmlns="http://www.w3.org/2000/svg" aria-label="Logo">
-          <path d="M50 8 C24 8 8 26 8 50 C8 72 28 92 50 128 C72 92 92 72 92 50 C92 26 76 8 50 8 Z" fill="#1E8069"/>
-          <circle cx="50" cy="48" r="35" fill="#F5F6EC"/>
-          <circle cx="50" cy="48" r="26" fill="none" stroke="#6DBE4A" stroke-width="1.6" opacity=".85"/>
-          <line x1="50" y1="17" x2="50" y2="21" stroke="#6DBE4A" stroke-width="2"/><line x1="50" y1="75" x2="50" y2="79" stroke="#6DBE4A" stroke-width="2"/>
-          <line x1="17" y1="48" x2="21" y2="48" stroke="#6DBE4A" stroke-width="2"/><line x1="75" y1="48" x2="79" y2="48" stroke="#6DBE4A" stroke-width="2"/>
-          <g transform="translate(50,48) rotate(20)"><ellipse cx="8" cy="0" rx="15" ry="5" fill="#1A1A1A" opacity=".75" transform="rotate(-8 8 0)"/><ellipse cx="9" cy="2" rx="10" ry="3.6" fill="#1A1A1A"/><ellipse cx="-2" cy="0" rx="4" ry="3.2" fill="#1A1A1A"/><circle cx="-7" cy="-1" r="2.8" fill="#1A1A1A"/><line x1="-9" y1="0" x2="-14" y2="6" stroke="#1A1A1A" stroke-width="1" stroke-linecap="round"/></g>
-        </svg>
+        <img class="brand-logo" src="icons/logo.png" alt="">
         <div class="brand-text"><div class="brand-name">Patrulla Antimosquito</div><div class="brand-tag" id="brandUser">Prevención en tu barrio</div></div>
       </div>
       <div class="header-right">
@@ -451,11 +455,34 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       <div class="modal-city" id="modalCity">—</div>
       <div class="modal-action"><div class="modal-action-icon" id="modalActionIcon">🔄</div><div class="modal-action-text" id="modalActionText">—</div></div>
       <div class="modal-note" id="modalNote">—</div>
+      <div class="meta-line" id="modalMeta"></div>
+      <div class="dup-flag" id="modalDup">⚠️ Esta imagen aparece en más de un reporte</div>
       <div class="vote-title">¿La acción se hizo bien?</div>
       <div class="vote-row">
         <button class="vote-btn ok"  data-vote="correcto"><span class="em">✅</span>Correcto</button>
         <button class="vote-btn mid" data-vote="dudoso"><span class="em">❓</span>Dudoso</button>
         <button class="vote-btn no"  data-vote="no_corresponde"><span class="em">⚠️</span>No corresponde</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRIVACIDAD / CONSENTIMIENTO -->
+<div class="modal-backdrop" id="privacyModal">
+  <div class="modal">
+    <button class="modal-close" id="privacyCloseBtn" aria-label="Cerrar">✕</button>
+    <div class="privacy-body">
+      <h3>🔒 Qué datos se recogen</h3>
+      <p>Para ayudar a mapear focos de mosquitos, junto a tu reporte la app puede guardar:</p>
+      <ul>
+        <li><b>Tu ubicación aproximada</b> (precisión reducida, ~100 m — no tu dirección exacta).</li>
+        <li><b>La fecha y hora</b> del reporte.</li>
+        <li>Una <b>huella digital de la foto</b>, para detectar si una misma imagen se usa en varios reportes.</li>
+      </ul>
+      <p>Es <b>opcional</b>: podés reportar sin compartir ubicación y revocar el permiso cuando quieras. Las fotos se procesan para quitarles los metadatos técnicos (EXIF) antes de subirlas. Los datos se usan solo para la prevención comunitaria del dengue, a cargo de Fundación Mundo Sano.</p>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="privacyDecline">No compartir</button>
+        <button class="btn btn-accent" id="privacyAccept">Aceptar y compartir</button>
       </div>
     </div>
   </div>
@@ -490,6 +517,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   // Puntos por acción
   var PTS_TIP = 2, PTS_QUIZ = 5, PTS_REVIEW = 3, REVIEWER_MIN = 350, PTS_BA_BONUS = 5;
+  var GEO_PRECISION = 3; // decimales ≈ ~110 m (minimización de datos)
 
   var LEVELS = [
     { emoji: '🥚', name: 'Vigilante Novato',      min: 0,    max: 49,   lvl: 1 },
@@ -691,6 +719,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       }
 
       S.profile = prof.data;
+      S.geoConsent = (prof.data.geo_consent === true);
       S.cities  = inc.data || [];
       S.actions = act.data || [];
       S.tips    = tp.data || [];
@@ -772,7 +801,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   // =====================================================================
   //  REPORTAR
   // =====================================================================
-  var currentAction=null, reportMode='simple', pickedAfter=null, pickedBefore=null;
+  var currentAction=null, reportMode='simple', pickedAfter=null, pickedBefore=null, attachLocation=false;
 
   function actionById(id){ for(var i=0;i<S.actions.length;i++){ if(S.actions[i].id===id) return S.actions[i]; } return null; }
 
@@ -793,7 +822,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     });
   }
 
-  function startFlow(a){ currentAction=a; reportMode='simple'; pickedAfter=null; pickedBefore=null; $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide'); renderStep(1); }
+  function startFlow(a){ currentAction=a; reportMode='simple'; pickedAfter=null; pickedBefore=null; attachLocation=!!S.geoConsent; $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide'); renderStep(1); }
   function cancelFlow(){ $('reportar-grid-view').classList.remove('hide'); var f=$('reportar-flow-view'); f.classList.add('hide'); f.innerHTML=''; currentAction=null; reportMode='simple'; pickedAfter=null; pickedBefore=null; }
   function reportPoints(){ return currentAction.points + (reportMode==='ba'?PTS_BA_BONUS:0); }
 
@@ -839,10 +868,20 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         '<div class="flow-header"><button class="flow-back" id="fB3">← Volver</button><span class="step-pill">3 de 3</span></div>'+
         '<div class="step-card"><div class="step-title" style="font-size:19px">📝 Contexto y enviar</div>'+
         previewHtml+
+        '<div class="meta-card"><div class="meta-row">'+
+          '<div><div class="meta-label">📍 Adjuntar ubicación</div><div class="meta-sub">Opcional. Ayuda a mapear focos. Se guarda con precisión aproximada (~100 m).</div></div>'+
+          '<label class="switch"><input type="checkbox" id="geoToggle"><span class="slider"></span></label>'+
+        '</div><button class="privacy-link" id="privacyOpen">¿Qué datos se recogen?</button></div>'+
         '<div class="step-desc" style="text-align:left;font-size:13px;margin:12px 0 8px"><b>Contá algo sobre este reporte (opcional):</b></div>'+
         '<textarea class="txt-area" id="reportNote" placeholder="Ej: Di vuelta 3 baldes del patio, ahora están secos"></textarea>'+
         '<button class="btn btn-accent" id="fSubmit">Enviar reporte (+'+reportPoints()+' pts)</button></div>';
       $('fB3').onclick=function(){renderStep(2);}; $('fSubmit').onclick=submitReport;
+      var gt=$('geoToggle'); gt.checked=attachLocation;
+      gt.addEventListener('change', function(){
+        if(gt.checked && !S.geoConsent){ gt.checked=false; openPrivacy(true); }
+        else { attachLocation=gt.checked; }
+      });
+      $('privacyOpen').addEventListener('click', function(){ openPrivacy(false); });
     }
   }
 
@@ -899,33 +938,97 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     var btn=$('fN2'); if(btn) btn.disabled = !ok;
   }
 
-  function uploadPhoto(file, suffix){
-    var ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
-    var path = S.user.id+'/'+Date.now()+'_'+suffix+'.'+ext;
-    return db.storage.from(BUCKET).upload(path, file, { cacheControl:'3600', upsert:false, contentType:file.type||'image/jpeg' })
+  // --- Privacidad / consentimiento -------------------------------------
+  var privacyForToggle=false;
+  function openPrivacy(fromToggle){ privacyForToggle=!!fromToggle; $('privacyModal').classList.add('show'); }
+  function closePrivacy(){ $('privacyModal').classList.remove('show'); }
+  function setConsent(value){
+    S.geoConsent=value; S.profile.geo_consent=value;
+    db.from('profiles').update({ geo_consent:value }).eq('id', S.user.id).then(function(){}, function(){});
+  }
+  function privacyAccept(){ setConsent(true); attachLocation=true; var gt=$('geoToggle'); if(gt) gt.checked=true; closePrivacy(); }
+  function privacyDecline(){ setConsent(false); attachLocation=false; var gt=$('geoToggle'); if(gt) gt.checked=false; closePrivacy(); }
+
+  // --- Metadata: imagen (strip EXIF), hash, geolocalización -------------
+  function processImage(file){
+    return new Promise(function(resolve){
+      try{
+        var url=URL.createObjectURL(file), img=new Image();
+        img.onload=function(){
+          var max=1600, w=img.naturalWidth, h=img.naturalHeight, s=Math.min(1, max/Math.max(w,h||1));
+          var cw=Math.max(1,Math.round(w*s)), ch=Math.max(1,Math.round(h*s));
+          var c=document.createElement('canvas'); c.width=cw; c.height=ch;
+          c.getContext('2d').drawImage(img,0,0,cw,ch);
+          URL.revokeObjectURL(url);
+          if(c.toBlob){ c.toBlob(function(b){ resolve(b||file); }, 'image/jpeg', 0.85); }
+          else resolve(file);
+        };
+        img.onerror=function(){ URL.revokeObjectURL(url); resolve(file); };
+        img.src=url;
+      }catch(e){ resolve(file); }
+    });
+  }
+  function sha256Hex(blob){
+    try{
+      if(!(window.crypto && crypto.subtle && blob && blob.arrayBuffer)) return Promise.resolve(null);
+      return blob.arrayBuffer().then(function(buf){ return crypto.subtle.digest('SHA-256', buf); }).then(function(hb){
+        var a=Array.prototype.slice.call(new Uint8Array(hb));
+        return a.map(function(b){ return ('0'+b.toString(16)).slice(-2); }).join('');
+      }).catch(function(){ return null; });
+    }catch(e){ return Promise.resolve(null); }
+  }
+  function getGeo(){
+    return new Promise(function(resolve){
+      if(!navigator.geolocation) return resolve(null);
+      navigator.geolocation.getCurrentPosition(function(pos){
+        var p=GEO_PRECISION;
+        resolve({ lat:Number(pos.coords.latitude.toFixed(p)), lng:Number(pos.coords.longitude.toFixed(p)), acc:Math.round(pos.coords.accuracy||0) });
+      }, function(){ resolve(null); }, { enableHighAccuracy:false, timeout:8000, maximumAge:60000 });
+    });
+  }
+  function uploadBlob(blob, suffix){
+    var path=S.user.id+'/'+Date.now()+'_'+suffix+'.jpg';
+    return db.storage.from(BUCKET).upload(path, blob, { cacheControl:'3600', upsert:false, contentType:'image/jpeg' })
       .then(function(up){ if(up.error) throw up.error; return db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl; });
+  }
+  function checkDuplicate(hash){
+    if(!hash) return;
+    db.from('reports').select('id',{count:'exact',head:true}).eq('photo_hash', hash).then(function(r){
+      if(!r.error && (r.count||0)>1) toast('⚠️ Esta foto ya figura en otro reporte');
+    }, function(){});
   }
 
   function submitReport(){
     var a=currentAction, note=($('reportNote')&&$('reportNote').value.trim())||null;
-    var total=reportPoints();
-    var btn=$('fSubmit'); btn.disabled=true; btn.textContent='Enviando…';
+    var total=reportPoints(), captured_at=new Date().toISOString();
+    var btn=$('fSubmit'); btn.disabled=true; btn.textContent='Procesando foto…';
 
-    var uploads=[ pickedAfter ? uploadPhoto(pickedAfter,'despues') : Promise.resolve(null) ];
-    uploads.push( (reportMode==='ba' && pickedBefore) ? uploadPhoto(pickedBefore,'antes') : Promise.resolve(null) );
-
-    Promise.all(uploads).then(function(urls){
-      return db.from('reports').insert({
-        user_id:S.user.id, action_type:a.id, city:S.profile.city||null,
-        photo_url:urls[0], photo_before_url:urls[1], note:note,
-        status:'pendiente', points_awarded:total
+    Promise.all([
+      pickedAfter ? processImage(pickedAfter) : Promise.resolve(null),
+      (reportMode==='ba' && pickedBefore) ? processImage(pickedBefore) : Promise.resolve(null)
+    ]).then(function(blobs){
+      var afterBlob=blobs[0], beforeBlob=blobs[1];
+      return sha256Hex(afterBlob).then(function(hash){
+        btn.textContent='Enviando…';
+        var ups=[ afterBlob ? uploadBlob(afterBlob,'despues') : Promise.resolve(null),
+                  beforeBlob ? uploadBlob(beforeBlob,'antes') : Promise.resolve(null) ];
+        var geoP = attachLocation ? getGeo() : Promise.resolve(null);
+        return Promise.all([ Promise.all(ups), geoP ]).then(function(r){
+          var urls=r[0], geo=r[1];
+          var row={ user_id:S.user.id, action_type:a.id, city:S.profile.city||null,
+            photo_url:urls[0], photo_before_url:urls[1], note:note,
+            status:'pendiente', points_awarded:total,
+            captured_at:captured_at, photo_hash:hash||null };
+          if(geo){ row.lat=geo.lat; row.lng=geo.lng; row.geo_accuracy=geo.acc; }
+          return db.from('reports').insert(row).then(function(ins){ if(ins.error) throw ins.error; return hash; });
+        });
       });
-    }).then(function(ins){
-      if(ins.error) throw ins.error;
-      return awardPoints(total);
-    }).then(function(){
+    }).then(function(hash){
+      return awardPoints(total).then(function(){ return hash; });
+    }).then(function(hash){
       S.stats.reports+=1; $('statReports').textContent=S.stats.reports;
       cancelFlow(); toast('¡Reporte enviado! +'+total+' pts 🎉');
+      checkDuplicate(hash);
     }).catch(function(e){
       console.error(e); showErr('No se pudo enviar el reporte: '+(e.message||e));
       btn.disabled=false; btn.textContent='Enviar reporte (+'+total+' pts)';
@@ -958,7 +1061,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       '<div id="reviewList"><div class="loading">Cargando…</div></div>';
 
     return db.from('reports')
-      .select('id,note,photo_url,photo_before_url,city,action_type,user_id')
+      .select('id,note,photo_url,photo_before_url,city,action_type,user_id,lat,lng,captured_at,photo_hash')
       .eq('status','pendiente').neq('user_id', S.user.id)
       .order('created_at',{ascending:false}).limit(40)
       .then(function(res){
@@ -1007,8 +1110,27 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('modalActionIcon').textContent = a.icon||'🔄';
     $('modalActionText').textContent = a.title||'Acción';
     $('modalNote').textContent = r.note ? ('📝 "'+r.note+'"') : 'Sin nota adicional.';
+
+    // Metadata: fecha del dispositivo + ubicación aproximada
+    var meta=[];
+    if(r.captured_at) meta.push('🕒 '+fmtDate(r.captured_at));
+    if(r.lat!=null && r.lng!=null){
+      var osm='https://www.openstreetmap.org/?mlat='+r.lat+'&mlon='+r.lng+'#map=15/'+r.lat+'/'+r.lng;
+      meta.push('📍 <a href="'+osm+'" target="_blank" rel="noopener">ubicación aprox.</a>');
+    }
+    $('modalMeta').innerHTML = meta.join('');
+
+    // Flag de imagen reutilizada
+    var dup=$('modalDup'); dup.style.display='none';
+    if(r.photo_hash){
+      db.from('reports').select('id',{count:'exact',head:true}).eq('photo_hash', r.photo_hash).then(function(c){
+        if(!c.error && (c.count||0)>1) dup.style.display='flex';
+      }, function(){});
+    }
+
     $('reviewModal').classList.add('show');
   }
+  function fmtDate(iso){ try{ return new Date(iso).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return iso; } }
   function closeReviewModal(){ $('reviewModal').classList.remove('show'); currentReview=null; }
 
   function castVote(vote){
@@ -1181,6 +1303,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('modalCloseBtn').addEventListener('click', closeReviewModal);
     document.querySelectorAll('.vote-btn').forEach(function(b){ b.addEventListener('click', function(){ castVote(b.dataset.vote); }); });
     $('reviewModal').addEventListener('click', function(e){ if(e.target.id==='reviewModal') closeReviewModal(); });
+    $('privacyCloseBtn').addEventListener('click', closePrivacy);
+    $('privacyModal').addEventListener('click', function(e){ if(e.target.id==='privacyModal') closePrivacy(); });
+    $('privacyAccept').addEventListener('click', privacyAccept);
+    $('privacyDecline').addEventListener('click', privacyDecline);
   }
 
   // =====================================================================
