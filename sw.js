@@ -3,7 +3,7 @@
    Supabase (datos/fotos/auth) → siempre red.
    Cambiá el número de versión al actualizar archivos.
 */
-const VERSION = 'patrulla-v2';
+const VERSION = 'patrulla-v3';
 const SHELL = [
   './',
   './index.html',
