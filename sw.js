@@ -1,9 +1,11 @@
 /* Service Worker · Patrulla Antimosquito
-   App shell → cache-first (instalable, carga rápida).
-   Supabase (datos/fotos/auth) → siempre red.
-   Cambiá el número de versión al actualizar archivos.
+   index.html y config.js → RED PRIMERO (siempre la última versión si hay
+     internet; caché sólo como respaldo sin conexión). Por eso NO hace falta
+     subir la versión ni tocar este archivo cada vez que cambia el index.
+   Resto de archivos (íconos, imágenes) → caché primero (carga rápida).
+   Supabase (datos/fotos/auth) → siempre red, nunca se cachea.
 */
-const VERSION = 'patrulla-v4';
+const VERSION = 'patrulla-v7';
 const SHELL = [
   './',
   './index.html',
@@ -32,6 +34,24 @@ self.addEventListener('fetch', (event) => {
   // No cachear Supabase (API/auth/storage).
   if (url.hostname.includes('supabase.co') || url.hostname.includes('supabase.in')) return;
 
+  // RED PRIMERO para el documento y la config: siempre lo último si hay conexión.
+  const fresh = req.mode === 'navigate'
+    || url.pathname.endsWith('/')
+    || url.pathname.endsWith('/index.html')
+    || url.pathname.endsWith('/config.js');
+
+  if (fresh) {
+    event.respondWith(
+      fetch(req).then((res) => {
+        const copy = res.clone();
+        caches.open(VERSION).then((c) => c.put(req, copy));
+        return res;
+      }).catch(() => caches.match(req).then((c) => c || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // CACHÉ PRIMERO para el resto (íconos, imágenes), con actualización en segundo plano.
   event.respondWith(
     caches.match(req).then((cached) => {
       const net = fetch(req).then((res) => {
