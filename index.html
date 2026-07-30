@@ -211,6 +211,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .onb-card{background:var(--background);width:100%;max-width:380px;border-radius:26px;box-shadow:var(--shadow-lg);padding:30px 24px 24px;text-align:center;position:relative}
 .onb-skip{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .onb-emoji{font-size:66px;line-height:1;margin:6px 0 14px}
+.onb-emoji.has-svg{margin:2px 0 12px}
+.onb-emoji.has-svg svg{height:104px;width:auto;display:block;margin:0 auto}
 .onb-title{font-family:'DM Serif Display',serif;font-size:24px;color:var(--primary);line-height:1.1;margin-bottom:10px}
 .onb-text{font-size:14.5px;color:var(--text);line-height:1.55;min-height:110px}
 .onb-dots{display:flex;gap:7px;justify-content:center;margin:16px 0 18px}
@@ -545,10 +547,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     </div>
 
     <nav class="bottomnav" aria-label="Navegación principal">
+      <button class="navbtn" data-sec="incidencia"><span class="em">📍</span>Incidencia</button>
       <button class="navbtn" data-sec="aprender"><span class="em">🧠</span>Aprender</button>
       <button class="navbtn active" data-sec="reportar"><span class="em">📸</span>Reportar</button>
       <button class="navbtn" data-sec="revisar"><span class="em">🔍</span>Revisar</button>
-      <button class="navbtn" data-sec="incidencia"><span class="em">📍</span>Incidencia</button>
       <button class="navbtn" data-sec="progreso"><span class="em">🏆</span>Progreso</button>
     </nav>
   </main>
@@ -864,8 +866,29 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   function handleLogout(){ db.auth.signOut().then(function(){ location.reload(); }); }
 
   // ---- ONBOARDING ------------------------------------------------------
+  var MOSQ_SVG = '<svg viewBox="0 0 130 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+
+    '<defs><clipPath id="abd"><ellipse cx="82" cy="52" rx="30" ry="10" transform="rotate(24 82 52)"/></clipPath></defs>'+
+    '<ellipse cx="60" cy="28" rx="30" ry="10" fill="#AEB9C2" opacity=".45" transform="rotate(-20 60 28)"/>'+
+    '<ellipse cx="68" cy="33" rx="27" ry="9" fill="#8FA0AA" opacity=".40" transform="rotate(-12 68 33)"/>'+
+    '<g stroke="#141414" stroke-width="2.6" fill="none" stroke-linecap="round">'+
+      '<path d="M44 55 Q28 70 18 92"/><path d="M52 57 Q46 78 44 100"/><path d="M60 56 Q70 78 82 96"/>'+
+      '<path d="M42 52 Q24 54 8 50"/><path d="M62 51 Q86 50 108 40"/><path d="M66 54 Q92 66 118 66"/></g>'+
+    '<g stroke="#F5F6EC" stroke-width="2.6">'+
+      '<path d="M33 63 l-4 6"/><path d="M23 78 l-4 7"/><path d="M49 66 l-1 8"/><path d="M45 86 l-1 8"/>'+
+      '<path d="M65 66 l4 7"/><path d="M76 84 l4 7"/><path d="M31 53 l-7 -1"/><path d="M14 51 l-6 -1"/>'+
+      '<path d="M74 50 l7 -1"/><path d="M95 45 l7 -2"/><path d="M80 60 l6 2"/><path d="M104 66 l7 0"/></g>'+
+    '<ellipse cx="82" cy="52" rx="30" ry="10" transform="rotate(24 82 52)" fill="#141414"/>'+
+    '<g clip-path="url(#abd)"><g stroke="#F5F6EC" stroke-width="3">'+
+      '<line x1="60" y1="30" x2="60" y2="80"/><line x1="70" y1="30" x2="70" y2="82"/><line x1="80" y1="30" x2="80" y2="84"/>'+
+      '<line x1="90" y1="30" x2="90" y2="86"/><line x1="100" y1="30" x2="100" y2="88"/></g></g>'+
+    '<ellipse cx="48" cy="47" rx="13" ry="11" fill="#141414"/>'+
+    '<circle cx="34" cy="50" r="7.5" fill="#141414"/><circle cx="32" cy="48" r="2.2" fill="#5A5A5A"/>'+
+    '<line x1="30" y1="55" x2="16" y2="74" stroke="#141414" stroke-width="2.6" stroke-linecap="round"/>'+
+    '<path d="M31 45 Q22 38 15 36" stroke="#141414" stroke-width="1.5" fill="none"/>'+
+    '<path d="M32 43 Q24 35 18 31" stroke="#141414" stroke-width="1.5" fill="none"/></svg>';
+
   var ONB = [
-    { emoji:'🦟', title:'¡Bienvenido/a a la Patrulla!',
+    { svg:MOSQ_SVG, title:'¡Bienvenido/a a la Patrulla!',
       text:'Sumate al equipo que cuida el barrio del dengue, el zika y la chikunguña. El mosquito es chiquito, pero entre todos lo paramos. 💪' },
     { emoji:'💧', title:'El agua quieta es el problema',
       text:'El mosquito pone sus huevos en agua estancada: baldes, floreros, tapitas, cubiertas, canaletas… Cualquier recipiente con agua quieta puede ser un criadero. Sin agua quieta, no hay mosquito.' },
@@ -880,7 +903,9 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   function showOnboarding(){ onbIdx=0; renderOnb(); $('onbOverlay').classList.add('show'); }
   function renderOnb(){
     var s=ONB[onbIdx];
-    $('onbEmoji').textContent=s.emoji; $('onbTitle').textContent=s.title; $('onbText').textContent=s.text;
+    if(s.svg){ $('onbEmoji').innerHTML=s.svg; $('onbEmoji').classList.add('has-svg'); }
+    else { $('onbEmoji').textContent=s.emoji; $('onbEmoji').classList.remove('has-svg'); }
+    $('onbTitle').textContent=s.title; $('onbText').textContent=s.text;
     var dots=''; for(var i=0;i<ONB.length;i++){ dots+='<span class="onb-dot'+(i===onbIdx?' on':'')+'"></span>'; }
     $('onbDots').innerHTML=dots;
     $('onbBack').style.visibility = onbIdx===0 ? 'hidden' : 'visible';
