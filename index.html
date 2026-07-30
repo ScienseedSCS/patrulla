@@ -205,6 +205,19 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:12px 20px;border-radius:999px;font-weight:700;font-size:13px;box-shadow:var(--shadow-lg);z-index:400;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+/* Onboarding */
+.onb-overlay{position:fixed;inset:0;z-index:1000;background:linear-gradient(135deg,#3d2445 0%,#251327 100%);display:none;align-items:center;justify-content:center;padding:24px}
+.onb-overlay.show{display:flex;animation:fade .25s ease}
+.onb-card{background:var(--background);width:100%;max-width:380px;border-radius:26px;box-shadow:var(--shadow-lg);padding:30px 24px 24px;text-align:center;position:relative}
+.onb-skip{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.onb-emoji{font-size:66px;line-height:1;margin:6px 0 14px}
+.onb-title{font-family:'DM Serif Display',serif;font-size:24px;color:var(--primary);line-height:1.1;margin-bottom:10px}
+.onb-text{font-size:14.5px;color:var(--text);line-height:1.55;min-height:110px}
+.onb-dots{display:flex;gap:7px;justify-content:center;margin:16px 0 18px}
+.onb-dot{width:8px;height:8px;border-radius:50%;background:#D8CBDA;transition:background .2s,width .2s}
+.onb-dot.on{background:var(--accent-2);width:22px;border-radius:999px}
+.onb-actions{display:flex;gap:8px}
+.onb-actions .btn{flex:1}
 
 /* Revisar */
 .role-badge{background:var(--accent-1);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;margin-bottom:12px;text-transform:uppercase;letter-spacing:.3px}
@@ -411,14 +424,14 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     </header>
 
       <!-- INCIDENCIA -->
-      <section class="section active" id="sec-incidencia">
+      <section class="section" id="sec-incidencia">
         <h2 class="section-title">📍 Incidencia local</h2>
         <p class="section-sub">Mapa de riesgo por ciudad. Reforzá la prevención donde más se necesita.</p>
         <div id="incidenciaList"><div class="loading">Cargando…</div></div>
       </section>
 
       <!-- REPORTAR -->
-      <section class="section" id="sec-reportar">
+      <section class="section active" id="sec-reportar">
         <div id="reportar-grid-view">
           <h2 class="section-title">📸 Reportar acción</h2>
           <p class="section-sub">Elegí una acción, sacá una foto y ganá puntos por proteger tu barrio.</p>
@@ -524,6 +537,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           </div>
 
           <div class="setting-row" id="rowPriv"><span>📍 Privacidad y ubicación</span><span class="chev">▸</span></div>
+          <div class="setting-row" id="rowTutorial"><span>👋 Ver el tutorial de nuevo</span><span class="chev">▸</span></div>
 
           <button class="btn btn-secondary" id="profLogout" style="margin-top:16px">🚪 Cerrar sesión</button>
         </div>
@@ -531,10 +545,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     </div>
 
     <nav class="bottomnav" aria-label="Navegación principal">
-      <button class="navbtn active" data-sec="incidencia"><span class="em">📍</span>Incidencia</button>
-      <button class="navbtn" data-sec="reportar"><span class="em">📸</span>Reportar</button>
-      <button class="navbtn" data-sec="revisar"><span class="em">🔍</span>Revisar</button>
       <button class="navbtn" data-sec="aprender"><span class="em">🧠</span>Aprender</button>
+      <button class="navbtn active" data-sec="reportar"><span class="em">📸</span>Reportar</button>
+      <button class="navbtn" data-sec="revisar"><span class="em">🔍</span>Revisar</button>
+      <button class="navbtn" data-sec="incidencia"><span class="em">📍</span>Incidencia</button>
       <button class="navbtn" data-sec="progreso"><span class="em">🏆</span>Progreso</button>
     </nav>
   </main>
@@ -603,6 +617,21 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ONBOARDING -->
+<div class="onb-overlay" id="onbOverlay">
+  <div class="onb-card">
+    <button class="onb-skip" id="onbSkip">Saltar</button>
+    <div class="onb-emoji" id="onbEmoji">🦟</div>
+    <div class="onb-title" id="onbTitle"></div>
+    <div class="onb-text" id="onbText"></div>
+    <div class="onb-dots" id="onbDots"></div>
+    <div class="onb-actions">
+      <button class="btn btn-secondary" id="onbBack">← Atrás</button>
+      <button class="btn btn-accent" id="onbNext">Siguiente →</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
@@ -834,6 +863,39 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function handleLogout(){ db.auth.signOut().then(function(){ location.reload(); }); }
 
+  // ---- ONBOARDING ------------------------------------------------------
+  var ONB = [
+    { emoji:'🦟', title:'¡Bienvenido/a a la Patrulla!',
+      text:'Sumate al equipo que cuida el barrio del dengue, el zika y la chikunguña. El mosquito es chiquito, pero entre todos lo paramos. 💪' },
+    { emoji:'💧', title:'El agua quieta es el problema',
+      text:'El mosquito pone sus huevos en agua estancada: baldes, floreros, tapitas, cubiertas, canaletas… Cualquier recipiente con agua quieta puede ser un criadero. Sin agua quieta, no hay mosquito.' },
+    { emoji:'🔎', title:'Identificá y armá tu rutina',
+      text:'La app te ayuda a encontrar esos focos en tu casa y tu barrio, y a convertir el “descacharrado” en una costumbre de todas las semanas.' },
+    { emoji:'📸', title:'Reportá y sumá puntos',
+      text:'Cada acción que hacés y reportás con una foto suma puntos, te sube de nivel y ayuda a mapear dónde están los focos. Tu granito de arena cuenta un montón.' },
+    { emoji:'🏆', title:'Comunidad y ranking',
+      text:'Cuando juntás puntos te volvés Revisor y validás los reportes de tus vecinos. Y competís sano en el ranking de tu comunidad. ¡Vamos que se puede!' }
+  ];
+  var onbIdx=0;
+  function showOnboarding(){ onbIdx=0; renderOnb(); $('onbOverlay').classList.add('show'); }
+  function renderOnb(){
+    var s=ONB[onbIdx];
+    $('onbEmoji').textContent=s.emoji; $('onbTitle').textContent=s.title; $('onbText').textContent=s.text;
+    var dots=''; for(var i=0;i<ONB.length;i++){ dots+='<span class="onb-dot'+(i===onbIdx?' on':'')+'"></span>'; }
+    $('onbDots').innerHTML=dots;
+    $('onbBack').style.visibility = onbIdx===0 ? 'hidden' : 'visible';
+    $('onbNext').textContent = (onbIdx===ONB.length-1) ? '¡Empezar!' : 'Siguiente →';
+  }
+  function onbNext(){ if(onbIdx<ONB.length-1){ onbIdx++; renderOnb(); } else { finishOnboarding(); } }
+  function onbBack(){ if(onbIdx>0){ onbIdx--; renderOnb(); } }
+  function finishOnboarding(){
+    $('onbOverlay').classList.remove('show');
+    if(S.profile && !S.profile.onboarded){
+      S.profile.onboarded=true;
+      db.from('profiles').update({ onboarded:true }).eq('id', S.user.id).then(function(){}, function(){});
+    }
+  }
+
   function updateUserChip(){
     var name = (S.profile && S.profile.username) || 'Vecino/a';
     $('hdrName').textContent = name;
@@ -921,6 +983,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     return loadEverything().then(function(){
       $('boot').classList.add('hide');
       $('appScreen').classList.remove('hide');
+      if(S.profile && !S.profile.onboarded) showOnboarding();
     }).catch(function(e){
       console.error(e);
       showErr('No se pudieron cargar los datos: ' + (e.message||e) + '. ¿Aplicaste supabase-fix.sql?');
@@ -1690,6 +1753,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('saveEmail').addEventListener('click', saveEmail);
     $('savePass').addEventListener('click', savePass);
     $('rowPriv').addEventListener('click', function(){ openPrivacy(false); });
+    $('rowTutorial').addEventListener('click', showOnboarding);
+    $('onbNext').addEventListener('click', onbNext);
+    $('onbBack').addEventListener('click', onbBack);
+    $('onbSkip').addEventListener('click', finishOnboarding);
     $('pfReqCity').addEventListener('click', openCityReq);
 
     // Solicitud de municipio (registro + modal)
