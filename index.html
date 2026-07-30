@@ -78,8 +78,31 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .brand-tag{font-size:10px;color:#F4D18B;font-weight:600;letter-spacing:.3px;margin-top:2px;opacity:.9}
 .header-right{display:flex;align-items:center;gap:8px}
 .points-pill{background:linear-gradient(135deg,var(--secondary),var(--accent));color:var(--primary);font-weight:800;font-size:14px;padding:8px 12px;border-radius:999px;display:flex;align-items:center;gap:5px;box-shadow:0 3px 8px rgba(0,0,0,.15);white-space:nowrap}
+.user-chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 6px 5px 12px;cursor:pointer;font-family:inherit;color:#F5E9D6;flex-shrink:0;transition:background .2s}
+.user-chip:hover{background:rgba(255,255,255,.2)}
+.user-chip-text{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;min-width:0}
+.user-chip-name{font-size:13px;font-weight:800;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-chip-pts{font-size:10px;font-weight:700;color:var(--secondary)}
+.user-chip-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent-2),var(--accent-1));color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;text-transform:uppercase}
 .logout-btn{background:rgba(255,255,255,.12);border:none;color:#F5E9D6;width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logout-btn:hover{background:rgba(255,255,255,.22)}
+/* Perfil */
+.profile-head{text-align:center;padding:8px 0 18px}
+.profile-avatar{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,var(--accent-2),var(--accent-1));color:#fff;font-weight:800;font-size:34px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;text-transform:uppercase;box-shadow:var(--shadow)}
+.profile-name{font-family:'DM Serif Display',serif;font-size:24px;color:var(--primary)}
+.profile-meta{font-size:12px;color:var(--muted);margin-top:4px}
+.settings{display:flex;flex-direction:column;gap:8px}
+.setting-row{background:var(--card);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700;color:var(--primary)}
+.setting-row .chev{color:var(--muted);font-weight:800;transition:transform .2s}
+.setting-row.open .chev{transform:rotate(90deg)}
+.setting-panel{background:#FBF7EF;border-radius:12px;padding:0 14px;max-height:0;overflow:hidden;transition:max-height .25s,padding .25s}
+.setting-panel.open{max-height:600px;padding:14px}
+.setting-panel .field{margin-bottom:10px}
+.setting-panel label{display:block;font-size:11px;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
+.setting-panel input,.setting-panel select{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid #DFD3E1;font-family:inherit;font-size:14px;background:#fff;color:var(--text)}
+.setting-msg{font-size:12px;font-weight:700;margin:2px 0 8px;display:none}
+.setting-msg.show{display:block}
+.setting-msg.ok{color:var(--ok)} .setting-msg.err{color:var(--danger)}
 
 .content{flex:1;padding:16px 14px 28px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .section{display:none}
@@ -259,6 +282,30 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .quiz-feedback{margin-top:8px;font-size:12px;padding:8px 10px;border-radius:8px;background:#E1F0E4;color:var(--ok);font-weight:700;display:none}
 .quiz-feedback.show{display:block}
 .quiz-feedback.err{background:#F9E4E2;color:var(--danger)}
+/* Detectar criaderos */
+.spot-card{background:var(--card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);margin-bottom:12px;cursor:pointer;display:flex;gap:12px;align-items:center;border:2px solid transparent;transition:border-color .15s}
+.spot-card:hover{border-color:var(--accent)}
+.spot-card.done{opacity:.75}
+.spot-thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#DDD1BD}
+.spot-card-title{font-weight:800;color:var(--primary);font-size:14px}
+.spot-card-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.spot-done-badge{font-size:10px;font-weight:800;color:#fff;background:var(--ok);padding:3px 8px;border-radius:999px;margin-left:auto;flex-shrink:0}
+.spot-hud{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:#fff;border-radius:12px;padding:10px 14px;margin-bottom:10px}
+.spot-hud-count{font-family:'DM Serif Display',serif;font-size:18px}
+.spot-hud-label{font-size:11px;opacity:.85}
+.spot-stage{position:relative;width:100%;border-radius:14px;overflow:hidden;box-shadow:var(--shadow);line-height:0;background:#DDD1BD;touch-action:manipulation}
+.spot-stage img{width:100%;height:auto;display:block;-webkit-user-select:none;user-select:none}
+.spot-marker{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:3}
+.spot-hit{width:34px;height:34px;border-radius:50%;background:rgba(62,143,74,.28);border:3px solid var(--ok);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800;box-shadow:0 0 0 4px rgba(62,143,74,.18);animation:pop .3s ease}
+.spot-hit.reveal{background:rgba(226,155,46,.22);border-color:var(--warn)}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.spot-miss{width:26px;height:26px;border-radius:50%;background:rgba(194,55,47,.85);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;animation:fadeout 1s forwards}
+@keyframes fadeout{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
+.spot-label{position:absolute;transform:translate(-50%,-140%);background:rgba(20,10,25,.82);color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:6px;white-space:nowrap;z-index:4;pointer-events:none;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.spot-actions{display:flex;gap:8px;margin-top:12px}
+.spot-actions .btn{flex:1}
+.spot-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.4}
+.spot-success{background:#E1F0E4;color:var(--ok);font-weight:800;text-align:center;padding:12px;border-radius:12px;margin-top:12px;font-size:14px}
 
 /* Progreso */
 .level-card{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:14px;text-align:center}
@@ -324,6 +371,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       <div class="field hide" id="fieldCity">
         <label for="inCity">Tu ciudad</label>
         <select id="inCity"><option value="">Elegí tu ciudad…</option></select>
+        <button type="button" class="privacy-link" id="reqCityBtn" style="padding-top:6px">¿No está tu municipio? Solicitá agregarlo</button>
       </div>
       <div class="field" id="fieldEmail">
         <label for="inEmail">Email</label>
@@ -355,8 +403,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         <div class="brand-text"><div class="brand-name">Patrulla Antimosquito</div><div class="brand-tag" id="brandUser">Prevención en tu barrio</div></div>
       </div>
       <div class="header-right">
-        <div class="points-pill">⭐ <span id="pts">0</span></div>
-        <button class="logout-btn" id="logoutBtn" title="Cerrar sesión" aria-label="Cerrar sesión">⎋</button>
+        <button class="user-chip" id="userChip" aria-label="Tu perfil y ajustes">
+          <span class="user-chip-text"><span class="user-chip-name" id="hdrName">—</span><span class="user-chip-pts">⭐ <span id="pts">0</span> pts</span></span>
+          <span class="user-chip-avatar" id="hdrAvatar">·</span>
+        </button>
       </div>
     </header>
 
@@ -372,7 +422,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         <div id="reportar-grid-view">
           <h2 class="section-title">📸 Reportar acción</h2>
           <p class="section-sub">Elegí una acción, sacá una foto y ganá puntos por proteger tu barrio.</p>
-          <div class="actions-grid" id="actionsGrid"><div class="loading">Cargando…</div></div>
+          <div id="actionsGrid"><div class="loading">Cargando…</div></div>
         </div>
         <div id="reportar-flow-view" class="hide"></div>
       </section>
@@ -391,6 +441,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           <div class="learn-menu">
             <div class="learn-card" data-learn="tips"><div class="learn-icon">📖</div><div><div class="learn-title">Tips</div><div class="learn-sub">Leé y sumá puntos.</div><div class="learn-count">+2 pts c/u</div></div></div>
             <div class="learn-card" data-learn="quizzes"><div class="learn-icon">❓</div><div><div class="learn-title">Quizzes</div><div class="learn-sub">Poné a prueba lo que sabés.</div><div class="learn-count">+5 pts c/u</div></div></div>
+            <div class="learn-card" data-learn="spot"><div class="learn-icon">🔍</div><div><div class="learn-title">Detectar criaderos</div><div class="learn-sub">Encontrá los focos de agua en la foto.</div><div class="learn-count">+pts por desafío</div></div></div>
           </div>
         </div>
         <div id="learn-tips-view" class="hide">
@@ -409,6 +460,12 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           <h2 class="section-title">❓ Quizzes</h2>
           <p class="section-sub">Elegí la respuesta correcta y sumá +5 pts.</p>
           <div id="quizList"></div>
+        </div>
+        <div id="learn-spot-view" class="hide">
+          <button class="flow-back" data-learn="menu">← Volver</button>
+          <h2 class="section-title">🔍 Detectar criaderos</h2>
+          <p class="section-sub">Mirá la foto y tocá cada lugar donde el agua se puede estancar. Ahí es donde el mosquito pone huevos.</p>
+          <div id="spotBody"><div class="loading">Cargando…</div></div>
         </div>
       </section>
 
@@ -432,6 +489,44 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         </div>
         <div class="leaderboard"><div class="lb-title" id="lbTitle">🏙️ Ranking</div><div id="lbList"><div class="loading">Cargando…</div></div></div>
         <div class="miniftr">Una iniciativa de<br><svg viewBox="0 0 200 32" height="22" style="height:22px;width:auto;vertical-align:middle" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fundación Mundo Sano"><circle cx="16" cy="16" r="11" fill="none" stroke="#1E8069" stroke-width="2.5"/><circle cx="16" cy="16" r="4.5" fill="#6DBE4A"/><text x="36" y="14" font-family="Georgia, serif" font-size="12" fill="#331F3A">Fundación</text><text x="36" y="28" font-family="Georgia, serif" font-size="12" fill="#1E8069">Mundo Sano</text></svg></div>
+      </section>
+
+      <!-- PERFIL -->
+      <section class="section" id="sec-profile">
+        <button class="flow-back" id="profBack">← Volver</button>
+        <div class="profile-head">
+          <div class="profile-avatar" id="profAvatar">·</div>
+          <div class="profile-name" id="profName">—</div>
+          <div class="profile-meta" id="profMeta"></div>
+        </div>
+        <div class="settings">
+          <div class="setting-row" data-acc="perfil"><span>✏️ Editar perfil</span><span class="chev">▸</span></div>
+          <div class="setting-panel" id="acc-perfil">
+            <div class="field"><label for="pfName">Nombre de usuario</label><input type="text" id="pfName" maxlength="40"></div>
+            <div class="field"><label for="pfCity">Ciudad</label><select id="pfCity"></select>
+              <button type="button" class="privacy-link" id="pfReqCity" style="padding-top:6px">¿No está tu municipio? Solicitá agregarlo</button></div>
+            <div class="setting-msg" id="msgPerfil"></div>
+            <button class="btn btn-accent" id="savePerfil">Guardar</button>
+          </div>
+
+          <div class="setting-row" data-acc="email"><span>✉️ Cambiar email</span><span class="chev">▸</span></div>
+          <div class="setting-panel" id="acc-email">
+            <div class="field"><label for="pfEmail">Nuevo email</label><input type="email" id="pfEmail" placeholder="nuevo@email.com"></div>
+            <div class="setting-msg" id="msgEmail"></div>
+            <button class="btn btn-accent" id="saveEmail">Cambiar email</button>
+          </div>
+
+          <div class="setting-row" data-acc="pass"><span>🔒 Cambiar contraseña</span><span class="chev">▸</span></div>
+          <div class="setting-panel" id="acc-pass">
+            <div class="field"><label for="pfPass">Nueva contraseña</label><input type="password" id="pfPass" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+            <div class="setting-msg" id="msgPass"></div>
+            <button class="btn btn-accent" id="savePass">Cambiar contraseña</button>
+          </div>
+
+          <div class="setting-row" id="rowPriv"><span>📍 Privacidad y ubicación</span><span class="chev">▸</span></div>
+
+          <button class="btn btn-secondary" id="profLogout" style="margin-top:16px">🚪 Cerrar sesión</button>
+        </div>
       </section>
     </div>
 
@@ -488,6 +583,25 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   </div>
 </div>
 
+<!-- MODAL SOLICITAR MUNICIPIO -->
+<div class="modal-backdrop" id="cityReqModal">
+  <div class="modal">
+    <button class="modal-close" id="cityReqCloseBtn" aria-label="Cerrar">✕</button>
+    <div class="privacy-body">
+      <h3>🏙️ Solicitar un municipio</h3>
+      <p>Pedí que agreguemos tu municipio. Un administrador lo revisa y, si corresponde, lo habilita.</p>
+      <div class="field" style="margin-bottom:10px"><label for="reqMuni">Municipio</label><input type="text" id="reqMuni" placeholder="Ej: Clorinda" maxlength="60"></div>
+      <div class="field" style="margin-bottom:10px"><label for="reqProv">Provincia (opcional)</label><input type="text" id="reqProv" placeholder="Ej: Formosa" maxlength="60"></div>
+      <div class="field" style="margin-bottom:10px"><label for="reqEmail">Tu email (opcional, para avisarte)</label><input type="email" id="reqEmail" placeholder="tu@email.com"></div>
+      <div class="auth-msg ok" id="reqMsg"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="cityReqCancel">Cancelar</button>
+        <button class="btn btn-accent" id="cityReqSend">Enviar solicitud</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -519,6 +633,17 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   var PTS_TIP = 2, PTS_QUIZ = 5, PTS_REVIEW = 3, REVIEWER_MIN = 350, PTS_BA_BONUS = 5;
   var GEO_PRECISION = 3; // decimales ≈ ~110 m (minimización de datos)
 
+  // === CONFIGURACIÓN EDITABLE =========================================
+  // Municipios por defecto (si la tabla "cities" de Supabase no responde).
+  var CITIES_FALLBACK = ['Gobernador Virasoro','Tartagal','Pampa del Indio','Añatuya'];
+  // Correo del admin que recibe las solicitudes de municipio nuevo.
+  // (Aún por establecer: dejalo vacío y las solicitudes igual se guardan en Supabase.)
+  var ADMIN_EMAIL = '';
+  // Opcional: clave de https://web3forms.com para que la solicitud llegue por email
+  // automáticamente (creá una clave gratis asociada a ADMIN_EMAIL y pegala acá).
+  var WEB3FORMS_KEY = '';
+  // ====================================================================
+
   var LEVELS = [
     { emoji: '🥚', name: 'Vigilante Novato',      min: 0,    max: 49,   lvl: 1 },
     { emoji: '🐛', name: 'Rastreador',            min: 50,   max: 149,  lvl: 2 },
@@ -532,6 +657,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     user: null, profile: null,
     cities: [], actions: [], tips: [], quizzes: [],
     myTipReads: {}, myQuizAnswers: {}, myReviewedReports: {},
+    spotChallenges: null, mySpotDone: {},
     stats: { reports: 0, quizzes: 0, tips: 0, reviews: 0 },
     recovery: false,
   };
@@ -581,15 +707,46 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     return msg || 'No se pudo completar la acción.';
   }
 
-  function loadCitiesIntoSelect(){
-    return db.from('incidence').select('city').order('city').then(function(res){
-      if(res.error) return;
-      var sel=$('inCity'); var seen={};
-      (res.data||[]).forEach(function(c){
-        if(seen[c.city]) return; seen[c.city]=1;
-        var o=document.createElement('option'); o.value=c.city; o.textContent=c.city; sel.appendChild(o);
-      });
+  var CITY_LIST = [];
+  function fillCitySelect(sel, current){
+    if(!sel) return;
+    sel.innerHTML='<option value="">Elegí tu ciudad…</option>';
+    CITY_LIST.forEach(function(name){
+      var o=document.createElement('option'); o.value=name; o.textContent=name;
+      if(current && current===name) o.selected=true;
+      sel.appendChild(o);
     });
+  }
+  function loadCitiesIntoSelect(){
+    return db.from('cities').select('name').eq('active', true).order('name').then(function(res){
+      if(res.error || !res.data || !res.data.length){ CITY_LIST = CITIES_FALLBACK.slice(); }
+      else { CITY_LIST = res.data.map(function(c){ return c.name; }); }
+      fillCitySelect($('inCity'));
+    }, function(){ CITY_LIST = CITIES_FALLBACK.slice(); fillCitySelect($('inCity')); });
+  }
+
+  // --- Solicitud de municipio nuevo ------------------------------------
+  function submitCityRequest(muni, prov, email, name, doneMsg){
+    var payload={ municipality:muni, province:prov||null, requester_email:email||null, requester_name:name||null, status:'pendiente' };
+    var tasks=[ db.from('city_requests').insert(payload) ];
+    // Email opcional automático vía web3forms (si hay clave configurada)
+    if(WEB3FORMS_KEY){
+      tasks.push(fetch('https://api.web3forms.com/submit',{
+        method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({ access_key:WEB3FORMS_KEY, subject:'Nuevo municipio solicitado: '+muni,
+          from_name:'Patrulla Antimosquito', municipio:muni, provincia:prov||'', solicita:(name||'')+' '+(email||'') })
+      }).catch(function(){}));
+    }
+    return Promise.all(tasks).then(function(){ if(doneMsg) toast(doneMsg); });
+  }
+  function openCityReq(){ $('reqMuni').value=''; $('reqProv').value=''; $('reqEmail').value=($('inEmail')&&$('inEmail').value)||''; $('reqMsg').classList.remove('show'); $('cityReqModal').classList.add('show'); }
+  function closeCityReq(){ $('cityReqModal').classList.remove('show'); }
+  function sendCityReq(){
+    var muni=$('reqMuni').value.trim(); if(!muni){ $('reqMsg').textContent='Escribí el nombre del municipio.'; $('reqMsg').className='auth-msg err show'; return; }
+    var btn=$('cityReqSend'); btn.disabled=true; btn.textContent='Enviando…';
+    submitCityRequest(muni, $('reqProv').value.trim(), $('reqEmail').value.trim(), (($('inName')&&$('inName').value.trim())|| (S.profile&&S.profile.username) || ''), null)
+      .then(function(){ closeCityReq(); toast('¡Solicitud enviada! La revisará un administrador.'); btn.disabled=false; btn.textContent='Enviar solicitud'; })
+      .catch(function(e){ $('reqMsg').textContent='No se pudo enviar: '+(e.message||e); $('reqMsg').className='auth-msg err show'; btn.disabled=false; btn.textContent='Enviar solicitud'; });
   }
 
   function handleAuthSubmit(){
@@ -677,6 +834,81 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function handleLogout(){ db.auth.signOut().then(function(){ location.reload(); }); }
 
+  function updateUserChip(){
+    var name = (S.profile && S.profile.username) || 'Vecino/a';
+    $('hdrName').textContent = name;
+    $('hdrAvatar').textContent = (name.trim()[0]||'·');
+  }
+
+  // ---- PERFIL ----------------------------------------------------------
+  function showProfile(){
+    renderProfile();
+    document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+    $('sec-profile').classList.add('active');
+    document.querySelectorAll('.navbtn').forEach(function(b){ b.classList.remove('active'); });
+    var c=document.querySelector('.content'); if(c) c.scrollTop=0;
+  }
+
+  function renderProfile(){
+    var p=S.profile||{}, name=p.username||'Vecino/a';
+    $('profAvatar').textContent=(name.trim()[0]||'·');
+    $('profName').textContent=name;
+    var lvl=currentLevel(p.points||0);
+    $('profMeta').innerHTML = (p.city?('📍 '+esc(p.city)+' · '):'')+lvl.emoji+' '+esc(lvl.name)+' · '+(p.points||0)+' pts';
+    $('pfName').value=name;
+    fillCitySelect($('pfCity'), p.city);
+    // cerrar paneles y limpiar mensajes
+    document.querySelectorAll('#sec-profile .setting-panel').forEach(function(pl){ pl.classList.remove('open'); });
+    document.querySelectorAll('#sec-profile .setting-row').forEach(function(r){ r.classList.remove('open'); });
+    ['msgPerfil','msgEmail','msgPass'].forEach(function(id){ var m=$(id); if(m){ m.className='setting-msg'; m.textContent=''; } });
+  }
+
+  function toggleAcc(key){
+    var row=document.querySelector('#sec-profile .setting-row[data-acc="'+key+'"]');
+    var panel=$('acc-'+key);
+    var isOpen=panel.classList.contains('open');
+    document.querySelectorAll('#sec-profile .setting-panel').forEach(function(pl){ pl.classList.remove('open'); });
+    document.querySelectorAll('#sec-profile .setting-row[data-acc]').forEach(function(r){ r.classList.remove('open'); });
+    if(!isOpen){ panel.classList.add('open'); row.classList.add('open'); }
+  }
+
+  function setMsg(id, kind, txt){ var m=$(id); m.textContent=txt; m.className='setting-msg show '+kind; }
+
+  function saveProfileInfo(){
+    var name=$('pfName').value.trim(), city=$('pfCity').value;
+    if(!name) return setMsg('msgPerfil','err','Escribí un nombre.');
+    var btn=$('savePerfil'); btn.disabled=true; btn.textContent='Guardando…';
+    db.from('profiles').update({ username:name, city:city||null }).eq('id', S.user.id).then(function(res){
+      if(res.error) throw res.error;
+      S.profile.username=name; S.profile.city=city||null;
+      updateUserChip(); $('brandUser').textContent = city ? ('📍 '+city) : 'Prevención en tu barrio';
+      renderProfile(); renderLeaderboard();
+      setMsg('msgPerfil','ok','¡Perfil actualizado!'); btn.disabled=false; btn.textContent='Guardar';
+    }).catch(function(e){ setMsg('msgPerfil','err','No se pudo guardar: '+(e.message||e)); btn.disabled=false; btn.textContent='Guardar'; });
+  }
+
+  function saveEmail(){
+    var email=$('pfEmail').value.trim();
+    if(!email || email.indexOf('@')<0) return setMsg('msgEmail','err','Escribí un email válido.');
+    var btn=$('saveEmail'); btn.disabled=true; btn.textContent='Enviando…';
+    db.auth.updateUser({ email:email }).then(function(res){
+      if(res.error) throw res.error;
+      setMsg('msgEmail','ok','Te enviamos un enlace de confirmación a ese email. El cambio se aplica al confirmarlo.');
+      btn.disabled=false; btn.textContent='Cambiar email';
+    }).catch(function(e){ setMsg('msgEmail','err', traducir(e.message)); btn.disabled=false; btn.textContent='Cambiar email'; });
+  }
+
+  function savePass(){
+    var pass=$('pfPass').value;
+    if(pass.length<6) return setMsg('msgPass','err','Mínimo 6 caracteres.');
+    var btn=$('savePass'); btn.disabled=true; btn.textContent='Guardando…';
+    db.auth.updateUser({ password:pass }).then(function(res){
+      if(res.error) throw res.error;
+      $('pfPass').value=''; setMsg('msgPass','ok','¡Contraseña actualizada!');
+      btn.disabled=false; btn.textContent='Cambiar contraseña';
+    }).catch(function(e){ setMsg('msgPass','err', traducir(e.message)); btn.disabled=false; btn.textContent='Cambiar contraseña'; });
+  }
+
   // =====================================================================
   //  CARGA
   // =====================================================================
@@ -709,8 +941,9 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       db.from('quiz_answers').select('quiz_id,is_correct').eq('user_id', uid),
       db.from('reports').select('id', { count:'exact', head:true }).eq('user_id', uid),
       db.from('report_reviews').select('report_id').eq('reviewer_id', uid),
+      db.from('cities').select('name').eq('active', true).order('name'),
     ]).then(function(r){
-      var prof=r[0], inc=r[1], act=r[2], tp=r[3], qz=r[4], tr=r[5], qa=r[6], rc=r[7], rv=r[8];
+      var prof=r[0], inc=r[1], act=r[2], tp=r[3], qz=r[4], tr=r[5], qa=r[6], rc=r[7], rv=r[8], ct=r[9];
 
       // Si no existe el perfil (caso raro), crearlo mínimamente.
       if(prof.error || !prof.data){
@@ -718,6 +951,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           .then(function(){ return loadEverything(); });
       }
 
+      if(ct && !ct.error && ct.data && ct.data.length){ CITY_LIST = ct.data.map(function(c){ return c.name; }); }
+      else if(!CITY_LIST.length){ CITY_LIST = CITIES_FALLBACK.slice(); }
       S.profile = prof.data;
       S.geoConsent = (prof.data.geo_consent === true);
       S.cities  = inc.data || [];
@@ -734,6 +969,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       S.stats.reviews = Object.keys(S.myReviewedReports).length;
 
       $('brandUser').textContent = S.profile.city ? ('📍 '+S.profile.city) : 'Prevención en tu barrio';
+      updateUserChip();
       applyPoints(S.profile.points||0);
       renderIncidencia(); renderActions(); renderTips(); renderQuizzes(); renderProgress();
       return Promise.all([ renderRevisar(), renderLeaderboard() ]);
@@ -779,22 +1015,39 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   // =====================================================================
   function renderIncidencia(){
     var wrap=$('incidenciaList'); wrap.innerHTML='';
-    if(!S.cities.length){ wrap.appendChild(el('div','empty','Todavía no hay datos de incidencia.')); return; }
-    S.cities.forEach(function(c){
-      var mine = S.profile.city===c.city;
-      var risk = c.risk_level||'bajo';
-      var card=el('article','card risk-card '+risk+(mine?' mine':''));
-      card.innerHTML =
-        '<div style="flex:1">'+
-          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+
-            '<div class="risk-city">'+esc(c.city)+'</div>'+
-            '<span class="risk-badge '+risk+'">'+esc(cap(risk))+'</span>'+
-            (mine?'<span class="tag" style="background:var(--accent);color:var(--primary)">Tu ciudad</span>':'')+
-          '</div>'+
-          '<div class="risk-cases">'+(c.cases_week||0)+' casos reportados esta semana</div>'+
-          '<div class="risk-msg">'+esc(c.message||'')+'</div>'+
-        '</div>';
-      wrap.appendChild(card);
+    var incByCity={}; (S.cities||[]).forEach(function(c){ incByCity[c.city]=c; });
+    var names = (CITY_LIST && CITY_LIST.length) ? CITY_LIST.slice() : Object.keys(incByCity);
+    Object.keys(incByCity).forEach(function(n){ if(names.indexOf(n)<0) names.push(n); });
+    if(!names.length){ wrap.appendChild(el('div','empty','Todavía no hay ciudades cargadas.')); return; }
+    names.forEach(function(cityName){
+      var c=incByCity[cityName], mine=S.profile.city===cityName;
+      if(c){
+        var risk=c.risk_level||'bajo';
+        var card=el('article','card risk-card '+risk+(mine?' mine':''));
+        card.innerHTML =
+          '<div style="flex:1">'+
+            '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+
+              '<div class="risk-city">'+esc(cityName)+'</div>'+
+              '<span class="risk-badge '+risk+'">'+esc(cap(risk))+'</span>'+
+              (mine?'<span class="tag" style="background:var(--accent);color:var(--primary)">Tu ciudad</span>':'')+
+            '</div>'+
+            '<div class="risk-cases">'+(c.cases_week||0)+' casos reportados esta semana</div>'+
+            '<div class="risk-msg">'+esc(c.message||'')+'</div>'+
+          '</div>';
+        wrap.appendChild(card);
+      } else {
+        var card2=el('article','card risk-card'+(mine?' mine':''));
+        card2.style.borderLeftColor='#CDBFD0';
+        card2.innerHTML =
+          '<div style="flex:1">'+
+            '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+
+              '<div class="risk-city">'+esc(cityName)+'</div>'+
+              (mine?'<span class="tag" style="background:var(--accent);color:var(--primary)">Tu ciudad</span>':'')+
+            '</div>'+
+            '<div class="risk-cases" style="margin-top:6px">Sin datos de incidencia aún</div>'+
+          '</div>';
+        wrap.appendChild(card2);
+      }
     });
   }
 
@@ -805,20 +1058,38 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function actionById(id){ for(var i=0;i<S.actions.length;i++){ if(S.actions[i].id===id) return S.actions[i]; } return null; }
 
+  var LOC_LABEL = { exterior:'🌳 En exteriores', interior:'🏠 En interiores', ambos:'🔁 Interior y exterior' };
+  var LOC_ORDER = ['exterior','interior','ambos'];
+
   function renderActions(){
-    var grid=$('actionsGrid'); grid.innerHTML='';
-    if(!S.actions.length){ grid.appendChild(el('div','empty','No hay acciones disponibles. ¿Aplicaste supabase-fix.sql?')); return; }
-    S.actions.forEach(function(a){
-      var star = a.id==='house_tour';
-      var card=el('div','action-card'+(star?' star':''));
-      card.innerHTML =
-        (star?'<span class="action-star-badge">⭐ Destacada</span>':'')+
-        '<div class="action-icon">'+esc(a.icon||'📍')+'</div>'+
-        '<div class="action-title">'+esc(a.title)+'</div>'+
-        '<div class="action-tags"><span class="tag">'+esc(a.location||'')+'</span><span class="tag type">'+esc(a.kind||'')+'</span></div>'+
-        '<span class="pts">+'+a.points+' pts</span>';
-      card.addEventListener('click', function(){ startFlow(a); });
-      grid.appendChild(card);
+    var wrap=$('actionsGrid'); wrap.innerHTML='';
+    if(!S.actions.length){ wrap.appendChild(el('div','empty','No hay acciones disponibles. ¿Aplicaste supabase-fix.sql?')); return; }
+
+    // Agrupar por 'location'
+    var groups={};
+    S.actions.forEach(function(a){ var k=(a.location||'otras').toLowerCase(); (groups[k]=groups[k]||[]).push(a); });
+    // Orden: exterior, interior, ambos, y luego cualquier otro
+    var keys=[]; LOC_ORDER.forEach(function(k){ if(groups[k]) keys.push(k); });
+    Object.keys(groups).forEach(function(k){ if(keys.indexOf(k)<0) keys.push(k); });
+
+    keys.forEach(function(k){
+      var header=el('div','tips-category', esc(LOC_LABEL[k] || cap(k)));
+      header.style.marginTop = wrap.children.length ? '16px' : '2px';
+      wrap.appendChild(header);
+      var grid=el('div','actions-grid');
+      groups[k].forEach(function(a){
+        var star = a.id==='house_tour';
+        var card=el('div','action-card'+(star?' star':''));
+        card.innerHTML =
+          (star?'<span class="action-star-badge">⭐ Destacada</span>':'')+
+          '<div class="action-icon">'+esc(a.icon||'📍')+'</div>'+
+          '<div class="action-title">'+esc(a.title)+'</div>'+
+          '<div class="action-tags"><span class="tag type">'+esc(a.kind||'')+'</span></div>'+
+          '<span class="pts">+'+a.points+' pts</span>';
+        card.addEventListener('click', function(){ startFlow(a); });
+        grid.appendChild(card);
+      });
+      wrap.appendChild(grid);
     });
   }
 
@@ -1153,6 +1424,119 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('learn-menu-view').classList.toggle('hide', v!=='menu');
     $('learn-tips-view').classList.toggle('hide', v!=='tips');
     $('learn-quiz-view').classList.toggle('hide', v!=='quizzes');
+    $('learn-spot-view').classList.toggle('hide', v!=='spot');
+    if(v==='spot') openSpotList();
+  }
+
+  // =====================================================================
+  //  DETECTAR CRIADEROS
+  // =====================================================================
+  function openSpotList(){
+    if(S.spotChallenges){ renderSpotList(); return; }
+    $('spotBody').innerHTML='<div class="loading">Cargando…</div>';
+    Promise.all([
+      db.from('spot_challenges').select('*').eq('active',true).order('sort_order'),
+      db.from('spot_answers').select('challenge_id').eq('user_id', S.user.id)
+    ]).then(function(r){
+      if(r[0].error) throw r[0].error;
+      S.spotChallenges = r[0].data || [];
+      S.mySpotDone = {}; (r[1].data||[]).forEach(function(x){ S.mySpotDone[x.challenge_id]=1; });
+      renderSpotList();
+    }).catch(function(e){ console.error(e); $('spotBody').innerHTML='<div class="empty">No se pudieron cargar los desafíos. ¿Aplicaste supabase-fix.sql?</div>'; });
+  }
+
+  function parseHotspots(h){
+    if(Array.isArray(h)) return h;
+    try{ return JSON.parse(h)||[]; }catch(e){ return []; }
+  }
+
+  function renderSpotList(){
+    var body=$('spotBody'); body.innerHTML='';
+    if(!S.spotChallenges.length){ body.appendChild(el('div','empty','Todavía no hay desafíos cargados.')); return; }
+    S.spotChallenges.forEach(function(ch){
+      var done=!!S.mySpotDone[ch.id];
+      var n=parseHotspots(ch.hotspots).length;
+      var card=el('div','spot-card'+(done?' done':''));
+      card.innerHTML =
+        '<img class="spot-thumb" src="'+esc(ch.image_url)+'" alt="" onerror="this.style.visibility=\'hidden\'">'+
+        '<div><div class="spot-card-title">'+esc(ch.title)+'</div>'+
+        '<div class="spot-card-sub">'+n+' focos · +'+ch.points+' pts</div></div>'+
+        (done?'<span class="spot-done-badge">✓ Hecho</span>':'');
+      card.addEventListener('click', function(){ openSpotGame(ch); });
+      body.appendChild(card);
+    });
+  }
+
+  function openSpotGame(ch){
+    var hotspots=parseHotspots(ch.hotspots);
+    var found={}; var revealed=false; var awarded=!!S.mySpotDone[ch.id];
+    var body=$('spotBody');
+    body.innerHTML =
+      '<button class="flow-back" id="spotBack">← Otros desafíos</button>'+
+      '<div class="spot-hud"><div><div class="spot-hud-count"><span id="spotFound">0</span> / '+hotspots.length+'</div><div class="spot-hud-label">focos encontrados</div></div>'+
+      '<div style="text-align:right"><div class="spot-hud-count">+'+ch.points+'</div><div class="spot-hud-label">puntos</div></div></div>'+
+      '<div class="spot-stage" id="spotStage"><img id="spotImg" src="'+esc(ch.image_url)+'" alt="'+esc(ch.title)+'" draggable="false"></div>'+
+      '<div id="spotResult"></div>'+
+      '<div class="spot-actions"><button class="btn btn-secondary" id="spotReveal">Ver solución</button></div>'+
+      '<div class="spot-hint">Tocá los lugares con agua estancada: baldes, floreros, platos de macetas, canaletas, tanques sin tapa…</div>';
+
+    $('spotBack').addEventListener('click', function(){ renderSpotList(); });
+
+    function updateCount(){ $('spotFound').textContent=Object.keys(found).length; }
+
+    function placeMarker(hx, hy, cls, txt, label){
+      var m=el('div','spot-marker'); m.style.left=(hx*100)+'%'; m.style.top=(hy*100)+'%';
+      m.innerHTML='<div class="'+cls+'">'+(txt||'')+'</div>';
+      $('spotStage').appendChild(m);
+      if(label){ var l=el('div','spot-label',esc(label)); l.style.left=(hx*100)+'%'; l.style.top=(hy*100)+'%'; $('spotStage').appendChild(l); }
+    }
+
+    function checkComplete(){
+      if(Object.keys(found).length>=hotspots.length && hotspots.length){
+        $('spotResult').innerHTML='<div class="spot-success">🎉 ¡Encontraste todos los criaderos!</div>';
+        completeChallenge();
+      }
+    }
+
+    function completeChallenge(){
+      if(awarded) return; awarded=true;
+      S.mySpotDone[ch.id]=1;
+      db.from('spot_answers').insert({ user_id:S.user.id, challenge_id:ch.id, found:Object.keys(found).length }).then(function(ins){
+        if(ins.error){ if(ins.error.code==='23505') return; throw ins.error; }
+        return awardPoints(ch.points).then(function(){ toast('+'+ch.points+' pts · desafío completado 🎉'); });
+      }).catch(function(e){ console.error(e); showErr('No se pudo guardar el desafío: '+(e.message||e)); });
+    }
+
+    $('spotImg').addEventListener('click', function(ev){
+      if(revealed) return;
+      var rect=this.getBoundingClientRect();
+      var fx=(ev.clientX-rect.left)/rect.width, fy=(ev.clientY-rect.top)/rect.height;
+      var hitIdx=-1;
+      for(var i=0;i<hotspots.length;i++){
+        if(found[i]) continue;
+        var hs=hotspots[i], dx=fx-hs.x, dy=fy-hs.y;
+        if(Math.sqrt(dx*dx+dy*dy) <= (hs.r||0.06)){ hitIdx=i; break; }
+      }
+      if(hitIdx>=0){
+        found[hitIdx]=1; var hs=hotspots[hitIdx];
+        placeMarker(hs.x, hs.y, 'spot-hit', '✓', hs.label);
+        updateCount(); checkComplete();
+      } else {
+        placeMarker(fx, fy, 'spot-miss', '✗', null);
+        var last=$('spotStage').lastChild; setTimeout(function(){ if(last&&last.parentNode) last.parentNode.removeChild(last); }, 1000);
+      }
+    });
+
+    $('spotReveal').addEventListener('click', function(){
+      if(revealed) return; revealed=true;
+      hotspots.forEach(function(hs,i){ if(!found[i]) placeMarker(hs.x, hs.y, 'spot-hit reveal', '!', hs.label); });
+      $('spotResult').innerHTML='<div class="spot-success" style="background:#FBF3E0;color:#8A6A1E">Estos son los focos. Recordá revisarlos en tu casa cada semana.</div>';
+      this.disabled=true;
+      completeChallenge();
+    });
+
+    // ya completado antes: mostrar hecho y permitir revisar la solución
+    if(awarded){ $('spotResult').innerHTML='<div class="spot-success">✓ Ya completaste este desafío. Tocá "Ver solución" para repasarlo.</div>'; }
   }
 
   function updateTipsProgress(){
@@ -1274,6 +1658,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   //  NAV
   // =====================================================================
   function showSection(sec){
+    S.lastSection = sec;
     document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
     var t=$('sec-'+sec); if(t) t.classList.add('active');
     document.querySelectorAll('.navbtn').forEach(function(b){ b.classList.toggle('active', b.dataset.sec===sec); });
@@ -1295,7 +1680,24 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     });
     $('forgotBtn').addEventListener('click', function(){ authMode='recover'; renderAuthMode(); });
     ['inEmail','inPass','inName'].forEach(function(id){ $(id).addEventListener('keydown', function(e){ if(e.key==='Enter'){ if(S.recovery) $('authSubmit').click(); else handleAuthSubmit(); } }); });
-    $('logoutBtn').addEventListener('click', handleLogout);
+
+    // Perfil / cuenta
+    $('userChip').addEventListener('click', showProfile);
+    $('profBack').addEventListener('click', function(){ showSection(S.lastSection||'incidencia'); });
+    $('profLogout').addEventListener('click', handleLogout);
+    document.querySelectorAll('#sec-profile .setting-row[data-acc]').forEach(function(r){ r.addEventListener('click', function(){ toggleAcc(r.dataset.acc); }); });
+    $('savePerfil').addEventListener('click', saveProfileInfo);
+    $('saveEmail').addEventListener('click', saveEmail);
+    $('savePass').addEventListener('click', savePass);
+    $('rowPriv').addEventListener('click', function(){ openPrivacy(false); });
+    $('pfReqCity').addEventListener('click', openCityReq);
+
+    // Solicitud de municipio (registro + modal)
+    $('reqCityBtn').addEventListener('click', openCityReq);
+    $('cityReqCloseBtn').addEventListener('click', closeCityReq);
+    $('cityReqCancel').addEventListener('click', closeCityReq);
+    $('cityReqSend').addEventListener('click', sendCityReq);
+    $('cityReqModal').addEventListener('click', function(e){ if(e.target.id==='cityReqModal') closeCityReq(); });
 
     document.querySelectorAll('.navbtn').forEach(function(b){ b.addEventListener('click', function(){ showSection(b.dataset.sec); }); });
     document.querySelectorAll('[data-learn]').forEach(function(x){ x.addEventListener('click', function(){ showLearnView(x.dataset.learn); }); });
