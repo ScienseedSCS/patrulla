@@ -233,6 +233,9 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .review-author{font-weight:700;color:var(--primary);font-size:13px;line-height:1.2}
 .review-action{font-size:12px;color:var(--text);margin-top:2px;line-height:1.3}
 .review-city{font-size:11px;color:var(--muted);margin-top:2px}
+.review-votes{font-weight:700;color:var(--muted)}
+.review-votes.almost{color:var(--accent-2)}
+.review-item.almost{border-left:4px solid var(--accent-2)}
 .review-open{background:var(--primary);color:#fff;border:none;font-family:inherit;padding:8px 12px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
 .review-open:hover{background:var(--primary-soft)}
 .lock-card{background:var(--card);border-radius:var(--radius);padding:26px 18px;box-shadow:var(--shadow);text-align:center}
@@ -538,6 +541,9 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
             <button class="btn btn-accent" id="savePass">Cambiar contraseña</button>
           </div>
 
+          <div class="setting-row" data-acc="push"><span>🔔 Notificaciones</span><span class="chev">▸</span></div>
+          <div class="setting-panel" id="acc-push"></div>
+
           <div class="setting-row" id="rowPriv"><span>📍 Privacidad y ubicación</span><span class="chev">▸</span></div>
           <div class="setting-row" id="rowTutorial"><span>👋 Ver el tutorial de nuevo</span><span class="chev">▸</span></div>
 
@@ -620,6 +626,21 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
 <div class="toast" id="toast"></div>
 
+<!-- SOFT-ASK NOTIFICACIONES -->
+<div class="modal-backdrop" id="pushAskModal">
+  <div class="modal">
+    <div class="privacy-body" style="text-align:center">
+      <div style="font-size:52px;margin-bottom:6px">🔔</div>
+      <h3 style="text-align:center">¿Te avisamos?</h3>
+      <p>Activá las notificaciones para que te recordemos la <b>ronda antimosquito</b> de cada semana y no se te escape. Son pocas y podés elegir cuáles recibir.</p>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="pushAskLater">Ahora no</button>
+        <button class="btn btn-accent" id="pushAskAccept">Activar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ONBOARDING -->
 <div class="onb-overlay" id="onbOverlay">
   <div class="onb-card">
@@ -673,6 +694,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   // Opcional: clave de https://web3forms.com para que la solicitud llegue por email
   // automáticamente (creá una clave gratis asociada a ADMIN_EMAIL y pegala acá).
   var WEB3FORMS_KEY = '';
+  // Clave PÚBLICA VAPID para notificaciones push (es pública por diseño).
+  var VAPID_PUBLIC_KEY = 'BELljIGjXsC84vSK6GGmctOSQnai1qY2Auvwm23h8C5yOaV7aH-ijw-qpn0IHSEOn9SNPqrbMZZfrMVxHwl9pP4';
   // ====================================================================
 
   var LEVELS = [
@@ -919,7 +942,139 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       S.profile.onboarded=true;
       db.from('profiles').update({ onboarded:true }).eq('id', S.user.id).then(function(){}, function(){});
     }
+    maybeSoftAskPush();
   }
+
+  // =====================================================================
+  //  NOTIFICACIONES PUSH (Fase 1: permiso + suscripción + preferencias)
+  // =====================================================================
+  var PUSH_CATS = [
+    { key:'rutina',   label:'🔁 Ronda semanal', desc:'El recordatorio para dar vuelta el agua.' },
+    { key:'contenido',label:'🧠 Tips, quizzes y desafíos', desc:'Contenido nuevo para aprender.' },
+    { key:'comunidad',label:'🏆 Comunidad y logros', desc:'Ranking, subiste de nivel, reporte validado.' },
+    { key:'riesgo',   label:'📈 Riesgo en tu ciudad', desc:'Aviso cuando sube el riesgo en tu zona.' },
+    { key:'revisor',  label:'🔍 Reportes por revisar', desc:'Si hay cola de revisión (solo revisores).' }
+  ];
+  function normalizePushPrefs(p){
+    var d={ rutina:true, contenido:true, comunidad:true, riesgo:true, revisor:true, quietStart:22, quietEnd:8 };
+    if(p && typeof p==='object'){ for(var k in d){ if(p[k]!==undefined) d[k]=p[k]; } }
+    return d;
+  }
+  function pushSupported(){ return ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window); }
+  function urlB64ToUint8Array(base64String){
+    var padding='='.repeat((4 - base64String.length % 4) % 4);
+    var base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
+    var raw=window.atob(base64); var arr=new Uint8Array(raw.length);
+    for(var i=0;i<raw.length;i++) arr[i]=raw.charCodeAt(i);
+    return arr;
+  }
+  function savePushPrefs(){
+    S.profile.push_prefs = S.pushPrefs;
+    return db.from('profiles').update({ push_prefs:S.pushPrefs }).eq('id', S.user.id);
+  }
+  function currentSubscription(){
+    if(!pushSupported()) return Promise.resolve(null);
+    return navigator.serviceWorker.ready.then(function(reg){ return reg.pushManager.getSubscription(); });
+  }
+  function enablePush(){
+    if(!pushSupported()) return Promise.reject(new Error('Tu navegador no soporta notificaciones.'));
+    return Notification.requestPermission().then(function(perm){
+      if(perm!=='granted') throw new Error('perm-denied');
+      return navigator.serviceWorker.ready;
+    }).then(function(reg){
+      return reg.pushManager.getSubscription().then(function(sub){
+        return sub || reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY) });
+      });
+    }).then(function(sub){
+      var j=sub.toJSON();
+      return db.from('push_subscriptions').upsert({
+        user_id:S.user.id, endpoint:sub.endpoint,
+        p256dh:j.keys&&j.keys.p256dh, auth:j.keys&&j.keys.auth,
+        user_agent:(navigator.userAgent||'').slice(0,300)
+      }, { onConflict:'endpoint' }).then(function(res){ if(res.error) throw res.error; return true; });
+    });
+  }
+  function disablePush(){
+    return currentSubscription().then(function(sub){
+      if(!sub) return;
+      var ep=sub.endpoint;
+      return sub.unsubscribe().then(function(){ return db.from('push_subscriptions').delete().eq('endpoint', ep); });
+    });
+  }
+  function sendTestNotification(){
+    if(Notification.permission!=='granted'){ toast('Primero activá las notificaciones'); return; }
+    navigator.serviceWorker.ready.then(function(reg){
+      reg.showNotification('Patrulla Antimosquito', {
+        body:'¡Listo! Vas a recibir avisos como este. 🦟',
+        icon:'icon-192.png', badge:'icon-192.png', tag:'test'
+      });
+      toast('Te enviamos una de prueba 🔔');
+    });
+  }
+
+  // Soft-ask: se ofrece una sola vez, después del onboarding.
+  function maybeSoftAskPush(){
+    if(!pushSupported()) return;
+    if(S.profile.push_prompted) return;
+    if(Notification.permission==='granted') return; // ya activadas
+    $('pushAskModal').classList.add('show');
+  }
+  function markPrompted(){
+    if(S.profile.push_prompted) return;
+    S.profile.push_prompted=true;
+    db.from('profiles').update({ push_prompted:true }).eq('id', S.user.id).then(function(){}, function(){});
+  }
+  function pushAskAccept(){
+    $('pushAskModal').classList.remove('show'); markPrompted();
+    enablePush().then(function(){ toast('¡Notificaciones activadas! 🔔'); })
+      .catch(function(e){ if(e&&e.message==='perm-denied') toast('Podés activarlas después desde tu perfil'); else showErr('No se pudo activar: '+(e.message||e)); });
+  }
+  function pushAskLater(){ $('pushAskModal').classList.remove('show'); markPrompted(); }
+
+  // Panel de preferencias en el Perfil
+  function renderPushPanel(){
+    var panel=$('acc-push'); if(!panel) return;
+    if(!pushSupported()){ panel.innerHTML='<div class="setting-msg show">Este navegador no soporta notificaciones push. Probá instalando la app (Agregar a inicio).</div>'; return; }
+    currentSubscription().then(function(sub){
+      var on = !!sub && Notification.permission==='granted';
+      var pr=S.pushPrefs;
+      var cats=PUSH_CATS.map(function(c){
+        return '<div class="meta-row" style="padding:8px 0"><div><div class="meta-label" style="font-size:13px">'+c.label+'</div><div class="meta-sub">'+c.desc+'</div></div>'+
+          '<label class="switch"><input type="checkbox" class="pushcat" data-k="'+c.key+'"'+(pr[c.key]?' checked':'')+'><span class="slider"></span></label></div>';
+      }).join('');
+      var hoursOpts=function(sel){ var s=''; for(var i=0;i<24;i++){ s+='<option value="'+i+'"'+(i===sel?' selected':'')+'>'+(i<10?'0':'')+i+':00</option>'; } return s; };
+      panel.innerHTML =
+        '<div class="meta-row" style="padding:4px 0 10px;border-bottom:1px solid #EDE3EF;margin-bottom:8px"><div><div class="meta-label">Recibir notificaciones</div><div class="meta-sub">Activá para no perderte la ronda semanal.</div></div>'+
+          '<label class="switch"><input type="checkbox" id="pushMaster"'+(on?' checked':'')+'><span class="slider"></span></label></div>'+
+        '<div id="pushDetail" class="'+(on?'':'hide')+'">'+
+          cats+
+          '<div style="display:flex;gap:8px;margin-top:10px"><div class="field" style="flex:1;margin:0"><label>No molestar desde</label><select id="pushQS">'+hoursOpts(pr.quietStart)+'</select></div>'+
+          '<div class="field" style="flex:1;margin:0"><label>hasta</label><select id="pushQE">'+hoursOpts(pr.quietEnd)+'</select></div></div>'+
+          '<div class="setting-msg" id="pushMsg"></div>'+
+          '<div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-secondary" id="pushTest">Probar 🔔</button><button class="btn btn-accent" id="pushSave">Guardar</button></div>'+
+        '</div>';
+
+      $('pushMaster').addEventListener('change', function(){
+        var el=this;
+        if(el.checked){
+          enablePush().then(function(){ $('pushDetail').classList.remove('hide'); toast('¡Notificaciones activadas! 🔔'); markPrompted(); })
+            .catch(function(e){ el.checked=false; if(e&&e.message==='perm-denied') setMsgEl('pushMsg','err','Diste "bloquear". Cambialo en los ajustes del navegador para activarlas.'); else showErr('No se pudo activar: '+(e.message||e)); });
+        } else {
+          disablePush().then(function(){ $('pushDetail').classList.add('hide'); toast('Notificaciones desactivadas'); }).catch(function(){});
+        }
+      });
+      var td=$('pushDetail');
+      if(td){
+        $('pushTest').addEventListener('click', sendTestNotification);
+        $('pushSave').addEventListener('click', function(){
+          PUSH_CATS.forEach(function(c){ var chk=panel.querySelector('.pushcat[data-k="'+c.key+'"]'); if(chk) S.pushPrefs[c.key]=chk.checked; });
+          S.pushPrefs.quietStart=parseInt($('pushQS').value,10); S.pushPrefs.quietEnd=parseInt($('pushQE').value,10);
+          savePushPrefs().then(function(res){ if(res.error) throw res.error; setMsgEl('pushMsg','ok','¡Preferencias guardadas!'); }, function(e){ setMsgEl('pushMsg','err','No se pudo guardar.'); });
+        });
+      }
+    });
+  }
+  function setMsgEl(id, kind, txt){ var m=$(id); if(m){ m.textContent=txt; m.className='setting-msg show '+kind; } }
 
   function updateUserChip(){
     var name = (S.profile && S.profile.username) || 'Vecino/a';
@@ -956,7 +1111,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     var isOpen=panel.classList.contains('open');
     document.querySelectorAll('#sec-profile .setting-panel').forEach(function(pl){ pl.classList.remove('open'); });
     document.querySelectorAll('#sec-profile .setting-row[data-acc]').forEach(function(r){ r.classList.remove('open'); });
-    if(!isOpen){ panel.classList.add('open'); row.classList.add('open'); }
+    if(!isOpen){ panel.classList.add('open'); row.classList.add('open'); if(key==='push') renderPushPanel(); }
   }
 
   function setMsg(id, kind, txt){ var m=$(id); m.textContent=txt; m.className='setting-msg show '+kind; }
@@ -1009,6 +1164,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       $('boot').classList.add('hide');
       $('appScreen').classList.remove('hide');
       if(S.profile && !S.profile.onboarded) showOnboarding();
+      else maybeSoftAskPush();
     }).catch(function(e){
       console.error(e);
       showErr('No se pudieron cargar los datos: ' + (e.message||e) + '. ¿Aplicaste supabase-fix.sql?');
@@ -1043,6 +1199,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       else if(!CITY_LIST.length){ CITY_LIST = CITIES_FALLBACK.slice(); }
       S.profile = prof.data;
       S.geoConsent = (prof.data.geo_consent === true);
+      S.pushPrefs = normalizePushPrefs(prof.data.push_prefs);
       S.cities  = inc.data || [];
       S.actions = act.data || [];
       S.tips    = tp.data || [];
@@ -1420,9 +1577,9 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       '<div id="reviewList"><div class="loading">Cargando…</div></div>';
 
     return db.from('reports')
-      .select('id,note,photo_url,photo_before_url,city,action_type,user_id,lat,lng,captured_at,photo_hash')
+      .select('id,note,photo_url,photo_before_url,city,action_type,user_id,lat,lng,captured_at,photo_hash,review_count')
       .eq('status','pendiente').neq('user_id', S.user.id)
-      .order('created_at',{ascending:false}).limit(40)
+      .order('created_at',{ascending:true}).limit(40)
       .then(function(res){
         var list=$('reviewList'); if(!list) return;
         if(res.error){ list.innerHTML='<div class="empty">No se pudieron cargar los reportes.</div>'; throw res.error; }
@@ -1438,12 +1595,14 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
             var a=actionById(r.action_type)||{};
             var thumb = r.photo_url ? '<img src="'+esc(r.photo_url)+'" alt="">' : (a.icon||'📷');
             var baBadge = r.photo_before_url ? '<span class="ba-badge">A/D</span>' : '';
-            var item=el('div','review-item');
+            var votes = r.review_count||0; var almost = votes>=2;
+            var votesTxt = almost ? '🗳️ '+votes+'/3 · ¡falta 1!' : '🗳️ '+votes+'/3 votos';
+            var item=el('div','review-item'+(almost?' almost':''));
             item.innerHTML =
               '<div class="review-thumb" style="position:relative">'+baBadge+thumb+'</div>'+
               '<div class="review-body"><div class="review-author">'+esc(names[r.user_id]||'Vecino/a')+'</div>'+
               '<div class="review-action">'+esc(a.icon||'')+' '+esc(a.title||'Acción')+'</div>'+
-              '<div class="review-city">📍 '+esc(r.city||'—')+'</div></div>'+
+              '<div class="review-city">📍 '+esc(r.city||'—')+' · <span class="review-votes'+(almost?' almost':'')+'">'+votesTxt+'</span></div></div>'+
               '<button class="review-open">Ver reporte →</button>';
             r._author = names[r.user_id]||'Vecino/a';
             item.querySelector('.review-open').addEventListener('click', function(){ openReview(r); });
@@ -1782,6 +1941,14 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('onbNext').addEventListener('click', onbNext);
     $('onbBack').addEventListener('click', onbBack);
     $('onbSkip').addEventListener('click', finishOnboarding);
+    $('pushAskAccept').addEventListener('click', pushAskAccept);
+    $('pushAskLater').addEventListener('click', pushAskLater);
+    $('pushAskModal').addEventListener('click', function(e){ if(e.target.id==='pushAskModal') pushAskLater(); });
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.addEventListener('message', function(ev){
+        if(ev.data && ev.data.type==='notif-click' && ev.data.section) showSection(ev.data.section);
+      });
+    }
     $('pfReqCity').addEventListener('click', openCityReq);
 
     // Solicitud de municipio (registro + modal)
