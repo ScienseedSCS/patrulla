@@ -195,6 +195,28 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .meta-line{font-size:12px;color:var(--muted);margin-top:10px;display:flex;flex-wrap:wrap;gap:12px}
 .meta-line a{color:var(--accent-2);font-weight:700;text-decoration:none}
 .dup-flag{background:#F9E4E2;color:var(--danger);font-size:12px;font-weight:800;padding:8px 12px;border-radius:8px;margin-top:12px;display:none;align-items:center;gap:6px}
+/* House Tour */
+.tour-checklist{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.tour-check{display:flex;align-items:center;gap:10px;background:#FBF7EF;border:2px solid #EDE3EF;border-radius:12px;padding:11px 12px;cursor:pointer;transition:border-color .15s,background .15s}
+.tour-check input{position:absolute;opacity:0;width:0;height:0}
+.tour-check-ic{font-size:20px;flex-shrink:0}
+.tour-check-tx{flex:1;font-size:13px;font-weight:700;color:var(--primary)}
+.tour-check-box{width:22px;height:22px;border-radius:6px;border:2px solid #CDBFD0;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.tour-check input:checked ~ .tour-check-box{background:var(--accent-2);border-color:var(--accent-2)}
+.tour-check:has(input:checked){border-color:var(--accent-2);background:#F1FAF3}
+.tour-prog{height:7px;background:#EDE3EF;border-radius:999px;overflow:hidden;margin-bottom:12px}
+.tour-prog-bar{height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent-1));transition:width .3s}
+.tour-hint{background:#F8F1E2;border-radius:10px;padding:9px 12px;font-size:12.5px;color:var(--text);line-height:1.45;margin-bottom:8px}
+.tour-hint.doit{background:#E9F5EC}
+.tour-sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.tour-sum-item{position:relative;border-radius:10px;overflow:hidden}
+.tour-sum-item img{width:100%;height:90px;object-fit:cover;display:block}
+.tour-sum-item span{position:absolute;left:0;right:0;bottom:0;background:rgba(20,10,25,.72);color:#fff;font-size:9px;font-weight:700;padding:3px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.modal-tour-label{font-size:12px;font-weight:800;color:var(--primary);padding:8px 10px 4px}
+.modal-tour-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 8px 8px}
+.modal-tour-grid figure{margin:0;position:relative;border-radius:8px;overflow:hidden}
+.modal-tour-grid img{width:100%;height:100px;object-fit:cover;display:block}
+.modal-tour-grid figcaption{position:absolute;left:0;right:0;bottom:0;background:rgba(20,10,25,.72);color:#fff;font-size:9px;font-weight:700;padding:3px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .photo-preview{border-radius:14px;height:170px;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;margin-bottom:12px;overflow:hidden;background:linear-gradient(135deg,#EFE6D8,#DDD1BD)}
 .photo-preview img{width:100%;height:100%;object-fit:cover;border-radius:14px}
 .photo-preview .check{position:absolute;top:8px;right:8px;background:var(--ok);color:#fff;font-size:11px;font-weight:800;padding:4px 9px;border-radius:999px;z-index:2}
@@ -755,6 +777,22 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   var PTS_TIP = 2, PTS_QUIZ = 5, PTS_REVIEW = 3, REVIEWER_MIN = 350, PTS_BA_BONUS = 5;
   var GEO_PRECISION = 3; // decimales ≈ ~110 m (minimización de datos)
 
+  // Estaciones del House Tour (editables). Cada persona elige las que tiene.
+  var HOUSE_TOUR_PTS_PER_STATION = 5;
+  var HOUSE_TOUR_STATIONS = [
+    { key:'floreros', icon:'🪴', title:'Floreros y platos de macetas', check:'Agua acumulada en platos, floreros y portamacetas.', doit:'Tirá el agua, poné arena en los platos o cambiala cada 3 días.' },
+    { key:'bebederos', icon:'🐾', title:'Bebederos de mascotas', check:'El agua del bebedero del perro o gato.', doit:'Lavalo cepillando las paredes y cambiá el agua a diario.' },
+    { key:'baldes', icon:'🪣', title:'Baldes, palanganas y tachos', check:'Recipientes en patio, lavadero o terraza que junten agua.', doit:'Dalos vuelta, vacialos o guardalos bajo techo.' },
+    { key:'tanques', icon:'🛢️', title:'Tanques y bidones de agua', check:'Tanques, bidones y toda reserva de agua.', doit:'Mantenelos siempre tapados herméticamente.' },
+    { key:'canaletas', icon:'🌧️', title:'Canaletas del techo', check:'Canaletas y bajadas del techo.', doit:'Destapá hojas y suciedad para que el agua no se estanque.' },
+    { key:'rejillas', icon:'🚰', title:'Rejillas y desagües del patio', check:'Rejillas, piletones y desagües del patio.', doit:'Limpialos y verificá que el agua escurra bien.' },
+    { key:'aire', icon:'❄️', title:'Bandeja del aire acondicionado', check:'La bandeja donde gotea el aire acondicionado.', doit:'Vaciala y limpiala; encaminá el goteo a un desagüe.' },
+    { key:'cubiertas', icon:'🛞', title:'Cubiertas o neumáticos viejos', check:'Cubiertas guardadas que junten agua de lluvia.', doit:'Perforalas, guardalas bajo techo o llevalas a reciclado.' },
+    { key:'piletas', icon:'🏊', title:'Piletas de lona o inflables', check:'Piletas, lonas y juguetes que acumulen agua.', doit:'Vaciá y dá vuelta lo que no estés usando; cubrí las piletas.' },
+    { key:'cacharros', icon:'🍾', title:'Botellas, latas y cacharros', check:'Botellas, latas y objetos en desuso que junten agua.', doit:'Descacharrá: tiralos o ponelos boca abajo.' }
+  ];
+  function tourStationByKey(k){ for(var i=0;i<HOUSE_TOUR_STATIONS.length;i++){ if(HOUSE_TOUR_STATIONS[i].key===k) return HOUSE_TOUR_STATIONS[i]; } return null; }
+
   // === CONFIGURACIÓN EDITABLE =========================================
   // Municipios por defecto (si la tabla "cities" de Supabase no responde).
   var CITIES_FALLBACK = ['Gobernador Virasoro','Tartagal','Pampa del Indio','Añatuya'];
@@ -1271,6 +1309,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       S.profile = prof.data;
       S.geoConsent = (prof.data.geo_consent === true);
       S.pushPrefs = normalizePushPrefs(prof.data.push_prefs);
+      S.tourStations = Array.isArray(prof.data.tour_stations) ? prof.data.tour_stations : null;
       S.cities  = inc.data || [];
       S.actions = act.data || [];
       S.tips    = tp.data || [];
@@ -1402,8 +1441,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           '<div class="action-icon">'+esc(a.icon||'📍')+'</div>'+
           '<div class="action-title">'+esc(a.title)+'</div>'+
           '<div class="action-tags"><span class="tag type">'+esc(a.kind||'')+'</span></div>'+
-          '<span class="pts">+'+a.points+' pts</span>';
-        card.addEventListener('click', function(){ startFlow(a); });
+          '<span class="pts">'+(star?('+'+HOUSE_TOUR_PTS_PER_STATION+' pts x lugar'):('+'+a.points+' pts'))+'</span>';
+        card.addEventListener('click', function(){ if(a.id==='house_tour') startHouseTour(a); else startFlow(a); });
         grid.appendChild(card);
       });
       wrap.appendChild(grid);
@@ -1413,6 +1452,136 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   function startFlow(a){ currentAction=a; reportMode='simple'; pickedAfter=null; pickedBefore=null; attachLocation=!!S.geoConsent; $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide'); renderStep(1); }
   function cancelFlow(){ $('reportar-grid-view').classList.remove('hide'); var f=$('reportar-flow-view'); f.classList.add('hide'); f.innerHTML=''; currentAction=null; reportMode='simple'; pickedAfter=null; pickedBefore=null; }
   function reportPoints(){ return currentAction.points + (reportMode==='ba'?PTS_BA_BONUS:0); }
+
+  // =====================================================================
+  //  HOUSE TOUR guiado (recorrido por estaciones)
+  // =====================================================================
+  var tourAction=null, tourList=[], tourIdx=0, tourFiles={}, tourAttachLoc=false;
+
+  function startHouseTour(a){
+    tourAction=a; tourFiles={}; tourIdx=0; tourAttachLoc=!!S.geoConsent;
+    $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide');
+    var sel=S.tourStations;
+    if(Array.isArray(sel) && sel.length){ tourList=sel.map(tourStationByKey).filter(Boolean); renderTourIntro(); }
+    else renderTourSetup();
+  }
+  function tourTotal(){ return tourList.length * HOUSE_TOUR_PTS_PER_STATION; }
+
+  function renderTourSetup(){
+    var flow=$('reportar-flow-view');
+    var sel=S.tourStations||[];
+    var items=HOUSE_TOUR_STATIONS.map(function(s){
+      var on=sel.indexOf(s.key)>=0 || !S.tourStations; // primera vez: todo marcado
+      return '<label class="tour-check"><input type="checkbox" data-k="'+s.key+'"'+(on?' checked':'')+'>'+
+        '<span class="tour-check-ic">'+s.icon+'</span><span class="tour-check-tx">'+esc(s.title)+'</span>'+
+        '<span class="tour-check-box">✓</span></label>';
+    }).join('');
+    flow.innerHTML =
+      '<div class="flow-header"><button class="flow-back" id="tsCancel">← Volver</button><span class="step-pill">Tu casa</span></div>'+
+      '<div class="step-card"><div class="step-title" style="font-size:19px">🏠 ¿Qué tenés en tu casa?</div>'+
+      '<div class="step-desc" style="text-align:left">Marcá los lugares que existen en tu casa. Después, tu recorrido va a incluir solo esos. Podés cambiarlo cuando quieras.</div>'+
+      '<div class="tour-checklist">'+items+'</div>'+
+      '<button class="btn btn-accent" id="tsSave">Guardar y empezar</button></div>';
+    $('tsCancel').onclick=cancelFlow;
+    $('tsSave').onclick=function(){
+      var keys=[]; flow.querySelectorAll('.tour-check input:checked').forEach(function(c){ keys.push(c.dataset.k); });
+      if(!keys.length){ toast('Elegí al menos un lugar'); return; }
+      S.tourStations=keys; S.profile.tour_stations=keys;
+      db.from('profiles').update({ tour_stations:keys }).eq('id', S.user.id).then(function(){},function(){});
+      tourList=keys.map(tourStationByKey).filter(Boolean); tourFiles={}; tourIdx=0; renderTourIntro();
+    };
+  }
+
+  function renderTourIntro(){
+    var flow=$('reportar-flow-view'), n=tourList.length;
+    flow.innerHTML =
+      '<div class="flow-header"><button class="flow-back" id="tiCancel">← Volver</button><span class="step-pill">Recorrido</span></div>'+
+      '<div class="step-card" style="text-align:center"><div class="action-icon" style="margin:0 auto">🏠</div>'+
+      '<div class="step-title" style="font-size:20px">Recorrido por tu casa</div>'+
+      '<div class="step-desc">Vas a revisar <b>'+n+' lugar'+(n===1?'':'es')+'</b> y sacar una foto en cada uno. Al completarlos todos ganás <b>+'+tourTotal()+' pts</b>.</div>'+
+      '<button class="btn btn-accent" id="tiStart">Empezar recorrido</button>'+
+      '<button class="btn btn-secondary" id="tiEdit" style="margin-top:8px">✏️ Editar los lugares de mi casa</button></div>';
+    $('tiCancel').onclick=cancelFlow;
+    $('tiStart').onclick=function(){ tourIdx=0; renderTourStation(0); };
+    $('tiEdit').onclick=renderTourSetup;
+  }
+
+  function renderTourStation(i){
+    tourIdx=i; var s=tourList[i], n=tourList.length, flow=$('reportar-flow-view');
+    var has=!!tourFiles[s.key];
+    var preview = has ? '<img src="'+URL.createObjectURL(tourFiles[s.key])+'" alt="" style="width:100%;border-radius:12px;margin-bottom:10px">' : '';
+    flow.innerHTML =
+      '<div class="flow-header"><button class="flow-back" id="stBack">← Atrás</button><span class="step-pill">'+(i+1)+' de '+n+'</span></div>'+
+      '<div class="tour-prog"><div class="tour-prog-bar" style="width:'+Math.round((i)/n*100)+'%"></div></div>'+
+      '<div class="step-card"><div class="action-icon" style="margin:0 auto">'+s.icon+'</div>'+
+      '<div class="step-title" style="font-size:19px;text-align:center">'+esc(s.title)+'</div>'+
+      '<div class="tour-hint"><b>🔎 Revisá:</b> '+esc(s.check)+'</div>'+
+      '<div class="tour-hint doit"><b>✅ Hacé:</b> '+esc(s.doit)+'</div>'+
+      preview+
+      '<label class="photo-drop" for="tourPhoto">'+(has?'📷 Cambiar foto':'📷 Sacar / subir foto')+'</label>'+
+      '<input type="file" id="tourPhoto" accept="image/*" capture="environment" class="hide">'+
+      '<button class="btn btn-accent" id="stNext"'+(has?'':' disabled')+'>'+(i===n-1?'Ver resumen':'Siguiente →')+'</button></div>';
+    $('stBack').onclick=function(){ if(i===0) renderTourIntro(); else renderTourStation(i-1); };
+    $('tourPhoto').addEventListener('change', function(e){
+      var f=e.target.files&&e.target.files[0]; if(!f) return;
+      tourFiles[s.key]=f; renderTourStation(i);
+    });
+    $('stNext').onclick=function(){ if(!tourFiles[s.key]) return; if(i===n-1) renderTourSummary(); else renderTourStation(i+1); };
+  }
+
+  function renderTourSummary(){
+    var flow=$('reportar-flow-view');
+    var thumbs=tourList.map(function(s){
+      return '<div class="tour-sum-item"><img src="'+URL.createObjectURL(tourFiles[s.key])+'" alt=""><span>'+s.icon+' '+esc(s.title)+'</span></div>';
+    }).join('');
+    flow.innerHTML =
+      '<div class="flow-header"><button class="flow-back" id="suBack">← Atrás</button><span class="step-pill">Resumen</span></div>'+
+      '<div class="step-card"><div class="step-title" style="font-size:19px">✅ Tu recorrido</div>'+
+      '<div class="step-desc" style="text-align:left">Completaste los '+tourList.length+' lugares. Revisá y enviá.</div>'+
+      '<div class="tour-sum-grid">'+thumbs+'</div>'+
+      '<div class="meta-card"><div class="meta-row"><div><div class="meta-label">📍 Adjuntar ubicación</div><div class="meta-sub">Opcional. Se guarda con precisión aproximada (~100 m).</div></div>'+
+        '<label class="switch"><input type="checkbox" id="tourGeo"><span class="slider"></span></label></div>'+
+        '<button class="privacy-link" id="tourPrivacy">¿Qué datos se recogen?</button></div>'+
+      '<textarea class="txt-area" id="tourNote" placeholder="Nota opcional sobre el recorrido…"></textarea>'+
+      '<button class="btn btn-accent" id="suSubmit">Enviar recorrido (+'+tourTotal()+' pts)</button></div>';
+    $('suBack').onclick=function(){ renderTourStation(tourList.length-1); };
+    var gt=$('tourGeo'); gt.checked=tourAttachLoc;
+    gt.addEventListener('change', function(){ if(gt.checked && !S.geoConsent){ gt.checked=false; openPrivacy(true); } else { tourAttachLoc=gt.checked; } });
+    $('tourPrivacy').addEventListener('click', function(){ openPrivacy(false); });
+    $('suSubmit').onclick=submitHouseTour;
+  }
+
+  function submitHouseTour(){
+    var note=($('tourNote')&&$('tourNote').value.trim())||null;
+    var total=tourTotal(), captured_at=new Date().toISOString();
+    var btn=$('suSubmit'); btn.disabled=true; btn.textContent='Procesando fotos…';
+
+    var keys=tourList.map(function(s){ return s.key; });
+    Promise.all(keys.map(function(k){ return processImage(tourFiles[k]); })).then(function(blobs){
+      btn.textContent='Enviando…';
+      return sha256Hex(blobs[0]).then(function(hash){
+        return Promise.all(blobs.map(function(b,i){ return uploadBlob(b, 'tour_'+keys[i]); })).then(function(urls){
+          var tour_photos = tourList.map(function(s,i){ return { station:s.key, title:s.title, url:urls[i] }; });
+          var geoP = tourAttachLoc ? getGeo() : Promise.resolve(null);
+          return geoP.then(function(geo){
+            var row={ user_id:S.user.id, action_type:tourAction.id, city:S.profile.city||null,
+              photo_url:urls[0], tour_photos:tour_photos, note:note,
+              status:'pendiente', points_awarded:total, captured_at:captured_at, photo_hash:hash||null };
+            if(geo){ row.lat=geo.lat; row.lng=geo.lng; row.geo_accuracy=geo.acc; }
+            return db.from('reports').insert(row).then(function(ins){ if(ins.error) throw ins.error; });
+          });
+        });
+      });
+    }).then(function(){
+      return awardPoints(total);
+    }).then(function(){
+      S.stats.reports+=1; if($('statReports')) $('statReports').textContent=S.stats.reports;
+      cancelFlow(); toast('¡Recorrido enviado! +'+total+' pts 🏠🎉');
+    }).catch(function(e){
+      console.error(e); showErr('No se pudo enviar el recorrido: '+(e.message||e));
+      btn.disabled=false; btn.textContent='Enviar recorrido (+'+total+' pts)';
+    });
+  }
 
   function renderStep(step){
     var a=currentAction, flow=$('reportar-flow-view');
@@ -1649,7 +1818,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       '<div id="reviewList"><div class="loading">Cargando…</div></div>';
 
     return db.from('reports')
-      .select('id,note,photo_url,photo_before_url,city,action_type,user_id,lat,lng,captured_at,photo_hash,review_count')
+      .select('id,note,photo_url,photo_before_url,city,action_type,user_id,lat,lng,captured_at,photo_hash,review_count,tour_photos')
       .eq('status','pendiente').neq('user_id', S.user.id)
       .order('created_at',{ascending:true}).limit(40)
       .then(function(res){
@@ -1686,7 +1855,14 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function openReview(r){
     currentReview=r; var a=actionById(r.action_type)||{};
-    if(r.photo_before_url){
+    var tour = Array.isArray(r.tour_photos) ? r.tour_photos : null;
+    if(tour && tour.length){
+      $('modalPhoto').innerHTML =
+        '<div class="modal-tour"><div class="modal-tour-label">🏠 Recorrido · '+tour.length+' lugares</div>'+
+        '<div class="modal-tour-grid">'+ tour.map(function(t){
+          return '<figure><img src="'+esc(t.url||'')+'" alt=""><figcaption>'+esc(t.title||'')+'</figcaption></figure>';
+        }).join('') +'</div></div>';
+    } else if(r.photo_before_url){
       $('modalPhoto').innerHTML =
         '<div class="modal-ba">'+
           '<figure><img src="'+esc(r.photo_before_url)+'" alt=""><figcaption>Antes</figcaption></figure>'+
