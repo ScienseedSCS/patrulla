@@ -341,6 +341,40 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .level-row-name{flex:1;color:var(--text)}
 .level-row-range{color:var(--muted);font-size:11px}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.stats-grid > .stat-card:last-child:nth-child(odd){grid-column:1 / -1}
+.stat-clickable{cursor:pointer;position:relative;border:2px solid var(--accent);background:linear-gradient(180deg,#fff 60%,#FFF7E4)}
+.stat-clickable:hover{transform:translateY(-2px)}
+.stat-hint{font-size:10px;font-weight:800;color:var(--accent-2);margin-top:4px}
+/* Pestañas de progreso */
+.prog-tabs{display:flex;gap:4px;background:#EFE6F0;border-radius:12px;padding:4px;margin-bottom:14px}
+.prog-tab{flex:1;background:none;border:none;font-family:inherit;font-size:12px;font-weight:800;color:var(--primary-soft);padding:9px 4px;border-radius:9px;cursor:pointer;transition:background .2s,color .2s}
+.prog-tab.active{background:var(--primary);color:#fff;box-shadow:var(--shadow)}
+.prog-view{animation:fade .25s ease}
+/* Ranking de municipios */
+.muni-row{display:flex;align-items:center;gap:10px;padding:10px 6px;border-bottom:1px solid #F0E6E8}
+.muni-row:last-child{border-bottom:none}
+.muni-row.mine{background:linear-gradient(90deg,#FBF3E0,transparent);border-radius:8px}
+.muni-rank{width:24px;font-weight:800;color:var(--muted);text-align:center;flex-shrink:0}
+.muni-body{flex:1;min-width:0}
+.muni-name{font-weight:700;color:var(--primary);font-size:14px}
+.muni-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.muni-pts{font-weight:800;color:var(--primary);font-size:14px}
+/* Mis reportes */
+.myrep{background:#FBF7EF;border-radius:12px;padding:12px;margin-bottom:10px;display:flex;gap:10px}
+.myrep-thumb{width:52px;height:52px;border-radius:9px;object-fit:cover;flex-shrink:0;background:#DDD1BD;display:flex;align-items:center;justify-content:center;font-size:22px}
+.myrep-body{flex:1;min-width:0}
+.myrep-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.myrep-action{font-weight:800;color:var(--primary);font-size:13px}
+.myrep-date{font-size:11px;color:var(--muted);margin-top:2px}
+.myrep-note{font-size:12px;color:var(--text);margin-top:6px;line-height:1.4;font-style:italic}
+.myrep-st{font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;color:#fff}
+.myrep-st.pendiente{background:var(--warn)} .myrep-st.validado{background:var(--ok)} .myrep-st.descartado{background:var(--danger)}
+.myrep-actions{display:flex;gap:8px;margin-top:8px}
+.myrep-btn{background:#fff;border:1.5px solid #E5D9E8;color:var(--primary);font-family:inherit;font-size:11px;font-weight:700;padding:6px 10px;border-radius:8px;cursor:pointer}
+.myrep-btn.danger{color:var(--danger);border-color:#F3D2CF}
+.myrep-edit{margin-top:8px;display:none}
+.myrep-edit.show{display:block}
+.myrep-edit textarea{width:100%;min-height:56px;padding:8px;border-radius:8px;border:1.5px solid #DFD3E1;font-family:inherit;font-size:12px;resize:vertical}
 .stat-card{background:var(--card);border-radius:12px;padding:12px;text-align:center;box-shadow:var(--shadow)}
 .stat-num{font-family:'DM Serif Display',serif;font-size:24px;color:var(--primary)}
 .stat-label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
@@ -489,23 +523,47 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
       <!-- PROGRESO -->
       <section class="section" id="sec-progreso">
-        <h2 class="section-title">🏆 Tu progreso</h2>
-        <p class="section-sub">Cada acción cuenta. Subí de nivel y desbloqueá nuevos roles.</p>
-        <div class="level-card">
-          <div class="level-emoji" id="lvlEmoji">🥚</div>
-          <div class="level-name" id="lvlName">Vigilante Novato</div>
-          <div class="level-pts"><span id="lvlPts">0</span> pts</div>
-          <div class="level-progress-outer"><div class="level-progress-inner" id="lvlBar" style="width:0%"></div></div>
-          <div class="level-next" id="lvlNext"></div>
+        <div class="prog-tabs">
+          <button class="prog-tab active" data-ptab="me">Tu progreso</button>
+          <button class="prog-tab" data-ptab="city">Tu municipio</button>
+          <button class="prog-tab" data-ptab="region">Tu región</button>
         </div>
-        <div class="levels-list" id="levelsList"></div>
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-num" id="statReports">0</div><div class="stat-label">Reportes</div></div>
-          <div class="stat-card"><div class="stat-num" id="statQuizzes">0</div><div class="stat-label">Quizzes</div></div>
-          <div class="stat-card"><div class="stat-num" id="statTips">0</div><div class="stat-label">Tips leídos</div></div>
-          <div class="stat-card"><div class="stat-num" id="statReviews">0</div><div class="stat-label">Revisiones</div></div>
+
+        <!-- TU PROGRESO -->
+        <div class="prog-view" id="prog-me">
+          <div class="level-card">
+            <div class="level-emoji" id="lvlEmoji">🥚</div>
+            <div class="level-name" id="lvlName">Vigilante Novato</div>
+            <div class="level-pts"><span id="lvlPts">0</span> pts</div>
+            <div class="level-progress-outer"><div class="level-progress-inner" id="lvlBar" style="width:0%"></div></div>
+            <div class="level-next" id="lvlNext"></div>
+          </div>
+          <div class="levels-list" id="levelsList"></div>
+          <div class="stats-grid">
+            <div class="stat-card stat-clickable" id="cardSent"><div class="stat-num" id="statReports">0</div><div class="stat-label">Reportes enviados</div><div class="stat-hint">Ver / editar ›</div></div>
+            <div class="stat-card"><div class="stat-num" id="statApproved">0</div><div class="stat-label">Reportes aprobados</div></div>
+            <div class="stat-card"><div class="stat-num" id="statQuizzes">0</div><div class="stat-label">Quizzes</div></div>
+            <div class="stat-card"><div class="stat-num" id="statTips">0</div><div class="stat-label">Tips leídos</div></div>
+            <div class="stat-card"><div class="stat-num" id="statReviews">0</div><div class="stat-label">Revisiones</div></div>
+          </div>
         </div>
-        <div class="leaderboard"><div class="lb-title" id="lbTitle">🏙️ Ranking</div><div id="lbList"><div class="loading">Cargando…</div></div></div>
+
+        <!-- TU MUNICIPIO -->
+        <div class="prog-view hide" id="prog-city">
+          <h2 class="section-title" id="progCityName" style="font-size:20px">🏙️ Tu municipio</h2>
+          <p class="section-sub">Lo que logró tu comunidad, entre todas y todos.</p>
+          <div class="stats-grid" id="cityTotals"><div class="loading">Cargando…</div></div>
+          <div class="leaderboard"><div class="lb-title" id="lbTitle">🏆 Ranking del municipio</div><div id="lbList"><div class="loading">Cargando…</div></div></div>
+        </div>
+
+        <!-- TU REGIÓN -->
+        <div class="prog-view hide" id="prog-region">
+          <h2 class="section-title" style="font-size:20px">🗺️ Tu región</h2>
+          <p class="section-sub">La suma de todos los municipios de la Patrulla.</p>
+          <div class="stats-grid" id="regionTotals"><div class="loading">Cargando…</div></div>
+          <div class="leaderboard"><div class="lb-title">🏆 Ranking de municipios</div><div id="muniList"><div class="loading">Cargando…</div></div></div>
+        </div>
+
         <div class="miniftr">Una iniciativa de<br><svg viewBox="0 0 200 32" height="22" style="height:22px;width:auto;vertical-align:middle" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fundación Mundo Sano"><circle cx="16" cy="16" r="11" fill="none" stroke="#1E8069" stroke-width="2.5"/><circle cx="16" cy="16" r="4.5" fill="#6DBE4A"/><text x="36" y="14" font-family="Georgia, serif" font-size="12" fill="#331F3A">Fundación</text><text x="36" y="28" font-family="Georgia, serif" font-size="12" fill="#1E8069">Mundo Sano</text></svg></div>
       </section>
 
@@ -625,6 +683,18 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- MIS REPORTES -->
+<div class="modal-backdrop" id="myReportsModal">
+  <div class="modal">
+    <button class="modal-close" id="myReportsCloseBtn" aria-label="Cerrar">✕</button>
+    <div class="privacy-body">
+      <h3>📋 Mis reportes</h3>
+      <p style="margin-bottom:6px">Revisá tus reportes. Podés editar la nota o eliminarlos.</p>
+      <div id="myReportsList"><div class="loading">Cargando…</div></div>
+    </div>
+  </div>
+</div>
 
 <!-- SOFT-ASK NOTIFICACIONES -->
 <div class="modal-backdrop" id="pushAskModal">
@@ -1186,8 +1256,9 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       db.from('reports').select('id', { count:'exact', head:true }).eq('user_id', uid),
       db.from('report_reviews').select('report_id').eq('reviewer_id', uid),
       db.from('cities').select('name').eq('active', true).order('name'),
+      db.from('reports').select('id', { count:'exact', head:true }).eq('user_id', uid).eq('status','validado'),
     ]).then(function(r){
-      var prof=r[0], inc=r[1], act=r[2], tp=r[3], qz=r[4], tr=r[5], qa=r[6], rc=r[7], rv=r[8], ct=r[9];
+      var prof=r[0], inc=r[1], act=r[2], tp=r[3], qz=r[4], tr=r[5], qa=r[6], rc=r[7], rv=r[8], ct=r[9], ap=r[10];
 
       // Si no existe el perfil (caso raro), crearlo mínimamente.
       if(prof.error || !prof.data){
@@ -1209,6 +1280,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       (rv.data||[]).forEach(function(x){ S.myReviewedReports[x.report_id]=1; });
 
       S.stats.reports = rc.count||0;
+      S.stats.approved = (ap && ap.count) || 0;
       S.stats.tips = Object.keys(S.myTipReads).length;
       S.stats.quizzes = (qa.data||[]).filter(function(a){return a.is_correct;}).length;
       S.stats.reviews = Object.keys(S.myReviewedReports).length;
@@ -1217,7 +1289,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       updateUserChip();
       applyPoints(S.profile.points||0);
       renderIncidencia(); renderActions(); renderTips(); renderQuizzes(); renderProgress();
-      return Promise.all([ renderRevisar(), renderLeaderboard() ]);
+      return renderRevisar();
     });
   }
 
@@ -1879,15 +1951,76 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       row.innerHTML='<div class="level-row-emoji">'+l.emoji+'</div><div class="level-row-name">'+esc(l.name)+(l.lvl===4?' · Revisor':'')+'</div><div class="level-row-range">'+range+'</div>';
       list.appendChild(row);
     });
-    $('statReports').textContent=S.stats.reports; $('statQuizzes').textContent=S.stats.quizzes;
-    $('statTips').textContent=S.stats.tips; $('statReviews').textContent=S.stats.reviews;
+    $('statReports').textContent=S.stats.reports; $('statApproved').textContent=S.stats.approved||0;
+    $('statQuizzes').textContent=S.stats.quizzes; $('statTips').textContent=S.stats.tips; $('statReviews').textContent=S.stats.reviews;
     applyPoints(S.profile.points||0);
+  }
+
+  // ---- Pestañas de Progreso -------------------------------------------
+  var progTab='me';
+  function showProgTab(tab){
+    progTab=tab;
+    ['me','city','region'].forEach(function(t){ $('prog-'+t).classList.toggle('hide', t!==tab); });
+    document.querySelectorAll('.prog-tab').forEach(function(b){ b.classList.toggle('active', b.dataset.ptab===tab); });
+    if(tab==='city') renderCityTab();
+    if(tab==='region') renderRegionTab();
+  }
+
+  function totalCards(items){
+    return '<div class="stats-grid">'+items.map(function(it){
+      return '<div class="stat-card"><div class="stat-num">'+it.n+'</div><div class="stat-label">'+it.l+'</div></div>';
+    }).join('')+'</div>';
+  }
+
+  function renderCityTab(){
+    var city=S.profile.city;
+    $('progCityName').textContent = '🏙️ '+(city||'Tu municipio');
+    var box=$('cityTotals');
+    if(!city){ box.innerHTML='<div class="empty">Todavía no elegiste tu municipio.</div>'; $('lbList').innerHTML=''; return; }
+    box.innerHTML='<div class="loading">Cargando…</div>';
+    db.rpc('city_totals', { p_city:city }).then(function(res){
+      var t=(res.data&&res.data[0])||{reportes:0,tips:0,quizzes:0,revisiones:0,miembros:0};
+      box.innerHTML = totalCards([
+        {n:t.reportes||0,l:'Reportes'},{n:t.tips||0,l:'Tips leídos'},
+        {n:t.quizzes||0,l:'Quizzes'},{n:t.revisiones||0,l:'Revisiones'}
+      ]) + '<div class="stat-card" style="margin-bottom:14px"><div class="stat-num">'+(t.miembros||0)+'</div><div class="stat-label">Vecinos en la Patrulla</div></div>';
+    }, function(){ box.innerHTML='<div class="empty">No se pudieron cargar los totales.</div>'; });
+    renderLeaderboard();
+  }
+
+  function renderRegionTab(){
+    var box=$('regionTotals');
+    box.innerHTML='<div class="loading">Cargando…</div>';
+    db.rpc('region_totals').then(function(res){
+      var t=(res.data&&res.data[0])||{reportes:0,tips:0,quizzes:0,revisiones:0,miembros:0,municipios:0};
+      box.innerHTML = totalCards([
+        {n:t.reportes||0,l:'Reportes'},{n:t.tips||0,l:'Tips leídos'},
+        {n:t.quizzes||0,l:'Quizzes'},{n:t.revisiones||0,l:'Revisiones'}
+      ]) + '<div class="stats-grid"><div class="stat-card"><div class="stat-num">'+(t.miembros||0)+'</div><div class="stat-label">Vecinos</div></div>'+
+           '<div class="stat-card"><div class="stat-num">'+(t.municipios||0)+'</div><div class="stat-label">Municipios</div></div></div>';
+    }, function(){ box.innerHTML='<div class="empty">No se pudieron cargar los totales.</div>'; });
+
+    var list=$('muniList'); list.innerHTML='<div class="loading">Cargando…</div>';
+    db.rpc('municipality_ranking').then(function(res){
+      list.innerHTML='';
+      var rows=res.data||[];
+      if(!rows.length){ list.appendChild(el('div','empty','Todavía no hay municipios con actividad.')); return; }
+      rows.forEach(function(m,i){
+        var mine=m.city===S.profile.city;
+        var row=el('div','muni-row'+(mine?' mine':''));
+        row.innerHTML='<div class="muni-rank">'+(i+1)+'</div>'+
+          '<div class="muni-body"><div class="muni-name">'+esc(m.city)+(mine?' 📍':'')+'</div>'+
+          '<div class="muni-sub">'+(m.miembros||0)+' vecinos · '+(m.reportes||0)+' reportes</div></div>'+
+          '<div class="muni-pts">'+(m.points||0)+'</div>';
+        list.appendChild(row);
+      });
+    }, function(){ list.innerHTML='<div class="empty">No se pudo cargar el ranking.</div>'; });
   }
 
   function renderLeaderboard(){
     var list=$('lbList'), city=S.profile.city;
-    $('lbTitle').textContent = city ? ('🏙️ Ranking '+city) : '🏆 Ranking general';
-    var q=db.from('profiles').select('id,username,points').order('points',{ascending:false}).limit(10);
+    var t=$('lbTitle'); if(t) t.textContent = '🏆 Ranking'+(city?(' de '+city):' general');
+    var q=db.from('profiles').select('id,username,points').order('points',{ascending:false}).limit(20);
     if(city) q=q.eq('city', city);
     return q.then(function(res){
       list.innerHTML='';
@@ -1901,6 +2034,66 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     });
   }
 
+  // ---- Mis reportes (revisar / editar / eliminar) ---------------------
+  function openMyReports(){
+    $('myReportsModal').classList.add('show');
+    var box=$('myReportsList'); box.innerHTML='<div class="loading">Cargando…</div>';
+    db.from('reports').select('id,action_type,status,note,photo_url,photo_before_url,created_at,review_count,points_awarded')
+      .eq('user_id', S.user.id).order('created_at',{ascending:false}).limit(50)
+      .then(function(res){
+        if(res.error){ box.innerHTML='<div class="empty">No se pudieron cargar tus reportes.</div>'; return; }
+        var rows=res.data||[];
+        if(!rows.length){ box.innerHTML='<div class="empty">Todavía no enviaste reportes. ¡Animate a reportar tu primera acción!</div>'; return; }
+        box.innerHTML='';
+        rows.forEach(function(r){ box.appendChild(buildMyRepItem(r)); });
+      }, function(){ box.innerHTML='<div class="empty">No se pudieron cargar tus reportes.</div>'; });
+  }
+
+  function statusLabel(s){ return s==='validado'?'✅ Validado':s==='descartado'?'❌ Descartado':'⏳ En revisión'; }
+
+  function buildMyRepItem(r){
+    var a=actionById(r.action_type)||{};
+    var thumb = r.photo_url ? '<img class="myrep-thumb" src="'+esc(r.photo_url)+'" alt="">' : '<div class="myrep-thumb">'+esc(a.icon||'📷')+'</div>';
+    var wrap=el('div','myrep');
+    wrap.innerHTML =
+      thumb +
+      '<div class="myrep-body">'+
+        '<div class="myrep-top"><span class="myrep-action">'+esc(a.icon||'')+' '+esc(a.title||'Acción')+'</span>'+
+        '<span class="myrep-st '+esc(r.status||'pendiente')+'">'+statusLabel(r.status)+'</span></div>'+
+        '<div class="myrep-date">'+fmtDate(r.created_at)+' · 🗳️ '+(r.review_count||0)+'/3</div>'+
+        '<div class="myrep-note">'+(r.note?('“'+esc(r.note)+'”'):'<span style="color:var(--muted);font-style:normal">Sin nota</span>')+'</div>'+
+        '<div class="myrep-edit"><textarea maxlength="300">'+esc(r.note||'')+'</textarea>'+
+          '<div class="myrep-actions"><button class="myrep-btn" data-act="save">Guardar</button><button class="myrep-btn" data-act="canceledit">Cancelar</button></div></div>'+
+        '<div class="myrep-actions myrep-mainactions"><button class="myrep-btn" data-act="edit">✏️ Editar nota</button><button class="myrep-btn danger" data-act="delete">🗑️ Eliminar</button></div>'+
+      '</div>';
+    var editBox=wrap.querySelector('.myrep-edit'), mainActions=wrap.querySelector('.myrep-mainactions');
+    var noteEl=wrap.querySelector('.myrep-note'), ta=wrap.querySelector('textarea');
+    wrap.querySelector('[data-act="edit"]').addEventListener('click', function(){ editBox.classList.add('show'); mainActions.style.display='none'; });
+    wrap.querySelector('[data-act="canceledit"]').addEventListener('click', function(){ editBox.classList.remove('show'); mainActions.style.display='flex'; ta.value=r.note||''; });
+    wrap.querySelector('[data-act="save"]').addEventListener('click', function(){
+      var nv=ta.value.trim();
+      db.rpc('edit_report_note', { p_id:r.id, p_note:nv||null }).then(function(res){
+        if(res.error) throw res.error;
+        r.note=nv; noteEl.innerHTML = nv?('“'+esc(nv)+'”'):'<span style="color:var(--muted);font-style:normal">Sin nota</span>';
+        editBox.classList.remove('show'); mainActions.style.display='flex'; toast('Nota actualizada ✏️');
+      }, function(e){ showErr('No se pudo guardar: '+(e.message||e)); });
+    });
+    wrap.querySelector('[data-act="delete"]').addEventListener('click', function(){
+      if(!window.confirm('¿Eliminar este reporte? Se descuentan los puntos que te dio.')) return;
+      db.rpc('delete_my_report', { p_id:r.id }).then(function(res){
+        if(res.error) throw res.error;
+        wrap.remove();
+        S.stats.reports=Math.max(0,S.stats.reports-1);
+        if(r.status==='validado') S.stats.approved=Math.max(0,(S.stats.approved||0)-1);
+        S.profile.points=Math.max(0,(S.profile.points||0)-(r.points_awarded||0));
+        applyPoints(S.profile.points); renderProgress();
+        toast('Reporte eliminado');
+      }, function(e){ showErr('No se pudo eliminar: '+(e.message||e)); });
+    });
+    return wrap;
+  }
+  function closeMyReports(){ $('myReportsModal').classList.remove('show'); }
+
   // =====================================================================
   //  NAV
   // =====================================================================
@@ -1913,7 +2106,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     if(sec!=='reportar') cancelFlow();
     if(sec==='aprender') showLearnView('menu');
     if(sec==='revisar') renderRevisar();
-    if(sec==='progreso') renderLeaderboard();
+    if(sec==='progreso') showProgTab('me');
   }
 
   // =====================================================================
@@ -1959,6 +2152,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('cityReqModal').addEventListener('click', function(e){ if(e.target.id==='cityReqModal') closeCityReq(); });
 
     document.querySelectorAll('.navbtn').forEach(function(b){ b.addEventListener('click', function(){ showSection(b.dataset.sec); }); });
+    document.querySelectorAll('.prog-tab').forEach(function(b){ b.addEventListener('click', function(){ showProgTab(b.dataset.ptab); }); });
+    $('cardSent').addEventListener('click', openMyReports);
+    $('myReportsCloseBtn').addEventListener('click', closeMyReports);
+    $('myReportsModal').addEventListener('click', function(e){ if(e.target.id==='myReportsModal') closeMyReports(); });
     document.querySelectorAll('[data-learn]').forEach(function(x){ x.addEventListener('click', function(){ showLearnView(x.dataset.learn); }); });
 
     $('modalCloseBtn').addEventListener('click', closeReviewModal);
