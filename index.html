@@ -274,6 +274,17 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .modal-close{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.9);border:none;width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer;color:var(--primary);font-weight:800;z-index:2;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
 .modal-photo{height:200px;background:linear-gradient(135deg,#DDD1BD,#B8A88E);display:flex;align-items:center;justify-content:center;font-size:80px;border-radius:20px 20px 0 0;overflow:hidden}
 .modal-photo img{width:100%;height:100%;object-fit:cover}
+.modal-photo.tour{height:auto;max-height:340px;overflow-y:auto;display:block;background:#F2E9DA;font-size:inherit}
+/* Motivos de rechazo */
+.reject-reasons{display:none;flex-direction:column;gap:8px;margin-top:4px}
+.reject-reasons.show{display:flex;animation:fade .2s ease}
+.reject-title{font-size:13px;font-weight:800;color:var(--primary);text-align:center;margin-bottom:2px}
+.reject-opt{text-align:left;background:#FBF7EF;border:2px solid #F0DEDA;border-radius:12px;padding:10px 12px;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;gap:2px;transition:border-color .15s,background .15s}
+.reject-opt:hover{border-color:var(--danger);background:#FDF1EF}
+.reject-opt b{font-size:13px;color:var(--primary)}
+.reject-opt span{font-size:11px;color:var(--muted);line-height:1.35}
+.reject-cancel{background:none;border:none;color:var(--primary-soft);font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;padding:6px}
+.myrep-reasons{font-size:11px;color:var(--danger);font-weight:700;margin-top:6px;line-height:1.4}
 .modal-body{padding:18px}
 .modal-author{font-family:'DM Serif Display',serif;font-size:20px;color:var(--primary)}
 .modal-city{font-size:12px;color:var(--muted);margin-top:2px}
@@ -654,11 +665,17 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       <div class="modal-note" id="modalNote">—</div>
       <div class="meta-line" id="modalMeta"></div>
       <div class="dup-flag" id="modalDup">⚠️ Esta imagen aparece en más de un reporte</div>
-      <div class="vote-title">¿La acción se hizo bien?</div>
-      <div class="vote-row">
+      <div class="vote-title">¿El reporte es válido?</div>
+      <div class="vote-row" id="voteMain">
         <button class="vote-btn ok"  data-vote="correcto"><span class="em">✅</span>Correcto</button>
-        <button class="vote-btn mid" data-vote="dudoso"><span class="em">❓</span>Dudoso</button>
-        <button class="vote-btn no"  data-vote="no_corresponde"><span class="em">⚠️</span>No corresponde</button>
+        <button class="vote-btn no"  id="voteRejectBtn"><span class="em">❌</span>Rechazar</button>
+      </div>
+      <div class="reject-reasons" id="rejectReasons">
+        <div class="reject-title">¿Por qué lo rechazás?</div>
+        <button class="reject-opt" data-reason="falso"><b>🚫 Es falso</b><span>Foto descontextualizada solo para sumar puntos.</span></button>
+        <button class="reject-opt" data-reason="incorrecto"><b>🎯 Es incorrecto</b><span>No tiene que ver con objetos que junten agua.</span></button>
+        <button class="reject-opt" data-reason="borrosa"><b>🌫️ Borrosa o poco visible</b><span>No se llega a ver bien qué se hizo.</span></button>
+        <button class="reject-cancel" id="rejectCancel">← Volver</button>
       </div>
     </div>
   </div>
@@ -1814,12 +1831,17 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     body.innerHTML =
       '<span class="role-badge">🛡️ Rol Revisor</span>'+
       '<div class="review-info"><div class="review-info-title">🗳️ Cómo funciona</div>'+
-      '<div class="review-info-text">Abrí cada reporte, mirá la foto y la nota, y votá si la acción se hizo bien. Cuando junta 3 votos correctos, se valida. Ganás <b>+3 pts</b> por cada revisión.</div></div>'+
+      '<div class="review-info-text">Revisás reportes de <b>'+(S.profile.city||'tu municipio')+'</b>. Mirá la foto y la nota, y votá si es correcto o rechazalo con un motivo. Con 3 votos correctos se valida; con 3 rechazos se descarta. Ganás <b>+3 pts</b> por revisión.</div></div>'+
       '<div id="reviewList"><div class="loading">Cargando…</div></div>';
+
+    if(!S.profile.city){
+      $('reviewList').innerHTML='<div class="empty">Elegí tu municipio en tu perfil para revisar los reportes de tu zona.</div>';
+      return Promise.resolve();
+    }
 
     return db.from('reports')
       .select('id,note,photo_url,photo_before_url,city,action_type,user_id,lat,lng,captured_at,photo_hash,review_count,tour_photos')
-      .eq('status','pendiente').neq('user_id', S.user.id)
+      .eq('status','pendiente').eq('city', S.profile.city).neq('user_id', S.user.id)
       .order('created_at',{ascending:true}).limit(40)
       .then(function(res){
         var list=$('reviewList'); if(!list) return;
@@ -1855,22 +1877,31 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function openReview(r){
     currentReview=r; var a=actionById(r.action_type)||{};
-    var tour = Array.isArray(r.tour_photos) ? r.tour_photos : null;
+    var mp=$('modalPhoto');
+    var tour = r.tour_photos;
+    if(typeof tour==='string'){ try{ tour=JSON.parse(tour); }catch(e){ tour=null; } }
+    if(!Array.isArray(tour)) tour=null;
     if(tour && tour.length){
-      $('modalPhoto').innerHTML =
+      mp.className='modal-photo tour';
+      mp.innerHTML =
         '<div class="modal-tour"><div class="modal-tour-label">🏠 Recorrido · '+tour.length+' lugares</div>'+
         '<div class="modal-tour-grid">'+ tour.map(function(t){
           return '<figure><img src="'+esc(t.url||'')+'" alt=""><figcaption>'+esc(t.title||'')+'</figcaption></figure>';
         }).join('') +'</div></div>';
     } else if(r.photo_before_url){
-      $('modalPhoto').innerHTML =
+      mp.className='modal-photo';
+      mp.innerHTML =
         '<div class="modal-ba">'+
           '<figure><img src="'+esc(r.photo_before_url)+'" alt=""><figcaption>Antes</figcaption></figure>'+
           '<figure><img src="'+esc(r.photo_url||'')+'" alt=""><figcaption>Después</figcaption></figure>'+
         '</div>';
     } else {
-      $('modalPhoto').innerHTML = r.photo_url ? '<img src="'+esc(r.photo_url)+'" alt="">' : (a.icon||'📷');
+      mp.className='modal-photo';
+      mp.innerHTML = r.photo_url ? '<img src="'+esc(r.photo_url)+'" alt="">' : (a.icon||'📷');
     }
+    // reset del panel de rechazo
+    var rr=$('rejectReasons'), vm=$('voteMain');
+    if(rr){ rr.classList.remove('show'); } if(vm){ vm.style.display='flex'; }
     $('modalAuthor').textContent = r._author||'Vecino/a';
     $('modalCity').textContent = '📍 '+(r.city||'—');
     $('modalActionIcon').textContent = a.icon||'🔄';
@@ -1899,15 +1930,14 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   function fmtDate(iso){ try{ return new Date(iso).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return iso; } }
   function closeReviewModal(){ $('reviewModal').classList.remove('show'); currentReview=null; }
 
-  function castVote(vote){
+  function castVote(vote, reason){
     if(!currentReview) return;
     var rid=currentReview.id; closeReviewModal();
-    db.from('report_reviews').insert({ report_id:rid, reviewer_id:S.user.id, vote:vote }).then(function(ins){
+    db.from('report_reviews').insert({ report_id:rid, reviewer_id:S.user.id, vote:vote, reason:reason||null }).then(function(ins){
       if(ins.error){ if(ins.error.code==='23505') return; throw ins.error; }
       S.myReviewedReports[rid]=1; S.stats.reviews+=1; $('statReviews').textContent=S.stats.reviews;
       return awardPoints(PTS_REVIEW).then(function(){ return renderRevisar(); }).then(function(){
-        var lbl = vote==='correcto'?'✅':vote==='dudoso'?'❓':'⚠️';
-        toast(lbl+' Voto registrado · +'+PTS_REVIEW+' pts');
+        toast((vote==='correcto'?'✅ Aprobado':'❌ Rechazado')+' · +'+PTS_REVIEW+' pts');
       });
     }).catch(function(e){ console.error(e); showErr('No se pudo registrar el voto: '+(e.message||e)); });
   }
@@ -2214,7 +2244,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   function openMyReports(){
     $('myReportsModal').classList.add('show');
     var box=$('myReportsList'); box.innerHTML='<div class="loading">Cargando…</div>';
-    db.from('reports').select('id,action_type,status,note,photo_url,photo_before_url,created_at,review_count,points_awarded')
+    db.from('reports').select('id,action_type,status,note,photo_url,photo_before_url,created_at,review_count,points_awarded,reject_reasons,tour_photos')
       .eq('user_id', S.user.id).order('created_at',{ascending:false}).limit(50)
       .then(function(res){
         if(res.error){ box.innerHTML='<div class="empty">No se pudieron cargar tus reportes.</div>'; return; }
@@ -2226,6 +2256,12 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   }
 
   function statusLabel(s){ return s==='validado'?'✅ Validado':s==='descartado'?'❌ Descartado':'⏳ En revisión'; }
+  var REJECT_LABELS={ falso:'Falso', incorrecto:'Incorrecto', borrosa:'Borrosa/poco visible', no_corresponde:'No corresponde', dudoso:'Dudoso' };
+  function rejectReasonsText(rr){
+    if(typeof rr==='string'){ try{ rr=JSON.parse(rr); }catch(e){ rr=null; } }
+    if(!Array.isArray(rr) || !rr.length) return 'sin especificar';
+    return rr.map(function(x){ return REJECT_LABELS[x]||x; }).join(', ');
+  }
 
   function buildMyRepItem(r){
     var a=actionById(r.action_type)||{};
@@ -2238,6 +2274,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         '<span class="myrep-st '+esc(r.status||'pendiente')+'">'+statusLabel(r.status)+'</span></div>'+
         '<div class="myrep-date">'+fmtDate(r.created_at)+' · 🗳️ '+(r.review_count||0)+'/3</div>'+
         '<div class="myrep-note">'+(r.note?('“'+esc(r.note)+'”'):'<span style="color:var(--muted);font-style:normal">Sin nota</span>')+'</div>'+
+        (r.status==='descartado' ? '<div class="myrep-reasons">❌ Motivos: '+rejectReasonsText(r.reject_reasons)+'</div>' : '')+
         '<div class="myrep-edit"><textarea maxlength="300">'+esc(r.note||'')+'</textarea>'+
           '<div class="myrep-actions"><button class="myrep-btn" data-act="save">Guardar</button><button class="myrep-btn" data-act="canceledit">Cancelar</button></div></div>'+
         '<div class="myrep-actions myrep-mainactions"><button class="myrep-btn" data-act="edit">✏️ Editar nota</button><button class="myrep-btn danger" data-act="delete">🗑️ Eliminar</button></div>'+
@@ -2335,7 +2372,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     document.querySelectorAll('[data-learn]').forEach(function(x){ x.addEventListener('click', function(){ showLearnView(x.dataset.learn); }); });
 
     $('modalCloseBtn').addEventListener('click', closeReviewModal);
-    document.querySelectorAll('.vote-btn').forEach(function(b){ b.addEventListener('click', function(){ castVote(b.dataset.vote); }); });
+    document.querySelector('.vote-btn[data-vote="correcto"]').addEventListener('click', function(){ castVote('correcto', null); });
+    $('voteRejectBtn').addEventListener('click', function(){ $('voteMain').style.display='none'; $('rejectReasons').classList.add('show'); });
+    $('rejectCancel').addEventListener('click', function(){ $('rejectReasons').classList.remove('show'); $('voteMain').style.display='flex'; });
+    document.querySelectorAll('.reject-opt').forEach(function(b){ b.addEventListener('click', function(){ castVote('rechazado', b.dataset.reason); }); });
     $('reviewModal').addEventListener('click', function(e){ if(e.target.id==='reviewModal') closeReviewModal(); });
     $('privacyCloseBtn').addEventListener('click', closePrivacy);
     $('privacyModal').addEventListener('click', function(e){ if(e.target.id==='privacyModal') closePrivacy(); });
