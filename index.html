@@ -114,6 +114,15 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .loading{text-align:center;color:var(--muted);font-size:13px;padding:30px 0}
 .retry-btn{display:block;margin:12px auto 0;background:var(--primary);color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:800;padding:11px 20px;min-height:44px;border-radius:12px;cursor:pointer}
 .retry-btn:hover{background:var(--primary-soft)}
+/* Botón fijo del House Tour (zona del pulgar) */
+.ht-fab{position:absolute;left:12px;right:12px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:60;display:none;align-items:center;gap:12px;background:linear-gradient(135deg,var(--accent-2),var(--accent-1));color:#fff;border:none;border-radius:16px;padding:12px 16px;min-height:60px;box-shadow:0 10px 26px rgba(30,128,105,.42);cursor:pointer;font-family:inherit;text-align:left}
+.ht-fab.show{display:flex;animation:htpop .3s ease}
+@keyframes htpop{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ht-fab-ic{font-size:28px;flex-shrink:0}
+.ht-fab-tx{flex:1;display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.ht-fab-tx b{font-size:15px;font-weight:800}
+.ht-fab-tx small{font-size:12px;opacity:.93;font-weight:600}
+.ht-fab-arrow{font-size:22px;font-weight:800;flex-shrink:0}
 .empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 12px;line-height:1.5}
 .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
 
@@ -507,7 +516,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
       <!-- REPORTAR -->
       <section class="section active" id="sec-reportar">
-        <div id="reportar-grid-view">
+        <div id="reportar-grid-view" style="padding-bottom:165px">
           <h2 class="section-title">📸 Reportar acción</h2>
           <p class="section-sub">Elegí una acción, sacá una foto y ganá puntos por proteger tu barrio.</p>
           <div id="actionsGrid"><div class="loading">Cargando…</div></div>
@@ -653,6 +662,12 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       <button class="navbtn" data-sec="revisar"><span class="em">🔍</span>Revisar</button>
       <button class="navbtn" data-sec="progreso"><span class="em">🏆</span>Progreso</button>
     </nav>
+
+    <button class="ht-fab" id="htFab" aria-label="Hacé el recorrido por tu casa">
+      <span class="ht-fab-ic">🏠</span>
+      <span class="ht-fab-tx"><b>Recorrido por tu casa</b><small>Revisá los focos · +5 pts por lugar</small></span>
+      <span class="ht-fab-arrow">→</span>
+    </button>
   </main>
 </div>
 
@@ -1480,11 +1495,13 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function renderActions(){
     var wrap=$('actionsGrid'); wrap.innerHTML='';
-    if(!S.actions.length){ wrap.appendChild(el('div','empty','No hay acciones disponibles. ¿Aplicaste supabase-fix.sql?')); return; }
+    // El House Tour va en el botón fijo de abajo, no en la grilla.
+    var actions=S.actions.filter(function(a){ return a.id!=='house_tour'; });
+    if(!actions.length){ wrap.appendChild(el('div','empty','No hay acciones disponibles. ¿Aplicaste supabase-fix.sql?')); updateHtFab(); return; }
 
     // Agrupar por 'location'
     var groups={};
-    S.actions.forEach(function(a){ var k=(a.location||'otras').toLowerCase(); (groups[k]=groups[k]||[]).push(a); });
+    actions.forEach(function(a){ var k=(a.location||'otras').toLowerCase(); (groups[k]=groups[k]||[]).push(a); });
     // Orden: exterior, interior, ambos, y luego cualquier otro
     var keys=[]; LOC_ORDER.forEach(function(k){ if(groups[k]) keys.push(k); });
     Object.keys(groups).forEach(function(k){ if(keys.indexOf(k)<0) keys.push(k); });
@@ -1495,23 +1512,29 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       wrap.appendChild(header);
       var grid=el('div','actions-grid');
       groups[k].forEach(function(a){
-        var star = a.id==='house_tour';
-        var card=el('div','action-card'+(star?' star':''));
+        var card=el('div','action-card');
         card.innerHTML =
-          (star?'<span class="action-star-badge">⭐ Destacada</span>':'')+
           '<div class="action-icon">'+esc(a.icon||'📍')+'</div>'+
           '<div class="action-title">'+esc(a.title)+'</div>'+
-          '<div class="action-tags"><span class="tag type">'+esc(a.kind||'')+'</span></div>'+
-          '<span class="pts">'+(star?('+'+HOUSE_TOUR_PTS_PER_STATION+' pts x lugar'):('+'+a.points+' pts'))+'</span>';
-        card.addEventListener('click', function(){ if(a.id==='house_tour') startHouseTour(a); else startFlow(a); });
+          '<span class="pts">+'+a.points+' pts</span>';
+        card.addEventListener('click', function(){ startFlow(a); });
         grid.appendChild(card);
       });
       wrap.appendChild(grid);
     });
+    updateHtFab();
   }
 
-  function startFlow(a){ currentAction=a; reportMode='simple'; pickedAfter=null; pickedBefore=null; attachLocation=!!S.geoConsent; $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide'); renderStep(1); }
-  function cancelFlow(){ $('reportar-grid-view').classList.remove('hide'); var f=$('reportar-flow-view'); f.classList.add('hide'); f.innerHTML=''; currentAction=null; reportMode='simple'; pickedAfter=null; pickedBefore=null; }
+  // Botón fijo del House Tour (zona del pulgar, siempre visible en Reportar)
+  function updateHtFab(){
+    var fab=$('htFab'); if(!fab) return;
+    var a=actionById('house_tour');
+    var onGrid = $('sec-reportar').classList.contains('active') && !$('reportar-grid-view').classList.contains('hide');
+    fab.classList.toggle('show', !!a && onGrid);
+  }
+
+  function startFlow(a){ currentAction=a; reportMode='simple'; pickedAfter=null; pickedBefore=null; attachLocation=!!S.geoConsent; $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide'); updateHtFab(); renderStep(1); }
+  function cancelFlow(){ $('reportar-grid-view').classList.remove('hide'); var f=$('reportar-flow-view'); f.classList.add('hide'); f.innerHTML=''; currentAction=null; reportMode='simple'; pickedAfter=null; pickedBefore=null; updateHtFab(); }
   function reportPoints(){ return currentAction.points + (reportMode==='ba'?PTS_BA_BONUS:0); }
 
   // =====================================================================
@@ -1521,7 +1544,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function startHouseTour(a){
     tourAction=a; tourFiles={}; tourIdx=0; tourAttachLoc=!!S.geoConsent;
-    $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide');
+    $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide'); updateHtFab();
     var sel=S.tourStations;
     if(Array.isArray(sel) && sel.length){ tourList=sel.map(tourStationByKey).filter(Boolean); renderTourIntro(); }
     else renderTourSetup();
@@ -2364,6 +2387,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     if(sec==='aprender') showLearnView('menu');
     if(sec==='revisar') renderRevisar();
     if(sec==='progreso') showProgTab('me');
+    updateHtFab();
   }
 
   // =====================================================================
@@ -2409,6 +2433,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('cityReqModal').addEventListener('click', function(e){ if(e.target.id==='cityReqModal') closeCityReq(); });
 
     document.querySelectorAll('.navbtn').forEach(function(b){ b.addEventListener('click', function(){ showSection(b.dataset.sec); }); });
+    $('htFab').addEventListener('click', function(){ var a=actionById('house_tour'); if(a) startHouseTour(a); });
     document.querySelectorAll('.prog-tab').forEach(function(b){ b.addEventListener('click', function(){ showProgTab(b.dataset.ptab); }); });
     $('cardSent').addEventListener('click', openMyReports);
     $('myReportsCloseBtn').addEventListener('click', closeMyReports);
