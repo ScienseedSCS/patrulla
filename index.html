@@ -104,6 +104,26 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .setting-msg{font-size:12px;font-weight:700;margin:2px 0 8px;display:none}
 .setting-msg.show{display:block}
 .setting-msg.ok{color:var(--ok)} .setting-msg.err{color:var(--danger)}
+.setting-current{font-size:12px;color:var(--muted);margin-bottom:10px;background:#F3ECE4;padding:9px 11px;border-radius:8px}
+/* Coach del primer reporte */
+.coach-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--accent-2),var(--accent-1));color:#fff;border-radius:14px;padding:12px 14px;margin-bottom:14px;box-shadow:var(--shadow);animation:htpop .3s ease}
+.coach-ic{font-size:26px;flex-shrink:0}
+.coach-tx{flex:1;display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.coach-tx b{font-size:14px;font-weight:800}
+.coach-tx small{font-size:12px;opacity:.95}
+.coach-skip{background:rgba(255,255,255,.22);border:none;color:#fff;font-family:inherit;font-size:12px;font-weight:800;padding:8px 12px;min-height:40px;border-radius:10px;cursor:pointer;flex-shrink:0}
+.coach-hint{background:#E9F5EC;color:#1c6b4f;font-size:13px;font-weight:700;padding:10px 12px;border-radius:10px;margin-bottom:12px;text-align:center;line-height:1.35}
+/* Celebración milestone */
+.celebrate{position:fixed;inset:0;z-index:1100;background:linear-gradient(160deg,#2f7d5b,#1e8069 60%,#173a2e);display:none;align-items:center;justify-content:center;padding:26px;text-align:center}
+.celebrate.show{display:flex;animation:fade .3s ease}
+.celebrate-card{max-width:360px}
+.celebrate-emoji{font-size:76px;line-height:1;animation:htpop .5s ease}
+.celebrate-title{font-family:'DM Serif Display',serif;font-size:30px;color:#fff;margin:12px 0 8px}
+.celebrate-text{font-size:15px;color:#EAF6EF;line-height:1.55;margin-bottom:10px}
+.celebrate-pts{display:inline-block;background:var(--secondary);color:var(--primary);font-weight:800;font-size:16px;padding:8px 18px;border-radius:999px;margin-bottom:22px}
+.celebrate .btn{background:#fff;color:var(--primary)}
+.confetti{position:absolute;font-size:22px;animation:conffall linear forwards;pointer-events:none}
+@keyframes conffall{from{transform:translateY(-40px) rotate(0);opacity:1}to{transform:translateY(110vh) rotate(360deg);opacity:.9}}
 
 .content{flex:1;padding:16px 14px 28px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .section{display:none}
@@ -642,6 +662,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
           <div class="setting-row" data-acc="email"><span>✉️ Cambiar email</span><span class="chev">▸</span></div>
           <div class="setting-panel" id="acc-email">
+            <div class="setting-current" id="curEmail"></div>
             <div class="field"><label for="pfEmail">Nuevo email</label><input type="email" id="pfEmail" placeholder="nuevo@email.com"></div>
             <div class="setting-msg" id="msgEmail"></div>
             <button class="btn btn-accent" id="saveEmail">Cambiar email</button>
@@ -777,6 +798,17 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         <button class="btn btn-accent" id="pushAskAccept">Activar</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- CELEBRACIÓN PRIMER REPORTE -->
+<div class="celebrate" id="celebrateModal">
+  <div class="celebrate-card">
+    <div class="celebrate-emoji">🎉</div>
+    <div class="celebrate-title">¡Tu primer reporte!</div>
+    <div class="celebrate-text">Acabás de sumar tu primera acción contra el mosquito. Ya sos parte de la Patrulla Antimosquito. 🦟💪</div>
+    <div class="celebrate-pts" id="celebratePts">+15 pts</div>
+    <button class="btn" id="celebrateBtn">¡Seguir cuidando el barrio!</button>
   </div>
 </div>
 
@@ -1139,6 +1171,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       db.from('profiles').update({ onboarded:true }).eq('id', S.user.id).then(function(){}, function(){});
     }
     maybeSoftAskPush();
+    maybeStartFirstReportTour();
   }
 
   // =====================================================================
@@ -1287,6 +1320,13 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     var c=document.querySelector('.content'); if(c) c.scrollTop=0;
   }
 
+  function maskEmail(email){
+    if(!email || email.indexOf('@')<0) return '—';
+    var parts=email.split('@'), local=parts[0], dom=parts[1]||'';
+    function mask(s){ if(!s) return ''; if(s.length<=2) return s[0]+'*'; return s.slice(0,2)+'***'; }
+    var dparts=dom.split('.'), dname=dparts[0], tld=dparts.length>1?('.'+dparts.slice(1).join('.')):'';
+    return mask(local)+'@'+mask(dname)+tld;
+  }
   function renderProfile(){
     var p=S.profile||{}, name=p.username||'Vecino/a';
     $('profAvatar').textContent=(name.trim()[0]||'·');
@@ -1295,6 +1335,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('profMeta').innerHTML = (p.city?('📍 '+esc(p.city)+' · '):'')+lvl.emoji+' '+esc(lvl.name)+' · '+(p.points||0)+' pts';
     $('pfName').value=name;
     fillCitySelect($('pfCity'), p.city);
+    var ce=$('curEmail'); if(ce) ce.innerHTML='Tu email actual: <b>'+esc(maskEmail(S.user&&S.user.email))+'</b>';
     // cerrar paneles y limpiar mensajes
     document.querySelectorAll('#sec-profile .setting-panel').forEach(function(pl){ pl.classList.remove('open'); });
     document.querySelectorAll('#sec-profile .setting-row').forEach(function(r){ r.classList.remove('open'); });
@@ -1360,7 +1401,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       $('boot').classList.add('hide');
       $('appScreen').classList.remove('hide');
       if(S.profile && !S.profile.onboarded) showOnboarding();
-      else maybeSoftAskPush();
+      else { maybeSoftAskPush(); maybeStartFirstReportTour(); }
     }).catch(function(e){
       console.error(e);
       showErr(humanError(e,'No pudimos cargar tus datos','Revisá tu conexión y recargá la app.'));
@@ -1507,6 +1548,12 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function renderActions(){
     var wrap=$('actionsGrid'); wrap.innerHTML='';
+    if(coachActive && (S.stats.reports||0)===0){
+      var banner=el('div','coach-banner');
+      banner.innerHTML='<span class="coach-ic">🎯</span><div class="coach-tx"><b>¡Hagamos tu primer reporte!</b><small>Elegí una acción que hayas hecho 👇</small></div><button class="coach-skip" id="coachSkip">Saltar</button>';
+      wrap.appendChild(banner);
+      banner.querySelector('#coachSkip').addEventListener('click', function(ev){ ev.stopPropagation(); skipCoach(); });
+    }
     var actions=S.actions.filter(function(a){ return a.id!=='house_tour'; });
     if(!actions.length && !actionById('house_tour')){ wrap.appendChild(el('div','empty','No hay acciones disponibles. ¿Aplicaste supabase-fix.sql?')); return; }
 
@@ -1550,6 +1597,41 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   }
 
   function updateHtFab(){}  // (obsoleto: el House Tour volvió a la lista)
+
+  // ---- Tour del primer reporte (milestone) ----------------------------
+  var coachActive=false;
+  function coachDone(){ try{ return localStorage.getItem('pa_first_report_done')==='1'; }catch(e){ return false; } }
+  function markCoachDone(){ try{ localStorage.setItem('pa_first_report_done','1'); }catch(e){} }
+  function maybeStartFirstReportTour(){
+    if(coachDone()) return;
+    if((S.stats.reports||0) > 0){ markCoachDone(); return; }
+    coachActive=true; renderActions();  // agrega el banner guía a la lista
+  }
+  function skipCoach(){ coachActive=false; markCoachDone(); renderActions(); }
+  function coachStepHint(step){
+    var m={1:'📖 Leé de qué se trata y tocá «Entendido, continuar».',
+           2:'📷 Sacá o subí una foto de lo que hiciste.',
+           3:'📝 Sumá una nota si querés y tocá «Enviar reporte». ¡Ya casi!'};
+    return m[step]||'';
+  }
+  function showCelebration(pts){
+    coachActive=false; markCoachDone();
+    $('celebratePts').textContent='+'+pts+' pts';
+    var m=$('celebrateModal'); m.classList.add('show');
+    // confeti simple
+    var emo=['🎉','🎊','🦟','⭐','💧','🏆'];
+    for(var i=0;i<18;i++){
+      (function(i){
+        var c=el('span','confetti', emo[i%emo.length]);
+        c.style.left=(Math.random()*100)+'%';
+        c.style.animationDuration=(2+Math.random()*2)+'s';
+        c.style.animationDelay=(Math.random()*0.6)+'s';
+        m.appendChild(c);
+        setTimeout(function(){ if(c.parentNode) c.parentNode.removeChild(c); }, 4200);
+      })(i);
+    }
+  }
+  function closeCelebration(){ $('celebrateModal').classList.remove('show'); }
 
   function startFlow(a){
     currentAction=a; reportMode='simple'; pickedAfter=null; pickedBefore=null; attachLocation=!!S.geoConsent;
@@ -1700,8 +1782,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     }).then(function(){
       return awardPoints(total);
     }).then(function(){
+      var wasFirst=(S.stats.reports||0)===0;
       S.stats.reports+=1; if($('statReports')) $('statReports').textContent=S.stats.reports;
-      cancelFlow(); toast('¡Recorrido enviado! +'+total+' pts 🏠🎉');
+      cancelFlow();
+      if(wasFirst) showCelebration(total); else toast('¡Recorrido enviado! +'+total+' pts 🏠🎉');
     }).catch(function(e){
       console.error(e); showErr(humanError(e,'No pudimos enviar tu recorrido','Revisá las fotos y volvé a tocar Enviar recorrido.'));
       btn.disabled=false; btn.textContent='Enviar recorrido (+'+total+' pts)';
@@ -1768,6 +1852,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         else { attachLocation=gt.checked; }
       });
       $('privacyOpen').addEventListener('click', function(){ openPrivacy(false); });
+    }
+    if(coachActive){
+      var sc=flow.querySelector('.step-card');
+      if(sc){ var hint=el('div','coach-hint'); hint.textContent=coachStepHint(step); sc.insertBefore(hint, sc.firstChild); }
     }
   }
 
@@ -1912,8 +2000,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     }).then(function(hash){
       return awardPoints(total).then(function(){ return hash; });
     }).then(function(hash){
+      var wasFirst=(S.stats.reports||0)===0;
       S.stats.reports+=1; $('statReports').textContent=S.stats.reports;
-      cancelFlow(); toast('¡Reporte enviado! +'+total+' pts 🎉');
+      cancelFlow();
+      if(wasFirst) showCelebration(total); else toast('¡Reporte enviado! +'+total+' pts 🎉');
       checkDuplicate(hash);
     }).catch(function(e){
       console.error(e); showErr(humanError(e,'No pudimos enviar tu reporte','Revisá que la foto se haya cargado y volvé a tocar Enviar.'));
@@ -2484,6 +2574,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('myReportsModal').addEventListener('click', function(e){ if(e.target.id==='myReportsModal') closeMyReports(); });
     $('actionInfoClose').addEventListener('click', closeActionInfo);
     $('actionInfoModal').addEventListener('click', function(e){ if(e.target.id==='actionInfoModal') closeActionInfo(); });
+    $('celebrateBtn').addEventListener('click', closeCelebration);
     document.querySelectorAll('[data-learn]').forEach(function(x){ x.addEventListener('click', function(){ showLearnView(x.dataset.learn); }); });
 
     $('modalCloseBtn').addEventListener('click', closeReviewModal);
