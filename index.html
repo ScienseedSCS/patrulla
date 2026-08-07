@@ -114,15 +114,23 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .loading{text-align:center;color:var(--muted);font-size:13px;padding:30px 0}
 .retry-btn{display:block;margin:12px auto 0;background:var(--primary);color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:800;padding:11px 20px;min-height:44px;border-radius:12px;cursor:pointer}
 .retry-btn:hover{background:var(--primary-soft)}
-/* Botón fijo del House Tour (zona del pulgar) */
-.ht-fab{position:absolute;left:12px;right:12px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:60;display:none;align-items:center;gap:12px;background:linear-gradient(135deg,var(--accent-2),var(--accent-1));color:#fff;border:none;border-radius:16px;padding:12px 16px;min-height:60px;box-shadow:0 10px 26px rgba(30,128,105,.42);cursor:pointer;font-family:inherit;text-align:left}
-.ht-fab.show{display:flex;animation:htpop .3s ease}
-@keyframes htpop{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
-.ht-fab-ic{font-size:28px;flex-shrink:0}
-.ht-fab-tx{flex:1;display:flex;flex-direction:column;line-height:1.2;min-width:0}
-.ht-fab-tx b{font-size:15px;font-weight:800}
-.ht-fab-tx small{font-size:12px;opacity:.93;font-weight:600}
-.ht-fab-arrow{font-size:22px;font-weight:800;flex-shrink:0}
+/* Card doble del House Tour (al final de la lista) */
+.ht-card{display:flex;align-items:center;gap:14px;text-align:left;margin-top:16px;background:linear-gradient(180deg,#fff,#FBF6EA);border:2px solid var(--accent);border-radius:16px;padding:16px;box-shadow:var(--shadow);cursor:pointer;position:relative;min-height:88px}
+.ht-card:hover{transform:translateY(-2px)}
+.ht-card-ic{font-size:40px;flex-shrink:0}
+.ht-card-body{flex:1;min-width:0}
+.ht-card-badge{display:inline-block;background:var(--accent-2);color:#fff;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;margin-bottom:4px}
+.ht-card-title{font-family:'DM Serif Display',serif;font-size:19px;color:var(--primary);line-height:1.1}
+.ht-card-sub{font-size:12px;color:var(--muted);margin:3px 0 6px;line-height:1.35}
+.ht-card-arrow{font-size:22px;color:var(--accent-2);font-weight:800;flex-shrink:0}
+/* Botón de info en las cards de acción */
+.action-card{position:relative}
+.action-info{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;background:rgba(51,31,58,.06);border:none;color:var(--primary-soft);font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;line-height:1}
+.action-info:hover{background:rgba(51,31,58,.14)}
+.info-body{padding:24px 20px}
+.info-body .step-icon-big,.info-body .info-ic{font-size:56px;text-align:center;margin-bottom:6px}
+.info-body h3{font-family:'DM Serif Display',serif;font-size:22px;color:var(--primary);text-align:center;margin-bottom:10px}
+.info-body p{font-size:14px;color:var(--text);line-height:1.5;margin-bottom:12px}
 .empty{text-align:center;color:var(--muted);font-size:13px;padding:24px 12px;line-height:1.5}
 .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
 
@@ -153,6 +161,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .flow-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .flow-back{background:none;border:none;color:var(--primary);font-weight:700;font-size:14px;cursor:pointer;padding:10px 6px;min-height:44px;display:inline-flex;align-items:center}
 .step-pill{background:var(--primary);color:#fff;font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px}
+.flow-info{background:rgba(51,31,58,.07);border:none;width:44px;height:44px;border-radius:50%;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.flow-info:hover{background:rgba(51,31,58,.15)}
 .step-card{background:var(--card);border-radius:var(--radius);padding:20px 16px;box-shadow:var(--shadow)}
 .step-icon-big{font-size:56px;text-align:center;margin-bottom:10px}
 .step-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--primary);text-align:center;margin-bottom:10px;line-height:1.15}
@@ -516,7 +526,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
       <!-- REPORTAR -->
       <section class="section active" id="sec-reportar">
-        <div id="reportar-grid-view" style="padding-bottom:165px">
+        <div id="reportar-grid-view">
           <h2 class="section-title">📸 Reportar acción</h2>
           <p class="section-sub">Elegí una acción, sacá una foto y ganá puntos por proteger tu barrio.</p>
           <div id="actionsGrid"><div class="loading">Cargando…</div></div>
@@ -662,12 +672,6 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       <button class="navbtn" data-sec="revisar"><span class="em">🔍</span>Revisar</button>
       <button class="navbtn" data-sec="progreso"><span class="em">🏆</span>Progreso</button>
     </nav>
-
-    <button class="ht-fab" id="htFab" aria-label="Hacé el recorrido por tu casa">
-      <span class="ht-fab-ic">🏠</span>
-      <span class="ht-fab-tx"><b>Recorrido por tu casa</b><small>Revisá los focos · +5 pts por lugar</small></span>
-      <span class="ht-fab-arrow">→</span>
-    </button>
   </main>
 </div>
 
@@ -740,6 +744,14 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- INFO DE ACCIÓN -->
+<div class="modal-backdrop" id="actionInfoModal">
+  <div class="modal">
+    <button class="modal-close" id="actionInfoClose" aria-label="Cerrar">✕</button>
+    <div class="info-body" id="actionInfoBody"></div>
+  </div>
+</div>
 
 <!-- MIS REPORTES -->
 <div class="modal-backdrop" id="myReportsModal">
@@ -1486,7 +1498,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   // =====================================================================
   //  REPORTAR
   // =====================================================================
-  var currentAction=null, reportMode='simple', pickedAfter=null, pickedBefore=null, attachLocation=false;
+  var currentAction=null, reportMode='simple', pickedAfter=null, pickedBefore=null, attachLocation=false, flowEnteredAtPhoto=false;
 
   function actionById(id){ for(var i=0;i<S.actions.length;i++){ if(S.actions[i].id===id) return S.actions[i]; } return null; }
 
@@ -1495,14 +1507,11 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function renderActions(){
     var wrap=$('actionsGrid'); wrap.innerHTML='';
-    // El House Tour va en el botón fijo de abajo, no en la grilla.
     var actions=S.actions.filter(function(a){ return a.id!=='house_tour'; });
-    if(!actions.length){ wrap.appendChild(el('div','empty','No hay acciones disponibles. ¿Aplicaste supabase-fix.sql?')); updateHtFab(); return; }
+    if(!actions.length && !actionById('house_tour')){ wrap.appendChild(el('div','empty','No hay acciones disponibles. ¿Aplicaste supabase-fix.sql?')); return; }
 
-    // Agrupar por 'location'
     var groups={};
     actions.forEach(function(a){ var k=(a.location||'otras').toLowerCase(); (groups[k]=groups[k]||[]).push(a); });
-    // Orden: exterior, interior, ambos, y luego cualquier otro
     var keys=[]; LOC_ORDER.forEach(function(k){ if(groups[k]) keys.push(k); });
     Object.keys(groups).forEach(function(k){ if(keys.indexOf(k)<0) keys.push(k); });
 
@@ -1514,28 +1523,60 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       groups[k].forEach(function(a){
         var card=el('div','action-card');
         card.innerHTML =
+          '<button class="action-info" aria-label="Qué es esta acción">ℹ️</button>'+
           '<div class="action-icon">'+esc(a.icon||'📍')+'</div>'+
           '<div class="action-title">'+esc(a.title)+'</div>'+
           '<span class="pts">+'+a.points+' pts</span>';
+        card.querySelector('.action-info').addEventListener('click', function(ev){ ev.stopPropagation(); openActionInfo(a); });
         card.addEventListener('click', function(){ startFlow(a); });
         grid.appendChild(card);
       });
       wrap.appendChild(grid);
     });
-    updateHtFab();
+
+    // House Tour: card doble, al final, destacada con mesura
+    var ht=actionById('house_tour');
+    if(ht){
+      var htc=el('div','ht-card');
+      htc.innerHTML =
+        '<div class="ht-card-ic">🏠</div>'+
+        '<div class="ht-card-body"><span class="ht-card-badge">🔁 Una vez por semana</span>'+
+        '<div class="ht-card-title">Recorrido por tu casa</div>'+
+        '<div class="ht-card-sub">Revisá los focos lugar por lugar y sumá +'+HOUSE_TOUR_PTS_PER_STATION+' pts por cada uno.</div></div>'+
+        '<div class="ht-card-arrow">→</div>';
+      htc.addEventListener('click', function(){ startHouseTour(ht); });
+      wrap.appendChild(htc);
+    }
   }
 
-  // Botón fijo del House Tour (zona del pulgar, siempre visible en Reportar)
-  function updateHtFab(){
-    var fab=$('htFab'); if(!fab) return;
-    var a=actionById('house_tour');
-    var onGrid = $('sec-reportar').classList.contains('active') && !$('reportar-grid-view').classList.contains('hide');
-    fab.classList.toggle('show', !!a && onGrid);
-  }
+  function updateHtFab(){}  // (obsoleto: el House Tour volvió a la lista)
 
-  function startFlow(a){ currentAction=a; reportMode='simple'; pickedAfter=null; pickedBefore=null; attachLocation=!!S.geoConsent; $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide'); updateHtFab(); renderStep(1); }
-  function cancelFlow(){ $('reportar-grid-view').classList.remove('hide'); var f=$('reportar-flow-view'); f.classList.add('hide'); f.innerHTML=''; currentAction=null; reportMode='simple'; pickedAfter=null; pickedBefore=null; updateHtFab(); }
+  function startFlow(a){
+    currentAction=a; reportMode='simple'; pickedAfter=null; pickedBefore=null; attachLocation=!!S.geoConsent;
+    $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide');
+    // La explicación se muestra solo la primera vez que entrás a cada categoría.
+    flowEnteredAtPhoto = introSeen(a.id);
+    renderStep(flowEnteredAtPhoto ? 2 : 1);
+  }
+  function cancelFlow(){ $('reportar-grid-view').classList.remove('hide'); var f=$('reportar-flow-view'); f.classList.add('hide'); f.innerHTML=''; currentAction=null; reportMode='simple'; pickedAfter=null; pickedBefore=null; }
   function reportPoints(){ return currentAction.points + (reportMode==='ba'?PTS_BA_BONUS:0); }
+
+  // Recordar qué categorías ya vieron su explicación (por dispositivo)
+  function introSeen(id){ try{ return localStorage.getItem('pa_intro_'+id)==='1'; }catch(e){ return false; } }
+  function markIntroSeen(id){ try{ localStorage.setItem('pa_intro_'+id,'1'); }catch(e){} }
+
+  // Modal de información de una acción (disponible siempre desde la card o el flujo)
+  function openActionInfo(a){
+    $('actionInfoBody').innerHTML =
+      '<div class="info-ic">'+esc(a.icon||'📍')+'</div>'+
+      '<h3>'+esc(a.title)+'</h3>'+
+      '<p><b>Qué hacer:</b> '+esc(a.description||'Reportá esta acción con una foto.')+'</p>'+
+      '<p style="color:var(--muted)">Sumás <b>+'+a.points+' pts</b> al reportarla'+(a.location?(' · '+esc(cap(a.location))):'')+'.</p>'+
+      '<button class="btn btn-accent" id="infoStartBtn">Reportar esto →</button>';
+    $('actionInfoModal').classList.add('show');
+    $('infoStartBtn').onclick=function(){ closeActionInfo(); startFlow(a); };
+  }
+  function closeActionInfo(){ $('actionInfoModal').classList.remove('show'); }
 
   // =====================================================================
   //  HOUSE TOUR guiado (recorrido por estaciones)
@@ -1670,17 +1711,20 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   function renderStep(step){
     var a=currentAction, flow=$('reportar-flow-view');
     if(step===1){
+      markIntroSeen(a.id);
       flow.innerHTML =
-        '<div class="flow-header"><button class="flow-back" id="fCancel">← Cancelar</button><span class="step-pill">1 de 3</span></div>'+
+        '<div class="flow-header"><button class="flow-back" id="fCancel">← Cancelar</button><span class="step-pill">Info</span></div>'+
         '<div class="step-card"><div class="step-icon-big">'+esc(a.icon||'📍')+'</div>'+
         '<div class="step-title">'+esc(a.title)+'</div>'+
         '<div class="step-desc"><b>Qué hacer:</b> '+esc(a.description||'')+'</div>'+
-        '<div class="step-meta"><span class="tag">'+esc(a.location||'')+'</span><span class="tag type">'+esc(a.kind||'')+'</span><span class="pts">+'+a.points+' pts</span></div>'+
+        '<div class="step-meta"><span class="pts">+'+a.points+' pts</span></div>'+
         '<button class="btn" id="fN1">Entendido, continuar →</button></div>';
       $('fCancel').onclick=cancelFlow; $('fN1').onclick=function(){renderStep(2);};
     } else if(step===2){
+      var back = function(){ if(flowEnteredAtPhoto) cancelFlow(); else renderStep(1); };
       flow.innerHTML =
-        '<div class="flow-header"><button class="flow-back" id="fB2">← Volver</button><span class="step-pill">2 de 3</span></div>'+
+        '<div class="flow-header"><button class="flow-back" id="fB2">← Volver</button><span class="step-pill">Foto</span>'+
+        '<button class="flow-info" id="fInfo" aria-label="Qué estoy reportando">ℹ️</button></div>'+
         '<div class="step-card"><div class="step-title" style="font-size:19px">📷 Documentá la acción</div>'+
         '<div class="step-desc" style="margin-bottom:12px">Elegí cómo mostrar lo que hiciste.</div>'+
         '<div class="mode-row">'+
@@ -1690,7 +1734,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         '<div class="mode-hint" id="modeHint"></div>'+
         '<div id="photoZone"></div>'+
         '<div class="btn-row"><button class="btn btn-secondary" id="fB2b">← Volver</button><button class="btn" id="fN2" disabled>Continuar →</button></div></div>';
-      $('fB2').onclick=function(){renderStep(1);}; $('fB2b').onclick=function(){renderStep(1);}; $('fN2').onclick=function(){renderStep(3);};
+      $('fB2').onclick=back; $('fB2b').onclick=back; $('fN2').onclick=function(){renderStep(3);};
+      $('fInfo').onclick=function(){ openActionInfo(a); };
       $('modeSimple').addEventListener('click', function(){ setMode('simple'); });
       $('modeBA').addEventListener('click', function(){ setMode('ba'); });
       setMode(reportMode);
@@ -1706,7 +1751,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         previewHtml = '<div class="photo-preview">'+(pvA?'<img src="'+pvA+'" alt=""><span class="check">✔</span>':esc(a.icon||'📍'))+'</div>';
       }
       flow.innerHTML =
-        '<div class="flow-header"><button class="flow-back" id="fB3">← Volver</button><span class="step-pill">3 de 3</span></div>'+
+        '<div class="flow-header"><button class="flow-back" id="fB3">← Volver</button><span class="step-pill">Enviar</span></div>'+
         '<div class="step-card"><div class="step-title" style="font-size:19px">📝 Contexto y enviar</div>'+
         previewHtml+
         '<div class="meta-card"><div class="meta-row">'+
@@ -2433,11 +2478,12 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('cityReqModal').addEventListener('click', function(e){ if(e.target.id==='cityReqModal') closeCityReq(); });
 
     document.querySelectorAll('.navbtn').forEach(function(b){ b.addEventListener('click', function(){ showSection(b.dataset.sec); }); });
-    $('htFab').addEventListener('click', function(){ var a=actionById('house_tour'); if(a) startHouseTour(a); });
     document.querySelectorAll('.prog-tab').forEach(function(b){ b.addEventListener('click', function(){ showProgTab(b.dataset.ptab); }); });
     $('cardSent').addEventListener('click', openMyReports);
     $('myReportsCloseBtn').addEventListener('click', closeMyReports);
     $('myReportsModal').addEventListener('click', function(e){ if(e.target.id==='myReportsModal') closeMyReports(); });
+    $('actionInfoClose').addEventListener('click', closeActionInfo);
+    $('actionInfoModal').addEventListener('click', function(e){ if(e.target.id==='actionInfoModal') closeActionInfo(); });
     document.querySelectorAll('[data-learn]').forEach(function(x){ x.addEventListener('click', function(){ showLearnView(x.dataset.learn); }); });
 
     $('modalCloseBtn').addEventListener('click', closeReviewModal);
