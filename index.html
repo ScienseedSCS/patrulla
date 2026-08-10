@@ -2414,8 +2414,9 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     progTab=tab;
     ['me','city','region'].forEach(function(t){ $('prog-'+t).classList.toggle('hide', t!==tab); });
     document.querySelectorAll('.prog-tab').forEach(function(b){ b.classList.toggle('active', b.dataset.ptab===tab); });
-    if(tab==='city'){ track('ranking_view', { tab:'city', city:S.profile.city||null }); renderCityTab(); }
-    if(tab==='region'){ track('ranking_view', { tab:'region' }); renderRegionTab(); }
+    track('ranking_view', { tab:tab, city:(tab==='city'?(S.profile.city||null):null) });
+    if(tab==='city') renderCityTab();
+    if(tab==='region') renderRegionTab();
   }
 
   function totalCards(items){

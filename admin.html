@@ -32,21 +32,28 @@ body{
 h1,h2,h3{font-family:'DM Serif Display',serif;font-weight:400;margin:0}
 ::selection{background:var(--teal);color:#0E1613}
 a{color:var(--teal)}
+input[type=date]{color-scheme:dark}
 
 .wrap{max-width:1320px;margin:0 auto;padding:22px 26px 60px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px}
 .brand{display:flex;align-items:center;gap:12px}
 .brand-logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--teal),#1E8069);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:var(--shadow)}
 .brand-tx h1{font-size:22px;color:#fff;line-height:1.1}
 .brand-tx span{font-size:12px;color:var(--muted);letter-spacing:.4px}
+
+.controls-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
 .top-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .range-pills{display:flex;background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:3px}
 .range-pill{background:none;border:none;color:var(--muted);font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:8px;cursor:pointer;transition:background .15s,color .15s}
 .range-pill.active{background:var(--teal);color:#0E1613}
-.icon-btn{background:var(--panel);border:1px solid var(--border);color:var(--cream);width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.daterange{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:5px 8px}
+.daterange input{background:none;border:none;color:var(--cream);font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px}
+.daterange span{color:var(--muted-2);font-size:12px}
+.icon-btn{background:var(--panel);border:1px solid var(--border);color:var(--cream);width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .icon-btn:hover{background:var(--panel-2)}
 .icon-btn.spin svg{animation:spin .7s linear}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.range-label{font-size:11.5px;color:var(--muted-2);margin-top:6px}
 .updated{font-size:11.5px;color:var(--muted-2)}
 
 .warn-banner{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,rgba(226,105,95,.16),rgba(244,209,139,.10));border:1px solid rgba(226,105,95,.35);color:#F6D9D5;font-size:12.5px;font-weight:600;padding:10px 14px;border-radius:12px;margin-bottom:20px;line-height:1.5}
@@ -63,7 +70,7 @@ a{color:var(--teal)}
 .grid.g3{grid-template-columns:repeat(3,1fr)}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
 .panel.wide{grid-column:1 / -1}
-.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
 .panel-title{font-size:16px;color:#fff}
 .panel-sub{font-size:11.5px;color:var(--muted);margin-top:2px;font-family:'Raleway',sans-serif}
 .legend{display:flex;gap:14px;font-size:11px;color:var(--muted)}
@@ -112,22 +119,24 @@ a{color:var(--teal)}
 .mini-stat span{font-size:10.5px;color:var(--muted)}
 
 .cmp-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.cmp-label{width:96px;font-size:12px;font-weight:700;color:var(--cream);flex-shrink:0}
+.cmp-row:last-child{margin-bottom:0}
+.cmp-label{width:104px;font-size:12px;font-weight:700;color:var(--cream);flex-shrink:0}
 .cmp-track{flex:1;background:rgba(244,233,218,.07);border-radius:999px;height:16px;overflow:hidden}
 .cmp-fill{height:100%;border-radius:999px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px}
 .cmp-fill span{font-size:10px;font-weight:800;color:#0E1613;font-family:'JetBrains Mono',monospace}
 
-.feed-title-row{display:flex;align-items:center;gap:8px}
-.live-dot{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:pulse 1.4s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
-.live-lbl{font-size:10.5px;font-weight:800;color:var(--coral);letter-spacing:.5px}
-.feed{max-height:460px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
-.feed-row{display:flex;align-items:baseline;gap:10px;padding:9px 4px;border-bottom:1px solid rgba(244,233,218,.05);font-size:12.5px}
-.feed-time{font-family:'JetBrains Mono',monospace;color:var(--muted-2);font-size:10.5px;width:64px;flex-shrink:0}
-.feed-ic{flex-shrink:0}
-.feed-tx{flex:1;color:var(--cream);line-height:1.4}
-.feed-tx b{color:#fff}
-.feed-city{font-size:10px;color:var(--muted-2);background:rgba(244,233,218,.06);padding:2px 7px;border-radius:999px;flex-shrink:0}
+.table-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.table-filter{flex:1;background:var(--panel-2);border:1px solid var(--border);color:var(--cream);font-family:inherit;font-size:12.5px;padding:9px 12px;border-radius:9px}
+.table-filter::placeholder{color:var(--muted-2)}
+.csv-btn{background:var(--panel-2);border:1px solid var(--border);color:var(--cream);font-family:inherit;font-size:12px;font-weight:700;padding:9px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.csv-btn:hover{background:#382A40}
+.data-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.data-table th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--border)}
+.data-table td{padding:9px 10px;border-bottom:1px solid rgba(244,233,218,.05);color:var(--cream)}
+.data-table tbody tr:hover{background:rgba(244,233,218,.03)}
+.data-table td.num{font-family:'JetBrains Mono',monospace;color:var(--muted)}
+.table-empty{text-align:center;color:var(--muted-2);padding:20px !important}
+.table-scroll{max-height:420px;overflow-y:auto;border-radius:10px}
 
 footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);line-height:1.6}
 
@@ -137,6 +146,7 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
 @media(max-width:640px){
   .wrap{padding:16px}
   .kpi-num{font-size:24px}
+  .daterange{flex-wrap:wrap}
 }
 </style>
 </head>
@@ -152,18 +162,29 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
         <span>PATRULLA ANTIMOSQUITO · FUNDACIÓN MUNDO SANO</span>
       </div>
     </div>
+    <span class="updated" id="updatedAt">—</span>
+  </div>
+
+  <div class="controls-row">
     <div class="top-controls">
       <div class="range-pills" id="rangePills">
-        <button class="range-pill" data-days="7">7 días</button>
-        <button class="range-pill active" data-days="30">30 días</button>
-        <button class="range-pill" data-days="90">90 días</button>
+        <button class="range-pill" data-preset="7">7 días</button>
+        <button class="range-pill active" data-preset="30">30 días</button>
+        <button class="range-pill" data-preset="90">90 días</button>
+      </div>
+      <div class="daterange">
+        <input type="date" id="dateFrom" aria-label="Desde">
+        <span>-</span>
+        <input type="date" id="dateTo" aria-label="Hasta">
+        <button class="icon-btn" id="applyRange" title="Aplicar rango" aria-label="Aplicar rango">✓</button>
       </div>
       <button class="icon-btn" id="refreshBtn" title="Actualizar ahora" aria-label="Actualizar ahora">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
       </button>
-      <span class="updated" id="updatedAt">—</span>
     </div>
   </div>
+  <div class="range-label" id="rangeLabel"></div>
+  <div style="margin-bottom:16px"></div>
 
   <div class="warn-banner">
     ⚠️ <span><b>Panel sin inicio de sesión (etapa temporal).</b> Por ahora cualquiera con este enlace puede ver los números agregados. No lo compartas públicamente — vamos a agregar el login de administradores más adelante.</span>
@@ -185,15 +206,15 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
 
   <div class="grid g3" style="margin-bottom:16px">
     <div class="panel" id="panel-signups">
-      <div class="panel-head"><div><div class="panel-title">🌱 Nuevos registros</div><div class="panel-sub">Altas por día</div></div></div>
+      <div class="panel-head"><div><div class="panel-title">🌱 Nuevos registros</div><div class="panel-sub">Altas por dia</div></div></div>
       <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
     </div>
     <div class="panel" id="panel-mapviews">
-      <div class="panel-head"><div><div class="panel-title">🗺️ Mapa de incidencia</div><div class="panel-sub">Vistas por día</div></div></div>
+      <div class="panel-head"><div><div class="panel-title">🗺️ Mapa de incidencia</div><div class="panel-sub">Vistas por dia</div></div></div>
       <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
     </div>
     <div class="panel" id="panel-ranking">
-      <div class="panel-head"><div><div class="panel-title">🏆 Ranking</div><div class="panel-sub">Qué pestaña se mira más</div></div></div>
+      <div class="panel-head"><div><div class="panel-title">🏆 Progreso</div><div class="panel-sub">Vistas por pestaña</div></div></div>
       <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
     </div>
   </div>
@@ -204,7 +225,7 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
       <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
     </div>
     <div class="panel" id="panel-reporttypes">
-      <div class="panel-head"><div><div class="panel-title">🎯 Tipos de reporte</div><div class="panel-sub">Elegidos vs. efectivamente enviados</div></div></div>
+      <div class="panel-head"><div><div class="panel-title">🎯 Tipos de reporte</div><div class="panel-sub">Elegidos vs. efectivamente enviados (incluye el Recorrido por la casa)</div></div></div>
       <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
     </div>
   </div>
@@ -220,11 +241,19 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
     </div>
   </div>
 
-  <div class="grid">
-    <div class="panel wide" id="panel-feed">
+  <div class="grid" style="margin-bottom:16px">
+    <div class="panel wide" id="panel-screentable">
       <div class="panel-head">
-        <div class="feed-title-row"><div class="panel-title">🛰️ Actividad reciente</div><span class="live-dot"></span><span class="live-lbl">EN VIVO</span></div>
-        <div class="panel-sub">Se actualiza sola cada 30s</div>
+        <div><div class="panel-title">📄 Detalle por pantalla</div><div class="panel-sub">Filtrable y descargable</div></div>
+      </div>
+      <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel wide" id="panel-citytable">
+      <div class="panel-head">
+        <div><div class="panel-title">🏙️ Detalle por municipio</div><div class="panel-sub">Usuarios registrados y uso en el período, filtrable y descargable</div></div>
       </div>
       <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
     </div>
@@ -252,55 +281,44 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
     if(n < 60) return n.toFixed(1).replace(/\.0$/,'')+'m';
     return Math.floor(n/60)+'h '+Math.round(n%60)+'m';
   }
+  function isoDate(d){ return d.toISOString().slice(0,10); }
+  function fmtDateShort(iso){ var d=new Date(iso+'T00:00:00'); return d.getDate()+'/'+(d.getMonth()+1); }
 
   if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
-    document.querySelector('.wrap').innerHTML = '<div class="panel" style="margin-top:60px;text-align:center">⚠️ Falta <b>config.js</b> (mismo archivo que usa la app) junto a este panel.</div>';
+    document.querySelector('.wrap').innerHTML = '<div class="panel" style="margin-top:60px;text-align:center">Falta config.js (mismo archivo que usa la app) junto a este panel.</div>';
     return;
   }
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  var STATE = { days: 30 };
+  var STATE = { start:null, end:null };
+  var RPC_ARGS = function(){ return { p_start: STATE.start, p_end: STATE.end }; };
 
   var SCREEN_LABELS = { incidencia:'Incidencia', aprender:'Aprender', reportar:'Reportar', revisar:'Revisar', progreso:'Progreso', profile:'Perfil' };
-  function screenLabel(s){ return SCREEN_LABELS[s] || s || '—'; }
-  function eventLabel(ev){
-    var p = ev.props || {};
-    switch(ev.event){
-      case 'app_open':
-        var extra = p.auth_event==='sign_up' ? ' — se registró' : p.auth_event==='log_in' ? ' — inició sesión' : '';
-        return { ic:'📲', tx:'Abrió la app'+extra };
-      case 'screen_view': return { ic:'👀', tx:'Miró <b>'+esc(screenLabel(p.screen))+'</b> ('+(p.seconds||0)+'s)' };
-      case 'map_view': return { ic:'🗺️', tx:'Abrió el mapa de incidencia' };
-      case 'report_type_select': return { ic:'🎯', tx:'Eligió reportar: <b>'+esc(p.title||p.action_id||'—')+'</b>' };
-      case 'report_submit': return { ic:'📸', tx:'Envió un reporte (+'+fmtNum(p.points)+' pts)' };
-      case 'house_tour_open': return { ic:'🏠', tx:'Abrió el Recorrido por su casa' };
-      case 'house_tour_setup_saved': return { ic:'🏠', tx:'Configuró su casa ('+(p.stations_count||0)+' lugares)' };
-      case 'house_tour_submit': return { ic:'🏠', tx:'Completó el Recorrido ('+(p.stations_count||0)+' lugares, +'+fmtNum(p.points)+' pts)' };
-      case 'ranking_view': return { ic:'🏆', tx:'Miró el ranking de '+(p.tab==='region'?'la región':'su municipio') };
-      case 'push_prompt_shown': return { ic:'🔔', tx:'Se le ofreció activar notificaciones' };
-      case 'push_prompt_accept': return { ic:'🔔', tx:'Activó notificaciones' };
-      case 'push_prompt_later': return { ic:'🔕', tx:'Dijo «ahora no» a notificaciones' };
-      case 'push_toggle_on': return { ic:'🔔', tx:'Activó notificaciones desde su perfil' };
-      case 'push_toggle_off': return { ic:'🔕', tx:'Desactivó notificaciones' };
-      case 'push_notification_click': return { ic:'👆', tx:'Tocó una notificación' };
-      default: return { ic:'•', tx: esc(ev.event) };
-    }
-  }
-  function timeAgo(iso){
-    var s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime())/1000));
-    if(s<60) return 'hace '+s+'s';
-    var m=Math.round(s/60); if(m<60) return 'hace '+m+'m';
-    var h=Math.round(m/60); if(h<24) return 'hace '+h+'h';
-    return 'hace '+Math.round(h/24)+'d';
-  }
+  function screenLabel(s){ return SCREEN_LABELS[s] || s || '-'; }
+  var TAB_LABELS = { me:'Tu progreso', city:'Tu municipio', region:'Tu región' };
 
   function panelBody(panelId){ return document.querySelector('#'+panelId+' .panel-body'); }
   function setLoading(panelId){ panelBody(panelId).innerHTML='<div class="panel-loading"><div class="spinner"></div>Cargando…</div>'; }
   function setEmpty(panelId, msg){ panelBody(panelId).innerHTML='<div class="panel-empty">'+esc(msg||'Todavía no hay datos suficientes en este período.')+'</div>'; }
   function setError(panelId, retryFn){
     var b=panelBody(panelId);
-    b.innerHTML='<div class="panel-error">No pudimos cargar este panel. Puede ser la conexión o que falte correr <span class="mono">analytics.sql</span>.<br></div>';
+    b.innerHTML='<div class="panel-error">No pudimos cargar este panel. Puede ser la conexión o que falte correr <span class="mono">analytics.sql</span> / <span class="mono">analytics-v2.sql</span>.<br></div>';
     var btn=el('button','retry-btn','↻ Reintentar'); btn.addEventListener('click', retryFn);
     b.querySelector('.panel-error').appendChild(btn);
+  }
+
+  function downloadCSV(filename, headers, rows){
+    var lines=[headers.join(',')];
+    rows.forEach(function(r){
+      lines.push(r.map(function(v){
+        v = (v==null?'':String(v));
+        if(/[",\n]/.test(v)) v='"'+v.replace(/"/g,'""')+'"';
+        return v;
+      }).join(','));
+    });
+    var blob=new Blob(['\uFEFF'+lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
   }
 
   function svgLineChart(series, opts){
@@ -335,17 +353,28 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
     return svg;
   }
 
-  function dayLabel(iso){ var d=new Date(iso+'T00:00:00'); return d.getDate()+'/'+(d.getMonth()+1); }
+  function funnelHtml(stages){
+    var max = stages[0].value || 1;
+    var html='';
+    stages.forEach(function(s){
+      var pct = Math.round((s.value/max)*100);
+      html += '<div class="funnel-stage"><div class="funnel-top"><span class="funnel-name">'+esc(s.label)+'</span>'+
+        '<span><span class="funnel-num">'+fmtNum(s.value)+'</span><span class="funnel-pct">'+pct+'%</span></span></div>'+
+        '<div class="funnel-track"><div class="funnel-fill" style="width:'+Math.max(3,pct)+'%"></div></div></div>';
+    });
+    return html;
+  }
 
   function loadKpis(){
-    db.rpc('analytics_kpis', { p_days: STATE.days }).then(function(res){
+    db.rpc('analytics_kpis', RPC_ARGS()).then(function(res){
       if(res.error) throw res.error;
       var k=(res.data&&res.data[0])||{};
       var cards=[
-        {l:'Usuarios activos', v:fmtNum(k.active_users), c:'#3FBBA0', sub:'últimos '+STATE.days+' días'},
-        {l:'Aperturas de app', v:fmtNum(k.app_opens), c:'#F4D18B', sub:'sesiones iniciadas'},
-        {l:'Sesiones', v:fmtNum(k.sessions), c:'#B79BE0', sub:'promedio '+fmtMin(k.avg_session_minutes)+' c/u'},
-        {l:'Reportes enviados', v:fmtNum(k.reports_submitted), c:'#8ED65A', sub:'incluye recorridos'},
+        {l:'Usuarios registrados', v:fmtNum(k.total_users), c:'#B79BE0', sub:'total, todo el tiempo'},
+        {l:'Usuarios activos', v:fmtNum(k.active_users), c:'#3FBBA0', sub:'en el período'},
+        {l:'Aperturas de app', v:fmtNum(k.app_opens), c:'#F4D18B', sub:'en el período'},
+        {l:'Sesiones', v:fmtNum(k.sessions), c:'#8ED65A', sub:'promedio '+fmtMin(k.avg_session_minutes)+' c/u'},
+        {l:'Reportes enviados', v:fmtNum(k.reports_submitted), c:'#F4D18B', sub:'incluye recorridos'},
         {l:'Nuevos registros', v:fmtNum(k.new_signups), c:'#E2695F', sub:'altas en el período'}
       ];
       var row=$('kpiRow'); row.innerHTML='';
@@ -355,18 +384,18 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
         row.appendChild(d);
       });
     }).catch(function(){
-      $('kpiRow').innerHTML='<div class="panel-error" style="grid-column:1/-1">No pudimos cargar los KPIs. Revisá que <span class="mono">analytics.sql</span> esté corrido.</div>';
+      $('kpiRow').innerHTML='<div class="panel-error" style="grid-column:1/-1">No pudimos cargar los KPIs. Revisá que analytics.sql y analytics-v2.sql estén corridos.</div>';
     });
   }
 
   function loadActivity(){
     setLoading('panel-activity');
-    db.rpc('analytics_daily_activity', { p_days: STATE.days }).then(function(res){
+    db.rpc('analytics_daily_activity', RPC_ARGS()).then(function(res){
       if(res.error) throw res.error;
       var rows=res.data||[];
       if(!rows.length || !rows.some(function(r){ return r.active_users>0 || r.app_opens>0; })) return setEmpty('panel-activity');
-      var au = rows.map(function(r){ return { y:r.active_users, xLabel:dayLabel(r.day) }; });
-      var ao = rows.map(function(r){ return { y:r.app_opens, xLabel:dayLabel(r.day) }; });
+      var au = rows.map(function(r){ return { y:r.active_users, xLabel:fmtDateShort(r.day) }; });
+      var ao = rows.map(function(r){ return { y:r.app_opens, xLabel:fmtDateShort(r.day) }; });
       panelBody('panel-activity').innerHTML = svgLineChart([
         { data:au, color:'#3FBBA0' }, { data:ao, color:'#F4D18B' }
       ], { height:220 });
@@ -375,7 +404,7 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
 
   function loadSignups(){
     setLoading('panel-signups');
-    db.rpc('analytics_daily_signups', { p_days: STATE.days }).then(function(res){
+    db.rpc('analytics_daily_signups', RPC_ARGS()).then(function(res){
       if(res.error) throw res.error;
       var rows=res.data||[];
       var total=rows.reduce(function(a,r){ return a+(r.signups||0); },0);
@@ -386,8 +415,8 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
       rows.forEach(function(r,i){
         var h = max? Math.max(2, Math.round((r.signups/max)*100)) : 2;
         html += '<div class="barmini-col">'+(r.signups?('<div class="barmini-val">'+r.signups+'</div>'):'')+
-          '<div class="barmini-bar" style="height:'+h+'%" title="'+dayLabel(r.day)+': '+r.signups+'"></div>'+
-          (i%showLbl===0?('<div class="barmini-lbl">'+dayLabel(r.day)+'</div>'):'')+'</div>';
+          '<div class="barmini-bar" style="height:'+h+'%" title="'+fmtDateShort(r.day)+': '+r.signups+'"></div>'+
+          (i%showLbl===0?('<div class="barmini-lbl">'+fmtDateShort(r.day)+'</div>'):'')+'</div>';
       });
       html += '</div>';
       panelBody('panel-signups').innerHTML=html;
@@ -396,12 +425,12 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
 
   function loadMapViews(){
     setLoading('panel-mapviews');
-    db.rpc('analytics_daily_map_views', { p_days: STATE.days }).then(function(res){
+    db.rpc('analytics_daily_map_views', RPC_ARGS()).then(function(res){
       if(res.error) throw res.error;
       var rows=res.data||[];
       var total=rows.reduce(function(a,r){ return a+(r.views||0); },0);
       if(!total) return setEmpty('panel-mapviews');
-      var series=[{ data: rows.map(function(r){ return {y:r.views, xLabel:dayLabel(r.day)}; }), color:'#8ED65A' }];
+      var series=[{ data: rows.map(function(r){ return {y:r.views, xLabel:fmtDateShort(r.day)}; }), color:'#8ED65A' }];
       panelBody('panel-mapviews').innerHTML =
         '<div class="mini-stat" style="margin-bottom:12px"><b>'+fmtNum(total)+'</b><span>vistas del mapa en el período</span></div>'+
         svgLineChart(series, { height:130 });
@@ -410,39 +439,75 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
 
   function loadRanking(){
     setLoading('panel-ranking');
-    db.rpc('analytics_ranking_views', { p_days: STATE.days }).then(function(res){
+    db.rpc('analytics_ranking_views', RPC_ARGS()).then(function(res){
       if(res.error) throw res.error;
       var rows=res.data||[];
       var byTab={}; rows.forEach(function(r){ byTab[r.tab]=r.views; });
-      var city=byTab.city||0, region=byTab.region||0, max=Math.max(city,region,1);
-      if(!city && !region) return setEmpty('panel-ranking');
-      panelBody('panel-ranking').innerHTML =
-        '<div class="cmp-row"><div class="cmp-label">🏙️ Municipio</div><div class="cmp-track"><div class="cmp-fill" style="width:'+Math.max(6,(city/max*100))+'%;background:linear-gradient(90deg,#3FBBA0,#2A8E77)"><span>'+fmtNum(city)+'</span></div></div></div>'+
-        '<div class="cmp-row"><div class="cmp-label">🗺️ Región</div><div class="cmp-track"><div class="cmp-fill" style="width:'+Math.max(6,(region/max*100))+'%;background:linear-gradient(90deg,#F4D18B,#C9A25E)"><span>'+fmtNum(region)+'</span></div></div></div>';
+      var vals=['me','city','region'].map(function(t){ return byTab[t]||0; });
+      var max=Math.max.apply(null, vals.concat([1]));
+      if(!vals.some(function(v){ return v>0; })) return setEmpty('panel-ranking');
+      var colors={me:'#3FBBA0', city:'#F4D18B', region:'#B79BE0'};
+      var html='';
+      ['me','city','region'].forEach(function(t){
+        var v=byTab[t]||0;
+        html += '<div class="cmp-row"><div class="cmp-label">'+esc(TAB_LABELS[t])+'</div><div class="cmp-track">'+
+          '<div class="cmp-fill" style="width:'+Math.max(6,(v/max*100))+'%;background:'+colors[t]+'"><span>'+fmtNum(v)+'</span></div></div></div>';
+      });
+      panelBody('panel-ranking').innerHTML=html;
     }).catch(function(){ setError('panel-ranking', loadRanking); });
   }
 
+  var _screenRows=[];
   function loadScreenTime(){
-    setLoading('panel-screentime');
-    db.rpc('analytics_screen_time', { p_days: STATE.days }).then(function(res){
+    setLoading('panel-screentime'); setLoading('panel-screentable');
+    db.rpc('analytics_screen_time', RPC_ARGS()).then(function(res){
       if(res.error) throw res.error;
       var rows=(res.data||[]).filter(function(r){ return r.screen; });
-      if(!rows.length) return setEmpty('panel-screentime');
-      var max=Math.max.apply(null, rows.map(function(r){ return r.total_minutes||0; }));
-      var html='';
-      rows.forEach(function(r){
-        var w = max? Math.max(4, Math.round((r.total_minutes/max)*100)) : 4;
-        html += '<div class="hbar-row"><div class="hbar-top"><span class="hbar-name">'+esc(screenLabel(r.screen))+'</span>'+
-          '<span class="hbar-val">'+fmtMin(r.total_minutes)+' · '+fmtNum(r.views)+' vistas · '+r.avg_seconds+'s prom.</span></div>'+
-          '<div class="hbar-track"><div class="hbar-fill" style="width:'+w+'%"></div></div></div>';
-      });
-      panelBody('panel-screentime').innerHTML=html;
-    }).catch(function(){ setError('panel-screentime', loadScreenTime); });
+      _screenRows = rows;
+      renderScreenChart(rows);
+      renderScreenTableShell(rows);
+    }).catch(function(){ setError('panel-screentime', loadScreenTime); setError('panel-screentable', loadScreenTime); });
+  }
+  function renderScreenChart(rows){
+    if(!rows.length) return setEmpty('panel-screentime');
+    var max=Math.max.apply(null, rows.map(function(r){ return r.total_minutes||0; }));
+    var html='';
+    rows.forEach(function(r){
+      var w = max? Math.max(4, Math.round((r.total_minutes/max)*100)) : 4;
+      html += '<div class="hbar-row"><div class="hbar-top"><span class="hbar-name">'+esc(screenLabel(r.screen))+'</span>'+
+        '<span class="hbar-val">'+fmtMin(r.total_minutes)+' · '+fmtNum(r.views)+' vistas · '+fmtNum(r.users)+' usuarios</span></div>'+
+        '<div class="hbar-track"><div class="hbar-fill" style="width:'+w+'%"></div></div></div>';
+    });
+    panelBody('panel-screentime').innerHTML=html;
+  }
+  function renderScreenTableShell(rows){
+    if(!rows.length){ setEmpty('panel-screentable'); return; }
+    panelBody('panel-screentable').innerHTML =
+      '<div class="table-toolbar"><input class="table-filter" id="screenFilter" placeholder="Filtrar por pantalla…">'+
+      '<button class="csv-btn" id="screenCsvBtn">⬇ CSV</button></div>'+
+      '<div class="table-scroll"><table class="data-table"><thead><tr><th>Pantalla</th><th>Vistas</th><th>Usuarios</th><th>Prom. seg.</th><th>Tiempo total</th></tr></thead><tbody id="screenTableBody"></tbody></table></div>';
+    $('screenFilter').addEventListener('input', renderScreenTableRows);
+    $('screenCsvBtn').addEventListener('click', function(){
+      downloadCSV('patrulla_pantallas_'+STATE.start+'_a_'+STATE.end+'.csv',
+        ['Pantalla','Vistas','Usuarios','Prom_segundos','Tiempo_total_min'],
+        _screenRows.map(function(r){ return [screenLabel(r.screen), r.views, r.users, r.avg_seconds, r.total_minutes]; }));
+    });
+    renderScreenTableRows();
+  }
+  function renderScreenTableRows(){
+    var q=(($('screenFilter')&&$('screenFilter').value)||'').toLowerCase();
+    var rows=_screenRows.filter(function(r){ return screenLabel(r.screen).toLowerCase().indexOf(q)>=0; });
+    var body=$('screenTableBody'); if(!body) return;
+    if(!rows.length){ body.innerHTML='<tr><td colspan="5" class="table-empty">Sin resultados para ese filtro.</td></tr>'; return; }
+    body.innerHTML = rows.map(function(r){
+      return '<tr><td>'+esc(screenLabel(r.screen))+'</td><td class="num">'+fmtNum(r.views)+'</td><td class="num">'+fmtNum(r.users)+'</td>'+
+        '<td class="num">'+r.avg_seconds+'s</td><td class="num">'+fmtMin(r.total_minutes)+'</td></tr>';
+    }).join('');
   }
 
   function loadReportTypes(){
     setLoading('panel-reporttypes');
-    db.rpc('analytics_report_types', { p_days: STATE.days }).then(function(res){
+    db.rpc('analytics_report_types', RPC_ARGS()).then(function(res){
       if(res.error) throw res.error;
       var rows=(res.data||[]).filter(function(r){ return r.action_id; });
       if(!rows.length) return setEmpty('panel-reporttypes');
@@ -462,21 +527,9 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
     }).catch(function(){ setError('panel-reporttypes', loadReportTypes); });
   }
 
-  function funnelHtml(stages){
-    var max = stages[0].value || 1;
-    var html='';
-    stages.forEach(function(s){
-      var pct = Math.round((s.value/max)*100);
-      html += '<div class="funnel-stage"><div class="funnel-top"><span class="funnel-name">'+esc(s.label)+'</span>'+
-        '<span><span class="funnel-num">'+fmtNum(s.value)+'</span><span class="funnel-pct">'+pct+'%</span></span></div>'+
-        '<div class="funnel-track"><div class="funnel-fill" style="width:'+Math.max(3,pct)+'%"></div></div></div>';
-    });
-    return html;
-  }
-
   function loadHouseTour(){
     setLoading('panel-housetour');
-    db.rpc('analytics_house_tour_funnel', { p_days: STATE.days }).then(function(res){
+    db.rpc('analytics_house_tour_funnel', RPC_ARGS()).then(function(res){
       if(res.error) throw res.error;
       var k=(res.data&&res.data[0])||{};
       if(!k.opened) return setEmpty('panel-housetour');
@@ -492,7 +545,7 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
 
   function loadPush(){
     setLoading('panel-push');
-    db.rpc('analytics_push_funnel', { p_days: STATE.days }).then(function(res){
+    db.rpc('analytics_push_funnel', RPC_ARGS()).then(function(res){
       if(res.error) throw res.error;
       var k=(res.data&&res.data[0])||{};
       if(!k.prompted) return setEmpty('panel-push');
@@ -508,42 +561,73 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
     }).catch(function(){ setError('panel-push', loadPush); });
   }
 
-  function loadFeed(){
-    db.rpc('analytics_recent_events', { p_limit: 50 }).then(function(res){
+  var _cityRows=[];
+  function loadCityBreakdown(){
+    setLoading('panel-citytable');
+    db.rpc('analytics_city_breakdown', RPC_ARGS()).then(function(res){
       if(res.error) throw res.error;
-      var rows=res.data||[];
-      if(!rows.length) return setEmpty('panel-feed', 'Todavía no se registró actividad.');
-      var html='<div class="feed">';
-      rows.forEach(function(r){
-        var lab=eventLabel(r);
-        html += '<div class="feed-row"><span class="feed-time">'+timeAgo(r.created_at)+'</span>'+
-          '<span class="feed-ic">'+lab.ic+'</span><span class="feed-tx">'+lab.tx+'</span>'+
-          (r.city?('<span class="feed-city">📍 '+esc(r.city)+'</span>'):'')+'</div>';
+      _cityRows = res.data||[];
+      if(!_cityRows.length) return setEmpty('panel-citytable');
+      panelBody('panel-citytable').innerHTML =
+        '<div class="table-toolbar"><input class="table-filter" id="cityFilter" placeholder="Filtrar por municipio…">'+
+        '<button class="csv-btn" id="cityCsvBtn">⬇ CSV</button></div>'+
+        '<div class="table-scroll"><table class="data-table"><thead><tr><th>Municipio</th><th>Usuarios registrados</th><th>Aperturas</th><th>Sesiones</th><th>Tiempo prom. en la app</th></tr></thead><tbody id="cityTableBody"></tbody></table></div>';
+      $('cityFilter').addEventListener('input', renderCityTableRows);
+      $('cityCsvBtn').addEventListener('click', function(){
+        downloadCSV('patrulla_municipios_'+STATE.start+'_a_'+STATE.end+'.csv',
+          ['Municipio','Usuarios_registrados','Aperturas','Sesiones','Tiempo_prom_min'],
+          _cityRows.map(function(r){ return [r.city, r.registered_users, r.app_opens, r.sessions, r.avg_session_minutes]; }));
       });
-      html += '</div>';
-      panelBody('panel-feed').innerHTML=html;
-    }).catch(function(){ setError('panel-feed', loadFeed); });
+      renderCityTableRows();
+    }).catch(function(){ setError('panel-citytable', loadCityBreakdown); });
+  }
+  function renderCityTableRows(){
+    var q=(($('cityFilter')&&$('cityFilter').value)||'').toLowerCase();
+    var rows=_cityRows.filter(function(r){ return (r.city||'').toLowerCase().indexOf(q)>=0; });
+    var body=$('cityTableBody'); if(!body) return;
+    if(!rows.length){ body.innerHTML='<tr><td colspan="5" class="table-empty">Sin resultados para ese filtro.</td></tr>'; return; }
+    body.innerHTML = rows.map(function(r){
+      return '<tr><td>'+esc(r.city)+'</td><td class="num">'+fmtNum(r.registered_users)+'</td><td class="num">'+fmtNum(r.app_opens)+'</td>'+
+        '<td class="num">'+fmtNum(r.sessions)+'</td><td class="num">'+fmtMin(r.avg_session_minutes)+'</td></tr>';
+    }).join('');
   }
 
   function loadAll(){
     loadKpis(); loadActivity(); loadSignups(); loadMapViews(); loadRanking();
-    loadScreenTime(); loadReportTypes(); loadHouseTour(); loadPush(); loadFeed();
+    loadScreenTime(); loadReportTypes(); loadHouseTour(); loadPush(); loadCityBreakdown();
     $('updatedAt').textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
+    $('rangeLabel').textContent = 'Mostrando del ' + fmtDateShort(STATE.start) + ' al ' + fmtDateShort(STATE.end);
+  }
+
+  function setPreset(days){
+    var end=new Date(), start=new Date(); start.setDate(end.getDate()-(days-1));
+    STATE.start=isoDate(start); STATE.end=isoDate(end);
+    $('dateFrom').value=STATE.start; $('dateTo').value=STATE.end;
   }
 
   document.querySelectorAll('.range-pill').forEach(function(b){
     b.addEventListener('click', function(){
       document.querySelectorAll('.range-pill').forEach(function(x){ x.classList.remove('active'); });
-      b.classList.add('active'); STATE.days=parseInt(b.dataset.days,10); loadAll();
+      b.classList.add('active');
+      setPreset(parseInt(b.dataset.preset,10));
+      loadAll();
     });
+  });
+  $('applyRange').addEventListener('click', function(){
+    var f=$('dateFrom').value, t=$('dateTo').value;
+    if(!f || !t) return;
+    if(f>t){ var tmp=f; f=t; t=tmp; $('dateFrom').value=f; $('dateTo').value=t; }
+    document.querySelectorAll('.range-pill').forEach(function(x){ x.classList.remove('active'); });
+    STATE.start=f; STATE.end=t;
+    loadAll();
   });
   $('refreshBtn').addEventListener('click', function(){
     this.classList.add('spin'); var self=this;
     loadAll(); setTimeout(function(){ self.classList.remove('spin'); }, 700);
   });
 
+  setPreset(30);
   loadAll();
-  setInterval(loadFeed, 30000);
 })();
 </script>
 </body>
