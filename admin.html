@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro de Monitoreo · Patrulla Antimosquito</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Raleway:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#170F1B; --panel:#231A29; --panel-2:#2C2131; --border:rgba(244,209,139,.14);
+  --teal:#3FBBA0; --lime:#8ED65A; --gold:#F4D18B; --coral:#E2695F; --violet:#B79BE0;
+  --cream:#F2E9DA; --muted:#A896AE; --muted-2:#7C6C87;
+  --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(1100px 500px at 15% -10%, rgba(63,187,160,.10), transparent),
+    radial-gradient(900px 500px at 100% 0%, rgba(244,209,139,.08), transparent),
+    var(--bg);
+  color:var(--cream); font-family:'Raleway',sans-serif; min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'JetBrains Mono',monospace}
+h1,h2,h3{font-family:'DM Serif Display',serif;font-weight:400;margin:0}
+::selection{background:var(--teal);color:#0E1613}
+a{color:var(--teal)}
+
+.wrap{max-width:1320px;margin:0 auto;padding:22px 26px 60px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--teal),#1E8069);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:var(--shadow)}
+.brand-tx h1{font-size:22px;color:#fff;line-height:1.1}
+.brand-tx span{font-size:12px;color:var(--muted);letter-spacing:.4px}
+.top-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.range-pills{display:flex;background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:3px}
+.range-pill{background:none;border:none;color:var(--muted);font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:8px;cursor:pointer;transition:background .15s,color .15s}
+.range-pill.active{background:var(--teal);color:#0E1613}
+.icon-btn{background:var(--panel);border:1px solid var(--border);color:var(--cream);width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.icon-btn:hover{background:var(--panel-2)}
+.icon-btn.spin svg{animation:spin .7s linear}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.updated{font-size:11.5px;color:var(--muted-2)}
+
+.warn-banner{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,rgba(226,105,95,.16),rgba(244,209,139,.10));border:1px solid rgba(226,105,95,.35);color:#F6D9D5;font-size:12.5px;font-weight:600;padding:10px 14px;border-radius:12px;margin-bottom:20px;line-height:1.5}
+.warn-banner b{color:#fff}
+
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi:before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--kc,var(--teal))}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.kpi-num{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;color:#fff;margin-top:6px;line-height:1}
+.kpi-sub{font-size:11px;color:var(--muted-2);margin-top:5px}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid.g3{grid-template-columns:repeat(3,1fr)}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.panel.wide{grid-column:1 / -1}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.panel-title{font-size:16px;color:#fff}
+.panel-sub{font-size:11.5px;color:var(--muted);margin-top:2px;font-family:'Raleway',sans-serif}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+
+.panel-loading,.panel-empty,.panel-error{padding:30px 6px;text-align:center;color:var(--muted);font-size:13px}
+.panel-error button{margin-top:10px}
+.retry-btn{background:var(--teal);color:#0E1613;border:none;font-family:inherit;font-size:12.5px;font-weight:800;padding:8px 16px;border-radius:9px;cursor:pointer}
+.spinner{width:22px;height:22px;border-radius:50%;border:3px solid rgba(244,233,218,.15);border-top-color:var(--teal);margin:0 auto 8px;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.linechart{width:100%;height:auto;display:block}
+.lc-grid{stroke:rgba(244,233,218,.08);stroke-width:1}
+.lc-axis{fill:var(--muted-2);font-size:9.5px;font-family:'JetBrains Mono',monospace}
+.lc-dot{cursor:pointer}
+
+.barmini-row{display:flex;align-items:flex-end;gap:4px;height:120px;padding-top:6px}
+.barmini-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.barmini-bar{width:100%;max-width:22px;background:linear-gradient(180deg,var(--gold),#C9A25E);border-radius:5px 5px 2px 2px;min-height:2px}
+.barmini-val{font-size:9.5px;color:var(--muted);margin-bottom:3px;font-family:'JetBrains Mono',monospace}
+.barmini-lbl{font-size:9px;color:var(--muted-2);margin-top:5px;white-space:nowrap}
+
+.hbar-row{margin-bottom:12px}
+.hbar-row:last-child{margin-bottom:0}
+.hbar-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px}
+.hbar-name{font-weight:700;color:var(--cream)}
+.hbar-val{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.hbar-track{background:rgba(244,233,218,.08);border-radius:999px;height:9px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--teal),#2A8E77)}
+.hbar-dual{display:flex;flex-direction:column;gap:4px}
+.hbar-mini-track{background:rgba(244,233,218,.08);border-radius:999px;height:7px;overflow:hidden}
+.hbar-mini-fill{height:100%;border-radius:999px}
+.conv-badge{font-size:10px;font-weight:800;color:var(--lime);background:rgba(142,214,90,.14);padding:2px 7px;border-radius:999px;margin-left:6px}
+
+.funnel-stage{margin-bottom:14px}
+.funnel-top{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;margin-bottom:6px}
+.funnel-name{font-weight:700;color:var(--cream)}
+.funnel-num{font-family:'JetBrains Mono',monospace;color:#fff;font-size:14px;font-weight:700}
+.funnel-pct{color:var(--muted-2);font-size:11px;margin-left:6px}
+.funnel-track{background:rgba(244,233,218,.07);border-radius:10px;height:26px;overflow:hidden}
+.funnel-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--teal),#2A8E77);transition:width .5s ease}
+.funnel-extra{display:flex;gap:10px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)}
+.mini-stat{flex:1;background:var(--panel-2);border-radius:11px;padding:10px 12px;text-align:center}
+.mini-stat b{display:block;font-family:'JetBrains Mono',monospace;font-size:19px;color:#fff}
+.mini-stat span{font-size:10.5px;color:var(--muted)}
+
+.cmp-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cmp-label{width:96px;font-size:12px;font-weight:700;color:var(--cream);flex-shrink:0}
+.cmp-track{flex:1;background:rgba(244,233,218,.07);border-radius:999px;height:16px;overflow:hidden}
+.cmp-fill{height:100%;border-radius:999px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px}
+.cmp-fill span{font-size:10px;font-weight:800;color:#0E1613;font-family:'JetBrains Mono',monospace}
+
+.feed-title-row{display:flex;align-items:center;gap:8px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+.live-lbl{font-size:10.5px;font-weight:800;color:var(--coral);letter-spacing:.5px}
+.feed{max-height:460px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.feed-row{display:flex;align-items:baseline;gap:10px;padding:9px 4px;border-bottom:1px solid rgba(244,233,218,.05);font-size:12.5px}
+.feed-time{font-family:'JetBrains Mono',monospace;color:var(--muted-2);font-size:10.5px;width:64px;flex-shrink:0}
+.feed-ic{flex-shrink:0}
+.feed-tx{flex:1;color:var(--cream);line-height:1.4}
+.feed-tx b{color:#fff}
+.feed-city{font-size:10px;color:var(--muted-2);background:rgba(244,233,218,.06);padding:2px 7px;border-radius:999px;flex-shrink:0}
+
+footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);line-height:1.6}
+
+@media(max-width:980px){
+  .grid, .grid.g3{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .wrap{padding:16px}
+  .kpi-num{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-logo">🦟</div>
+      <div class="brand-tx">
+        <h1>Centro de Monitoreo</h1>
+        <span>PATRULLA ANTIMOSQUITO · FUNDACIÓN MUNDO SANO</span>
+      </div>
+    </div>
+    <div class="top-controls">
+      <div class="range-pills" id="rangePills">
+        <button class="range-pill" data-days="7">7 días</button>
+        <button class="range-pill active" data-days="30">30 días</button>
+        <button class="range-pill" data-days="90">90 días</button>
+      </div>
+      <button class="icon-btn" id="refreshBtn" title="Actualizar ahora" aria-label="Actualizar ahora">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+      </button>
+      <span class="updated" id="updatedAt">—</span>
+    </div>
+  </div>
+
+  <div class="warn-banner">
+    ⚠️ <span><b>Panel sin inicio de sesión (etapa temporal).</b> Por ahora cualquiera con este enlace puede ver los números agregados. No lo compartas públicamente — vamos a agregar el login de administradores más adelante.</span>
+  </div>
+
+  <div class="kpi-row" id="kpiRow">
+    <div class="panel-loading" style="grid-column:1/-1"><div class="spinner"></div>Cargando métricas…</div>
+  </div>
+
+  <div class="grid" style="margin-bottom:16px">
+    <div class="panel wide" id="panel-activity">
+      <div class="panel-head">
+        <div><div class="panel-title">📈 Actividad diaria</div><div class="panel-sub">Usuarios activos y aperturas de la app</div></div>
+        <div class="legend"><span><i class="dot" style="background:var(--teal)"></i>Usuarios activos</span><span><i class="dot" style="background:var(--gold)"></i>Aperturas</span></div>
+      </div>
+      <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+    </div>
+  </div>
+
+  <div class="grid g3" style="margin-bottom:16px">
+    <div class="panel" id="panel-signups">
+      <div class="panel-head"><div><div class="panel-title">🌱 Nuevos registros</div><div class="panel-sub">Altas por día</div></div></div>
+      <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+    </div>
+    <div class="panel" id="panel-mapviews">
+      <div class="panel-head"><div><div class="panel-title">🗺️ Mapa de incidencia</div><div class="panel-sub">Vistas por día</div></div></div>
+      <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+    </div>
+    <div class="panel" id="panel-ranking">
+      <div class="panel-head"><div><div class="panel-title">🏆 Ranking</div><div class="panel-sub">Qué pestaña se mira más</div></div></div>
+      <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-bottom:16px">
+    <div class="panel" id="panel-screentime">
+      <div class="panel-head"><div><div class="panel-title">⏱️ Tiempo por pantalla</div><div class="panel-sub">Dónde pasan más tiempo</div></div></div>
+      <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+    </div>
+    <div class="panel" id="panel-reporttypes">
+      <div class="panel-head"><div><div class="panel-title">🎯 Tipos de reporte</div><div class="panel-sub">Elegidos vs. efectivamente enviados</div></div></div>
+      <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-bottom:16px">
+    <div class="panel" id="panel-housetour">
+      <div class="panel-head"><div><div class="panel-title">🏠 Recorrido por la casa</div><div class="panel-sub">Embudo de uso</div></div></div>
+      <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+    </div>
+    <div class="panel" id="panel-push">
+      <div class="panel-head"><div><div class="panel-title">🔔 Notificaciones push</div><div class="panel-sub">Aceptación y uso</div></div></div>
+      <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel wide" id="panel-feed">
+      <div class="panel-head">
+        <div class="feed-title-row"><div class="panel-title">🛰️ Actividad reciente</div><span class="live-dot"></span><span class="live-lbl">EN VIVO</span></div>
+        <div class="panel-sub">Se actualiza sola cada 30s</div>
+      </div>
+      <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+    </div>
+  </div>
+
+  <footer>
+    Los datos son agregados a partir de eventos de uso (pantallas, botones, tipos de acción). Nunca se muestran notas ni fotos de los reportes en este panel.<br>
+    Patrulla Antimosquito · Fundación Mundo Sano
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  function $(id){ return document.getElementById(id); }
+  function el(tag, cls, txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function fmtNum(n){ return Number(n||0).toLocaleString('es-AR'); }
+  function fmtMin(n){
+    n = Number(n||0);
+    if(n < 1) return Math.round(n*60)+'s';
+    if(n < 60) return n.toFixed(1).replace(/\.0$/,'')+'m';
+    return Math.floor(n/60)+'h '+Math.round(n%60)+'m';
+  }
+
+  if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
+    document.querySelector('.wrap').innerHTML = '<div class="panel" style="margin-top:60px;text-align:center">⚠️ Falta <b>config.js</b> (mismo archivo que usa la app) junto a este panel.</div>';
+    return;
+  }
+  var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  var STATE = { days: 30 };
+
+  var SCREEN_LABELS = { incidencia:'Incidencia', aprender:'Aprender', reportar:'Reportar', revisar:'Revisar', progreso:'Progreso', profile:'Perfil' };
+  function screenLabel(s){ return SCREEN_LABELS[s] || s || '—'; }
+  function eventLabel(ev){
+    var p = ev.props || {};
+    switch(ev.event){
+      case 'app_open':
+        var extra = p.auth_event==='sign_up' ? ' — se registró' : p.auth_event==='log_in' ? ' — inició sesión' : '';
+        return { ic:'📲', tx:'Abrió la app'+extra };
+      case 'screen_view': return { ic:'👀', tx:'Miró <b>'+esc(screenLabel(p.screen))+'</b> ('+(p.seconds||0)+'s)' };
+      case 'map_view': return { ic:'🗺️', tx:'Abrió el mapa de incidencia' };
+      case 'report_type_select': return { ic:'🎯', tx:'Eligió reportar: <b>'+esc(p.title||p.action_id||'—')+'</b>' };
+      case 'report_submit': return { ic:'📸', tx:'Envió un reporte (+'+fmtNum(p.points)+' pts)' };
+      case 'house_tour_open': return { ic:'🏠', tx:'Abrió el Recorrido por su casa' };
+      case 'house_tour_setup_saved': return { ic:'🏠', tx:'Configuró su casa ('+(p.stations_count||0)+' lugares)' };
+      case 'house_tour_submit': return { ic:'🏠', tx:'Completó el Recorrido ('+(p.stations_count||0)+' lugares, +'+fmtNum(p.points)+' pts)' };
+      case 'ranking_view': return { ic:'🏆', tx:'Miró el ranking de '+(p.tab==='region'?'la región':'su municipio') };
+      case 'push_prompt_shown': return { ic:'🔔', tx:'Se le ofreció activar notificaciones' };
+      case 'push_prompt_accept': return { ic:'🔔', tx:'Activó notificaciones' };
+      case 'push_prompt_later': return { ic:'🔕', tx:'Dijo «ahora no» a notificaciones' };
+      case 'push_toggle_on': return { ic:'🔔', tx:'Activó notificaciones desde su perfil' };
+      case 'push_toggle_off': return { ic:'🔕', tx:'Desactivó notificaciones' };
+      case 'push_notification_click': return { ic:'👆', tx:'Tocó una notificación' };
+      default: return { ic:'•', tx: esc(ev.event) };
+    }
+  }
+  function timeAgo(iso){
+    var s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime())/1000));
+    if(s<60) return 'hace '+s+'s';
+    var m=Math.round(s/60); if(m<60) return 'hace '+m+'m';
+    var h=Math.round(m/60); if(h<24) return 'hace '+h+'h';
+    return 'hace '+Math.round(h/24)+'d';
+  }
+
+  function panelBody(panelId){ return document.querySelector('#'+panelId+' .panel-body'); }
+  function setLoading(panelId){ panelBody(panelId).innerHTML='<div class="panel-loading"><div class="spinner"></div>Cargando…</div>'; }
+  function setEmpty(panelId, msg){ panelBody(panelId).innerHTML='<div class="panel-empty">'+esc(msg||'Todavía no hay datos suficientes en este período.')+'</div>'; }
+  function setError(panelId, retryFn){
+    var b=panelBody(panelId);
+    b.innerHTML='<div class="panel-error">No pudimos cargar este panel. Puede ser la conexión o que falte correr <span class="mono">analytics.sql</span>.<br></div>';
+    var btn=el('button','retry-btn','↻ Reintentar'); btn.addEventListener('click', retryFn);
+    b.querySelector('.panel-error').appendChild(btn);
+  }
+
+  function svgLineChart(series, opts){
+    opts = opts||{};
+    var W=640, H=opts.height||210, padL=34, padR=10, padT=14, padB=22;
+    var innerW=W-padL-padR, innerH=H-padT-padB;
+    var allY=[]; series.forEach(function(s){ s.data.forEach(function(p){ allY.push(p.y); }); });
+    var maxY=Math.max(1, Math.max.apply(null, allY));
+    var n = series[0].data.length;
+    function x(i){ return padL + (n<=1?0:(i/(n-1))*innerW); }
+    function y(v){ return padT + innerH - (v/maxY)*innerH; }
+
+    var svg='<svg class="linechart" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
+    for(var g=0; g<=3; g++){
+      var gy = padT + innerH - (g/3)*innerH;
+      svg += '<line class="lc-grid" x1="'+padL+'" y1="'+gy+'" x2="'+(W-padR)+'" y2="'+gy+'"/>';
+      svg += '<text class="lc-axis" x="4" y="'+(gy+3)+'">'+Math.round(maxY*g/3)+'</text>';
+    }
+    var idxs = n<=1?[0]:[0, Math.floor((n-1)/2), n-1];
+    idxs.forEach(function(i){
+      var d = series[0].data[i]; if(!d) return;
+      svg += '<text class="lc-axis" x="'+x(i)+'" y="'+(H-4)+'" text-anchor="middle">'+esc(d.xLabel||'')+'</text>';
+    });
+    series.forEach(function(s){
+      var pts = s.data.map(function(p,i){ return x(i)+','+y(p.y); }).join(' L ');
+      svg += '<path d="M '+pts+'" fill="none" stroke="'+s.color+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
+      s.data.forEach(function(p,i){
+        svg += '<circle class="lc-dot" cx="'+x(i)+'" cy="'+y(p.y)+'" r="3" fill="'+s.color+'"><title>'+esc(p.xLabel)+': '+fmtNum(p.y)+'</title></circle>';
+      });
+    });
+    svg += '</svg>';
+    return svg;
+  }
+
+  function dayLabel(iso){ var d=new Date(iso+'T00:00:00'); return d.getDate()+'/'+(d.getMonth()+1); }
+
+  function loadKpis(){
+    db.rpc('analytics_kpis', { p_days: STATE.days }).then(function(res){
+      if(res.error) throw res.error;
+      var k=(res.data&&res.data[0])||{};
+      var cards=[
+        {l:'Usuarios activos', v:fmtNum(k.active_users), c:'#3FBBA0', sub:'últimos '+STATE.days+' días'},
+        {l:'Aperturas de app', v:fmtNum(k.app_opens), c:'#F4D18B', sub:'sesiones iniciadas'},
+        {l:'Sesiones', v:fmtNum(k.sessions), c:'#B79BE0', sub:'promedio '+fmtMin(k.avg_session_minutes)+' c/u'},
+        {l:'Reportes enviados', v:fmtNum(k.reports_submitted), c:'#8ED65A', sub:'incluye recorridos'},
+        {l:'Nuevos registros', v:fmtNum(k.new_signups), c:'#E2695F', sub:'altas en el período'}
+      ];
+      var row=$('kpiRow'); row.innerHTML='';
+      cards.forEach(function(c){
+        var d=el('div','kpi'); d.style.setProperty('--kc', c.c);
+        d.innerHTML='<div class="kpi-label">'+esc(c.l)+'</div><div class="kpi-num">'+c.v+'</div><div class="kpi-sub">'+esc(c.sub)+'</div>';
+        row.appendChild(d);
+      });
+    }).catch(function(){
+      $('kpiRow').innerHTML='<div class="panel-error" style="grid-column:1/-1">No pudimos cargar los KPIs. Revisá que <span class="mono">analytics.sql</span> esté corrido.</div>';
+    });
+  }
+
+  function loadActivity(){
+    setLoading('panel-activity');
+    db.rpc('analytics_daily_activity', { p_days: STATE.days }).then(function(res){
+      if(res.error) throw res.error;
+      var rows=res.data||[];
+      if(!rows.length || !rows.some(function(r){ return r.active_users>0 || r.app_opens>0; })) return setEmpty('panel-activity');
+      var au = rows.map(function(r){ return { y:r.active_users, xLabel:dayLabel(r.day) }; });
+      var ao = rows.map(function(r){ return { y:r.app_opens, xLabel:dayLabel(r.day) }; });
+      panelBody('panel-activity').innerHTML = svgLineChart([
+        { data:au, color:'#3FBBA0' }, { data:ao, color:'#F4D18B' }
+      ], { height:220 });
+    }).catch(function(){ setError('panel-activity', loadActivity); });
+  }
+
+  function loadSignups(){
+    setLoading('panel-signups');
+    db.rpc('analytics_daily_signups', { p_days: STATE.days }).then(function(res){
+      if(res.error) throw res.error;
+      var rows=res.data||[];
+      var total=rows.reduce(function(a,r){ return a+(r.signups||0); },0);
+      if(!total) return setEmpty('panel-signups');
+      var max=Math.max.apply(null, rows.map(function(r){ return r.signups||0; }));
+      var showLbl = Math.max(1, Math.ceil(rows.length/8));
+      var html='<div class="barmini-row">';
+      rows.forEach(function(r,i){
+        var h = max? Math.max(2, Math.round((r.signups/max)*100)) : 2;
+        html += '<div class="barmini-col">'+(r.signups?('<div class="barmini-val">'+r.signups+'</div>'):'')+
+          '<div class="barmini-bar" style="height:'+h+'%" title="'+dayLabel(r.day)+': '+r.signups+'"></div>'+
+          (i%showLbl===0?('<div class="barmini-lbl">'+dayLabel(r.day)+'</div>'):'')+'</div>';
+      });
+      html += '</div>';
+      panelBody('panel-signups').innerHTML=html;
+    }).catch(function(){ setError('panel-signups', loadSignups); });
+  }
+
+  function loadMapViews(){
+    setLoading('panel-mapviews');
+    db.rpc('analytics_daily_map_views', { p_days: STATE.days }).then(function(res){
+      if(res.error) throw res.error;
+      var rows=res.data||[];
+      var total=rows.reduce(function(a,r){ return a+(r.views||0); },0);
+      if(!total) return setEmpty('panel-mapviews');
+      var series=[{ data: rows.map(function(r){ return {y:r.views, xLabel:dayLabel(r.day)}; }), color:'#8ED65A' }];
+      panelBody('panel-mapviews').innerHTML =
+        '<div class="mini-stat" style="margin-bottom:12px"><b>'+fmtNum(total)+'</b><span>vistas del mapa en el período</span></div>'+
+        svgLineChart(series, { height:130 });
+    }).catch(function(){ setError('panel-mapviews', loadMapViews); });
+  }
+
+  function loadRanking(){
+    setLoading('panel-ranking');
+    db.rpc('analytics_ranking_views', { p_days: STATE.days }).then(function(res){
+      if(res.error) throw res.error;
+      var rows=res.data||[];
+      var byTab={}; rows.forEach(function(r){ byTab[r.tab]=r.views; });
+      var city=byTab.city||0, region=byTab.region||0, max=Math.max(city,region,1);
+      if(!city && !region) return setEmpty('panel-ranking');
+      panelBody('panel-ranking').innerHTML =
+        '<div class="cmp-row"><div class="cmp-label">🏙️ Municipio</div><div class="cmp-track"><div class="cmp-fill" style="width:'+Math.max(6,(city/max*100))+'%;background:linear-gradient(90deg,#3FBBA0,#2A8E77)"><span>'+fmtNum(city)+'</span></div></div></div>'+
+        '<div class="cmp-row"><div class="cmp-label">🗺️ Región</div><div class="cmp-track"><div class="cmp-fill" style="width:'+Math.max(6,(region/max*100))+'%;background:linear-gradient(90deg,#F4D18B,#C9A25E)"><span>'+fmtNum(region)+'</span></div></div></div>';
+    }).catch(function(){ setError('panel-ranking', loadRanking); });
+  }
+
+  function loadScreenTime(){
+    setLoading('panel-screentime');
+    db.rpc('analytics_screen_time', { p_days: STATE.days }).then(function(res){
+      if(res.error) throw res.error;
+      var rows=(res.data||[]).filter(function(r){ return r.screen; });
+      if(!rows.length) return setEmpty('panel-screentime');
+      var max=Math.max.apply(null, rows.map(function(r){ return r.total_minutes||0; }));
+      var html='';
+      rows.forEach(function(r){
+        var w = max? Math.max(4, Math.round((r.total_minutes/max)*100)) : 4;
+        html += '<div class="hbar-row"><div class="hbar-top"><span class="hbar-name">'+esc(screenLabel(r.screen))+'</span>'+
+          '<span class="hbar-val">'+fmtMin(r.total_minutes)+' · '+fmtNum(r.views)+' vistas · '+r.avg_seconds+'s prom.</span></div>'+
+          '<div class="hbar-track"><div class="hbar-fill" style="width:'+w+'%"></div></div></div>';
+      });
+      panelBody('panel-screentime').innerHTML=html;
+    }).catch(function(){ setError('panel-screentime', loadScreenTime); });
+  }
+
+  function loadReportTypes(){
+    setLoading('panel-reporttypes');
+    db.rpc('analytics_report_types', { p_days: STATE.days }).then(function(res){
+      if(res.error) throw res.error;
+      var rows=(res.data||[]).filter(function(r){ return r.action_id; });
+      if(!rows.length) return setEmpty('panel-reporttypes');
+      var max=Math.max.apply(null, rows.map(function(r){ return r.selections||0; }), 1);
+      var html='';
+      rows.slice(0,8).forEach(function(r){
+        var wSel = Math.max(4, Math.round(((r.selections||0)/max)*100));
+        var wSub = Math.max(2, Math.round(((r.submissions||0)/max)*100));
+        var conv = r.selections ? Math.round((r.submissions/r.selections)*100) : 0;
+        html += '<div class="hbar-row"><div class="hbar-top"><span class="hbar-name">'+esc(r.title||r.action_id)+
+          '<span class="conv-badge">'+conv+'% completa</span></span>'+
+          '<span class="hbar-val">'+fmtNum(r.selections)+' elegidos · '+fmtNum(r.submissions)+' enviados</span></div>'+
+          '<div class="hbar-dual"><div class="hbar-mini-track"><div class="hbar-mini-fill" style="width:'+wSel+'%;background:#3FBBA0"></div></div>'+
+          '<div class="hbar-mini-track"><div class="hbar-mini-fill" style="width:'+wSub+'%;background:#8ED65A"></div></div></div></div>';
+      });
+      panelBody('panel-reporttypes').innerHTML=html;
+    }).catch(function(){ setError('panel-reporttypes', loadReportTypes); });
+  }
+
+  function funnelHtml(stages){
+    var max = stages[0].value || 1;
+    var html='';
+    stages.forEach(function(s){
+      var pct = Math.round((s.value/max)*100);
+      html += '<div class="funnel-stage"><div class="funnel-top"><span class="funnel-name">'+esc(s.label)+'</span>'+
+        '<span><span class="funnel-num">'+fmtNum(s.value)+'</span><span class="funnel-pct">'+pct+'%</span></span></div>'+
+        '<div class="funnel-track"><div class="funnel-fill" style="width:'+Math.max(3,pct)+'%"></div></div></div>';
+    });
+    return html;
+  }
+
+  function loadHouseTour(){
+    setLoading('panel-housetour');
+    db.rpc('analytics_house_tour_funnel', { p_days: STATE.days }).then(function(res){
+      if(res.error) throw res.error;
+      var k=(res.data&&res.data[0])||{};
+      if(!k.opened) return setEmpty('panel-housetour');
+      var html = funnelHtml([
+        { label:'Abrieron el Recorrido', value:k.opened||0 },
+        { label:'Eligieron sus lugares', value:k.setup_saved||0 },
+        { label:'Completaron el Recorrido', value:k.submitted||0 }
+      ]);
+      html += '<div class="funnel-extra"><div class="mini-stat"><b>'+(k.avg_stations||0)+'</b><span>lugares promedio por recorrido completado</span></div></div>';
+      panelBody('panel-housetour').innerHTML=html;
+    }).catch(function(){ setError('panel-housetour', loadHouseTour); });
+  }
+
+  function loadPush(){
+    setLoading('panel-push');
+    db.rpc('analytics_push_funnel', { p_days: STATE.days }).then(function(res){
+      if(res.error) throw res.error;
+      var k=(res.data&&res.data[0])||{};
+      if(!k.prompted) return setEmpty('panel-push');
+      var html = funnelHtml([
+        { label:'Se les ofreció activar', value:k.prompted||0 },
+        { label:'Aceptaron', value:k.accepted||0 }
+      ]);
+      html += '<div class="funnel-extra">'+
+        '<div class="mini-stat"><b>'+fmtNum(k.later)+'</b><span>dijeron "ahora no"</span></div>'+
+        '<div class="mini-stat"><b>'+fmtNum(k.notif_clicks)+'</b><span>tocaron una notificación</span></div>'+
+        '</div>';
+      panelBody('panel-push').innerHTML=html;
+    }).catch(function(){ setError('panel-push', loadPush); });
+  }
+
+  function loadFeed(){
+    db.rpc('analytics_recent_events', { p_limit: 50 }).then(function(res){
+      if(res.error) throw res.error;
+      var rows=res.data||[];
+      if(!rows.length) return setEmpty('panel-feed', 'Todavía no se registró actividad.');
+      var html='<div class="feed">';
+      rows.forEach(function(r){
+        var lab=eventLabel(r);
+        html += '<div class="feed-row"><span class="feed-time">'+timeAgo(r.created_at)+'</span>'+
+          '<span class="feed-ic">'+lab.ic+'</span><span class="feed-tx">'+lab.tx+'</span>'+
+          (r.city?('<span class="feed-city">📍 '+esc(r.city)+'</span>'):'')+'</div>';
+      });
+      html += '</div>';
+      panelBody('panel-feed').innerHTML=html;
+    }).catch(function(){ setError('panel-feed', loadFeed); });
+  }
+
+  function loadAll(){
+    loadKpis(); loadActivity(); loadSignups(); loadMapViews(); loadRanking();
+    loadScreenTime(); loadReportTypes(); loadHouseTour(); loadPush(); loadFeed();
+    $('updatedAt').textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
+  }
+
+  document.querySelectorAll('.range-pill').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.range-pill').forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active'); STATE.days=parseInt(b.dataset.days,10); loadAll();
+    });
+  });
+  $('refreshBtn').addEventListener('click', function(){
+    this.classList.add('spin'); var self=this;
+    loadAll(); setTimeout(function(){ self.classList.remove('spin'); }, 700);
+  });
+
+  loadAll();
+  setInterval(loadFeed, 30000);
+})();
+</script>
+</body>
+</html>

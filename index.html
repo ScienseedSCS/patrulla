@@ -950,6 +950,41 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   }
 
   // =====================================================================
+  //  ANALYTICS · uso interno para el dashboard admin (admin.html)
+  //  Solo cuenta interacciones (pantallas, botones, tipos de reporte…),
+  //  nunca contenido escrito por el usuario (notas, fotos). Se puede
+  //  apagar poniendo ANALYTICS_ENABLED=false acá abajo.
+  // =====================================================================
+  var ANALYTICS_ENABLED = true;
+  var _sid=null;
+  function sessionId(){
+    if(_sid) return _sid;
+    try{
+      _sid = sessionStorage.getItem('pa_sid');
+      if(!_sid){ _sid = (crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(16).slice(2))); sessionStorage.setItem('pa_sid', _sid); }
+    }catch(e){ _sid = Date.now()+'-'+Math.random().toString(16).slice(2); }
+    return _sid;
+  }
+  function track(event, props){
+    if(!ANALYTICS_ENABLED || !S.user) return;
+    try{ db.from('events').insert({ user_id:S.user.id, session_id:sessionId(), event:event, props:props||{} }).then(function(){}, function(){}); }catch(e){}
+  }
+  // Tiempo por pantalla: al cambiar de pantalla, cierra la anterior con su duración.
+  var _screen=null, _screenAt=0;
+  function trackScreen(name){
+    var now=Date.now();
+    if(_screen){ var secs=Math.round((now-_screenAt)/1000); if(secs>=1) track('screen_view', { screen:_screen, seconds:secs }); }
+    _screen=name; _screenAt=now;
+  }
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden && _screen){
+      var secs=Math.round((Date.now()-_screenAt)/1000);
+      if(secs>=1) track('screen_view', { screen:_screen, seconds:secs });
+      _screenAt=Date.now();
+    }
+  });
+
+  // =====================================================================
   //  AUTH
   // =====================================================================
   var authMode = 'login'; // login | register | recover
@@ -1064,7 +1099,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           return db.from('profiles').insert({ id:res.data.user.id, username:name, city:city, points:0, level:1, is_reviewer:false })
             .then(function(ins){
               if(ins.error && ins.error.code!=='23505') throw ins.error;
-              return onAuthenticated(res.data.user);
+              return onAuthenticated(res.data.user, 'sign_up');
             });
         } else {
           // confirmación de email activada
@@ -1075,7 +1110,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     } else {
       db.auth.signInWithPassword({ email:email, password:pass }).then(function(res){
         if(res.error){ authMsg('err', traducir(res.error.message)); btn.disabled=false; btn.textContent=orig; return; }
-        return onAuthenticated(res.data.user);
+        return onAuthenticated(res.data.user, 'log_in');
       }).catch(function(e){ authMsg('err', traducir(e.message)); btn.disabled=false; btn.textContent=orig; });
     }
   }
@@ -1246,6 +1281,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     if(!pushSupported()) return;
     if(S.profile.push_prompted) return;
     if(Notification.permission==='granted') return; // ya activadas
+    track('push_prompt_shown');
     $('pushAskModal').classList.add('show');
   }
   function markPrompted(){
@@ -1255,10 +1291,11 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   }
   function pushAskAccept(){
     $('pushAskModal').classList.remove('show'); markPrompted();
+    track('push_prompt_accept');
     enablePush().then(function(){ toast('¡Notificaciones activadas! 🔔'); })
       .catch(function(e){ if(e&&e.message==='perm-denied') toast('Podés activarlas después desde tu perfil'); else showErr(humanError(e,'No pudimos activar las notificaciones','Revisá los permisos del navegador e intentá de nuevo.')); });
   }
-  function pushAskLater(){ $('pushAskModal').classList.remove('show'); markPrompted(); }
+  function pushAskLater(){ $('pushAskModal').classList.remove('show'); markPrompted(); track('push_prompt_later'); }
 
   // Panel de preferencias en el Perfil
   function renderPushPanel(){
@@ -1286,10 +1323,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       $('pushMaster').addEventListener('change', function(){
         var el=this;
         if(el.checked){
-          enablePush().then(function(){ $('pushDetail').classList.remove('hide'); toast('¡Notificaciones activadas! 🔔'); markPrompted(); })
+          enablePush().then(function(){ $('pushDetail').classList.remove('hide'); toast('¡Notificaciones activadas! 🔔'); markPrompted(); track('push_toggle_on', { from:'profile' }); })
             .catch(function(e){ el.checked=false; if(e&&e.message==='perm-denied') setMsgEl('pushMsg','err','Diste "bloquear". Cambialo en los ajustes del navegador para activarlas.'); else showErr(humanError(e,'No pudimos activar las notificaciones','Revisá los permisos del navegador e intentá de nuevo.')); });
         } else {
-          disablePush().then(function(){ $('pushDetail').classList.add('hide'); toast('Notificaciones desactivadas'); }).catch(function(){});
+          disablePush().then(function(){ $('pushDetail').classList.add('hide'); toast('Notificaciones desactivadas'); track('push_toggle_off', { from:'profile' }); }).catch(function(){});
         }
       });
       var td=$('pushDetail');
@@ -1313,6 +1350,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   // ---- PERFIL ----------------------------------------------------------
   function showProfile(){
+    trackScreen('profile');
     renderProfile();
     document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
     $('sec-profile').classList.add('active');
@@ -1391,7 +1429,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   // =====================================================================
   //  CARGA
   // =====================================================================
-  function onAuthenticated(user){
+  function onAuthenticated(user, authEvent){
     S.user = user;
     $('authScreen').classList.add('hide');
     $('boot').classList.remove('hide');
@@ -1400,6 +1438,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     return loadEverything().then(function(){
       $('boot').classList.add('hide');
       $('appScreen').classList.remove('hide');
+      track('app_open', { auth_event: authEvent||'session_restore' });
+      trackScreen(S.lastSection||'reportar');
       if(S.profile && !S.profile.onboarded) showOnboarding();
       else { maybeSoftAskPush(); maybeStartFirstReportTour(); }
     }).catch(function(e){
@@ -1575,7 +1615,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           '<div class="action-title">'+esc(a.title)+'</div>'+
           '<span class="pts">+'+a.points+' pts</span>';
         card.querySelector('.action-info').addEventListener('click', function(ev){ ev.stopPropagation(); openActionInfo(a); });
-        card.addEventListener('click', function(){ startFlow(a); });
+        card.addEventListener('click', function(){ track('report_type_select', { action_id:a.id, title:a.title, location:a.location||null }); startFlow(a); });
         grid.appendChild(card);
       });
       wrap.appendChild(grid);
@@ -1667,6 +1707,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function startHouseTour(a){
     tourAction=a; tourFiles={}; tourIdx=0; tourAttachLoc=!!S.geoConsent;
+    track('house_tour_open', { has_stations: !!(S.tourStations&&S.tourStations.length), stations_count:(S.tourStations||[]).length });
     $('reportar-grid-view').classList.add('hide'); $('reportar-flow-view').classList.remove('hide'); updateHtFab();
     var sel=S.tourStations;
     if(Array.isArray(sel) && sel.length){ tourList=sel.map(tourStationByKey).filter(Boolean); renderTourIntro(); }
@@ -1694,6 +1735,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       var keys=[]; flow.querySelectorAll('.tour-check input:checked').forEach(function(c){ keys.push(c.dataset.k); });
       if(!keys.length){ toast('Elegí al menos un lugar'); return; }
       S.tourStations=keys; S.profile.tour_stations=keys;
+      track('house_tour_setup_saved', { stations_count:keys.length });
       db.from('profiles').update({ tour_stations:keys }).eq('id', S.user.id).then(function(){},function(){});
       tourList=keys.map(tourStationByKey).filter(Boolean); tourFiles={}; tourIdx=0; renderTourIntro();
     };
@@ -1784,6 +1826,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     }).then(function(){
       var wasFirst=(S.stats.reports||0)===0;
       S.stats.reports+=1; if($('statReports')) $('statReports').textContent=S.stats.reports;
+      track('house_tour_submit', { stations_count:tourList.length, points:total });
       cancelFlow();
       if(wasFirst) showCelebration(total); else toast('¡Recorrido enviado! +'+total+' pts 🏠🎉');
     }).catch(function(e){
@@ -2002,6 +2045,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     }).then(function(hash){
       var wasFirst=(S.stats.reports||0)===0;
       S.stats.reports+=1; $('statReports').textContent=S.stats.reports;
+      track('report_submit', { action_id:a.id, mode:reportMode, points:total });
       cancelFlow();
       if(wasFirst) showCelebration(total); else toast('¡Reporte enviado! +'+total+' pts 🎉');
       checkDuplicate(hash);
@@ -2370,8 +2414,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     progTab=tab;
     ['me','city','region'].forEach(function(t){ $('prog-'+t).classList.toggle('hide', t!==tab); });
     document.querySelectorAll('.prog-tab').forEach(function(b){ b.classList.toggle('active', b.dataset.ptab===tab); });
-    if(tab==='city') renderCityTab();
-    if(tab==='region') renderRegionTab();
+    if(tab==='city'){ track('ranking_view', { tab:'city', city:S.profile.city||null }); renderCityTab(); }
+    if(tab==='region'){ track('ranking_view', { tab:'region' }); renderRegionTab(); }
   }
 
   function totalCards(items){
@@ -2514,6 +2558,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   // =====================================================================
   function showSection(sec){
     S.lastSection = sec;
+    trackScreen(sec);
+    if(sec==='incidencia') track('map_view');
     document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
     var t=$('sec-'+sec); if(t) t.classList.add('active');
     document.querySelectorAll('.navbtn').forEach(function(b){ b.classList.toggle('active', b.dataset.sec===sec); });
@@ -2555,7 +2601,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('pushAskModal').addEventListener('click', function(e){ if(e.target.id==='pushAskModal') pushAskLater(); });
     if('serviceWorker' in navigator){
       navigator.serviceWorker.addEventListener('message', function(ev){
-        if(ev.data && ev.data.type==='notif-click' && ev.data.section) showSection(ev.data.section);
+        if(ev.data && ev.data.type==='notif-click'){
+          track('push_notification_click', { section: ev.data.section||null });
+          if(ev.data.section) showSection(ev.data.section);
+        }
       });
     }
     $('pfReqCity').addEventListener('click', openCityReq);
