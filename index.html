@@ -347,38 +347,86 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
 /* Aprender */
 .learn-menu{display:grid;grid-template-columns:1fr;gap:12px}
-.learn-card{background:linear-gradient(135deg,var(--white),#FBF3E0);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);cursor:pointer;display:flex;gap:14px;align-items:center;transition:transform .15s;border:2px solid transparent}
+.learn-card{background:linear-gradient(135deg,var(--white),#FBF3E0);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);cursor:pointer;display:flex;gap:14px;align-items:center;transition:transform .15s;border:2px solid transparent;font-family:inherit;text-align:left;width:100%}
+.learn-card:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
 .learn-card:hover{transform:translateY(-2px);border-color:var(--accent)}
 .learn-icon{font-size:44px;flex-shrink:0}
 .learn-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--primary);line-height:1}
 .learn-sub{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4}
 .learn-count{font-size:11px;color:var(--accent-2);font-weight:800;margin-top:6px}
-.daily-card{background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:#fff;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
-.daily-title{font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:4px}
-.daily-desc{font-size:12px;opacity:.85;margin-bottom:10px;line-height:1.4}
-.progress-outer{background:rgba(255,255,255,.2);border-radius:999px;height:10px;overflow:hidden;margin-bottom:6px}
-.progress-inner{background:linear-gradient(90deg,var(--accent),var(--secondary));height:100%;border-radius:999px;transition:width .4s}
-.progress-txt{font-size:11px;font-weight:700;opacity:.9}
 .tips-category{font-weight:800;color:var(--primary);font-size:12px;text-transform:uppercase;letter-spacing:.4px;margin:14px 0 6px}
 .tip-item{background:var(--card);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);margin-bottom:8px;cursor:pointer;border:none;font-family:inherit;text-align:left;width:100%;display:block}
 .tip-item:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
 .tip-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .tip-title{font-weight:700;color:var(--primary);font-size:13px;line-height:1.3;flex:1}
-.tip-check{font-size:16px;color:#DFD3E1;flex-shrink:0}
-.tip-item.read .tip-check{color:var(--ok)}
-.tip-item.read{background:#F5F7EF}
 .tip-body{font-size:12px;color:var(--text);margin-top:6px;line-height:1.5;display:none}
 .tip-item.open .tip-body{display:block}
-.quiz-card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
-.quiz-q{font-weight:800;color:var(--primary);font-size:14px;line-height:1.35;margin-bottom:10px}
-.quiz-opt{display:block;width:100%;text-align:left;background:#F8F3EA;border:1.5px solid transparent;padding:10px 12px;border-radius:10px;font-family:inherit;font-size:13px;color:var(--text);cursor:pointer;margin-bottom:6px;transition:background .15s,border-color .15s}
-.quiz-opt:hover:not(:disabled){background:#EFE6D8}
-.quiz-opt.correct{background:#E1F0E4;border-color:var(--ok);color:var(--ok);font-weight:700}
-.quiz-opt.wrong{background:#F9E4E2;border-color:var(--danger);color:var(--danger)}
-.quiz-opt:disabled{cursor:default}
-.quiz-feedback{margin-top:8px;font-size:12px;padding:8px 10px;border-radius:8px;background:#E1F0E4;color:var(--ok);font-weight:700;display:none}
-.quiz-feedback.show{display:block}
-.quiz-feedback.err{background:#F9E4E2;color:var(--danger)}
+
+/* Tests (menú) */
+.test-card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:10px;cursor:pointer;display:flex;gap:14px;align-items:center;border:2px solid transparent;font-family:inherit;text-align:left;width:100%;transition:border-color .15s}
+.test-card:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
+.test-card.done{border-color:var(--ok)}
+.test-card.repaso{background:linear-gradient(135deg,var(--white),#FBF3E0)}
+.test-card.locked{opacity:.55;cursor:not-allowed}
+.test-card-ic{font-size:32px;flex-shrink:0}
+.test-card-title{font-family:'DM Serif Display',serif;font-size:17px;color:var(--primary);line-height:1.15}
+.test-card-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.test-card-arrow{font-size:20px;color:var(--accent-2);font-weight:800;flex-shrink:0}
+
+/* Jugando un test */
+.test-prog{height:7px;background:#EDE3EF;border-radius:999px;overflow:hidden;margin-bottom:14px}
+.test-prog-bar{height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent-1));transition:width .3s}
+.tq-card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.tq-type-badge{display:inline-block;background:#F1E7D8;color:var(--primary-soft);font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:3px 9px;border-radius:999px;margin-bottom:10px}
+.tq-prompt{font-family:'DM Serif Display',serif;font-size:18px;color:var(--primary);line-height:1.3;margin-bottom:14px}
+.tq-options{display:flex;flex-direction:column;gap:8px}
+.tq-options.multi{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tq-opt{display:block;width:100%;text-align:left;background:#F8F3EA;border:1.5px solid transparent;padding:11px 12px;border-radius:10px;font-family:inherit;font-size:13.5px;color:var(--text);cursor:pointer;transition:background .15s,border-color .15s;min-height:44px}
+.tq-opt:hover:not(:disabled){background:#EFE6D8}
+.tq-opt.correct{background:#E1F0E4;border-color:var(--ok);color:var(--ok);font-weight:700}
+.tq-opt.wrong{background:#F9E4E2;border-color:var(--danger);color:var(--danger)}
+.tq-opt:disabled{cursor:default}
+.tq-opt.chip{text-align:center;font-weight:700}
+.tq-opt.chip.picked{background:var(--accent);border-color:var(--accent-2);color:var(--primary)}
+.tq-tf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tq-tf-btn{padding:20px 10px;border-radius:14px;border:1.5px solid transparent;background:#F8F3EA;font-family:'DM Serif Display',serif;font-size:17px;color:var(--primary);cursor:pointer;min-height:60px}
+.tq-tf-btn:hover:not(:disabled){background:#EFE6D8}
+.tq-tf-btn.correct{background:#E1F0E4;border-color:var(--ok);color:var(--ok)}
+.tq-tf-btn.wrong{background:#F9E4E2;border-color:var(--danger);color:var(--danger)}
+.tq-tf-btn:disabled{cursor:default}
+.tq-sentence{font-size:15px;color:var(--text);line-height:1.7;margin-bottom:14px}
+.tq-blank{display:inline-block;min-width:64px;text-align:center;border-bottom:2.5px solid var(--accent-2);color:var(--primary);font-weight:800;padding:0 4px}
+.tq-blank.correct{color:var(--ok);border-color:var(--ok)}
+.tq-blank.wrong{color:var(--danger);border-color:var(--danger)}
+.tq-bank{display:flex;gap:8px;flex-wrap:wrap}
+.tq-chip{background:var(--accent);color:var(--primary);border:none;font-family:inherit;font-weight:800;font-size:13.5px;padding:10px 16px;border-radius:999px;cursor:pointer;min-height:44px}
+.tq-chip:hover:not(:disabled){background:var(--secondary)}
+.tq-chip:disabled{opacity:.55;cursor:default}
+.tq-order-list{display:flex;flex-direction:column;gap:8px}
+.tq-order-item{display:flex;align-items:center;gap:10px;text-align:left;background:#F8F3EA;border:none;padding:12px;border-radius:10px;font-family:inherit;font-size:13.5px;color:var(--text);cursor:pointer;min-height:44px}
+.tq-order-item.picked{background:var(--accent);color:var(--primary);font-weight:700}
+.tq-order-num{background:var(--primary);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.tq-reset-link{background:none;border:none;color:var(--primary-soft);font-family:inherit;font-size:12px;font-weight:800;text-decoration:underline;cursor:pointer;margin-top:10px;padding:8px 0;min-height:44px}
+.tq-order-correct{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+.tq-classify-list{display:flex;flex-direction:column;gap:8px}
+.tq-classify-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#F8F3EA;border-radius:10px;padding:9px 12px}
+.tq-classify-row.ok{background:#E1F0E4}
+.tq-classify-row.bad{background:#F9E4E2}
+.tq-classify-item{font-size:13px;color:var(--text);flex:1}
+.tq-classify-btns{display:flex;gap:6px;flex-shrink:0}
+.tq-classify-btn{background:#fff;border:1.5px solid #DFD3E1;color:var(--primary-soft);font-family:inherit;font-size:11px;font-weight:700;padding:7px 10px;border-radius:8px;cursor:pointer;min-height:36px}
+.tq-classify-btn.picked{background:var(--accent-2);border-color:var(--accent-2);color:#fff}
+.tq-classify-btn:disabled{cursor:default}
+.tq-confirm-btn{margin-top:12px;width:100%}
+.tq-feedback{margin-top:14px;font-size:13px;padding:12px;border-radius:10px;background:#E1F0E4;color:var(--ok);font-weight:700;display:none}
+.tq-feedback.show{display:block}
+.tq-feedback.err{background:#F9E4E2;color:var(--danger)}
+.tq-explain{font-weight:500;color:var(--text);font-size:12.5px;margin-top:6px;line-height:1.5}
+.tq-summary{text-align:center;padding:10px 4px}
+.tq-summary-emoji{font-size:56px;line-height:1}
+.tq-summary-score{font-family:'DM Serif Display',serif;font-size:34px;color:var(--primary);margin:8px 0 4px}
+.tq-summary-msg{font-size:14px;color:var(--text);margin-bottom:6px}
+.tq-summary-bonus{font-size:13px;font-weight:800;color:var(--accent-2);margin-bottom:16px}
 /* Detectar criaderos */
 .spot-card{background:var(--card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);margin-bottom:12px;cursor:pointer;display:flex;gap:12px;align-items:center;border:2px solid transparent;transition:border-color .15s;font-family:inherit;text-align:left;width:100%}
 .spot-card:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
@@ -578,30 +626,37 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       <section class="section" id="sec-aprender">
         <div id="learn-menu-view">
           <h2 class="section-title">🧠 Aprender</h2>
-          <p class="section-sub">Sumá conocimiento y puntos, aunque no salgas a reportar.</p>
+          <p class="section-sub">Conocé al mosquito y sumá puntos poniendo a prueba lo que aprendiste.</p>
           <div class="learn-menu">
-            <div class="learn-card" data-learn="tips"><div class="learn-icon">📖</div><div><div class="learn-title">Tips</div><div class="learn-sub">Leé y sumá puntos.</div><div class="learn-count">+2 pts c/u</div></div></div>
-            <div class="learn-card" data-learn="quizzes"><div class="learn-icon">❓</div><div><div class="learn-title">Quizzes</div><div class="learn-sub">Poné a prueba lo que sabés.</div><div class="learn-count">+5 pts c/u</div></div></div>
-            <div class="learn-card" data-learn="spot"><div class="learn-icon">🔍</div><div><div class="learn-title">Detectar criaderos</div><div class="learn-sub">Encontrá los focos de agua en la foto.</div><div class="learn-count">+pts por desafío</div></div></div>
+            <button type="button" class="learn-card" data-learn="resources"><div class="learn-icon" aria-hidden="true">📚</div><div><div class="learn-title">Recursos</div><div class="learn-sub">Leé la información con calma, por tema.</div><div class="learn-count">Sin apuro, sin puntos</div></div></button>
+            <button type="button" class="learn-card" data-learn="tests"><div class="learn-icon" aria-hidden="true">📝</div><div><div class="learn-title">Tests</div><div class="learn-sub">Tests cortos por tema. Sumás puntos si acertás.</div><div class="learn-count">+pts por test</div></div></button>
+            <button type="button" class="learn-card" data-learn="spot"><div class="learn-icon" aria-hidden="true">🔍</div><div><div class="learn-title">Detectar criaderos</div><div class="learn-sub">Encontrá los focos de agua en la foto.</div><div class="learn-count">+pts por desafío</div></div></button>
           </div>
         </div>
-        <div id="learn-tips-view" class="hide">
+
+        <!-- RECURSOS (antes "Tips"): lectura organizada por categoría, sin puntos -->
+        <div id="learn-resources-view" class="hide">
           <button class="flow-back" data-learn="menu">← Volver</button>
-          <h2 class="section-title">📖 Tips</h2>
-          <div class="daily-card">
-            <div class="daily-title">Leé y sumá puntos</div>
-            <div class="daily-desc">Cada tip que leés por primera vez te da +2 pts.</div>
-            <div class="progress-outer"><div class="progress-inner" id="tipsProg" style="width:0%"></div></div>
-            <div class="progress-txt"><span id="tipsReadCount">0</span> / <span id="tipsTotal">0</span> tips leídos</div>
-          </div>
-          <div id="tipsList"></div>
+          <h2 class="section-title">📚 Recursos</h2>
+          <p class="section-sub">Todo lo que sabemos sobre prevención del dengue, organizado por tema. Tocá para leer.</p>
+          <div id="resourcesList"></div>
         </div>
-        <div id="learn-quiz-view" class="hide">
+
+        <!-- TESTS (antes "Quizzes"): menú de tests temáticos + repaso general -->
+        <div id="learn-tests-view" class="hide">
           <button class="flow-back" data-learn="menu">← Volver</button>
-          <h2 class="section-title">❓ Quizzes</h2>
-          <p class="section-sub">Elegí la respuesta correcta y sumá +5 pts.</p>
-          <div id="quizList"></div>
+          <h2 class="section-title">📝 Tests</h2>
+          <p class="section-sub">Tests cortos de hasta 10 preguntas. Si te equivocás, te explicamos por qué.</p>
+          <div id="testsMenuList"></div>
         </div>
+
+        <!-- Jugando un test -->
+        <div id="learn-testplay-view" class="hide">
+          <div class="flow-header"><button class="flow-back" id="testExitBtn">← Salir</button><span class="step-pill" id="testProgPill">1 de 10</span></div>
+          <div class="test-prog"><div class="test-prog-bar" id="testProgBar" style="width:0%"></div></div>
+          <div id="testQuestionBody"></div>
+        </div>
+
         <div id="learn-spot-view" class="hide">
           <button class="flow-back" data-learn="menu">← Volver</button>
           <h2 class="section-title">🔍 Detectar criaderos</h2>
@@ -631,8 +686,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           <div class="stats-grid">
             <div class="stat-card stat-clickable" id="cardSent"><div class="stat-num" id="statReports">0</div><div class="stat-label">Reportes enviados</div><div class="stat-hint">Ver / editar ›</div></div>
             <div class="stat-card"><div class="stat-num" id="statApproved">0</div><div class="stat-label">Reportes aprobados</div></div>
-            <div class="stat-card"><div class="stat-num" id="statQuizzes">0</div><div class="stat-label">Quizzes</div></div>
-            <div class="stat-card"><div class="stat-num" id="statTips">0</div><div class="stat-label">Tips leídos</div></div>
+            <div class="stat-card"><div class="stat-num" id="statQuizzes">0</div><div class="stat-label">Tests completados</div></div>
+            <div class="stat-card"><div class="stat-num" id="statTips">0</div><div class="stat-label">Preguntas acertadas</div></div>
             <div class="stat-card"><div class="stat-num" id="statReviews">0</div><div class="stat-label">Revisiones</div></div>
           </div>
         </div>
@@ -898,7 +953,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   var BUCKET = 'reports';
 
   // Puntos por acción
-  var PTS_TIP = 2, PTS_QUIZ = 5, PTS_REVIEW = 3, REVIEWER_MIN = 350, PTS_BA_BONUS = 5;
+  var PTS_REVIEW = 3, REVIEWER_MIN = 350, PTS_BA_BONUS = 5;
   var GEO_PRECISION = 3; // decimales ≈ ~110 m (minimización de datos)
 
   // Estaciones del House Tour (editables). Cada persona elige las que tiene.
@@ -941,8 +996,9 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   var S = {
     user: null, profile: null,
-    cities: [], actions: [], tips: [], quizzes: [],
-    myTipReads: {}, myQuizAnswers: {}, myReviewedReports: {},
+    cities: [], actions: [], tips: [], learnQuestions: [],
+    myReviewedReports: {},
+    testProgress: {}, myCorrectQuestions: {},
     spotChallenges: null, mySpotDone: {},
     stats: { reports: 0, quizzes: 0, tips: 0, reviews: 0 },
     recovery: false,
@@ -1517,15 +1573,15 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       db.from('incidence').select('*').order('city'),
       db.from('action_types').select('*').order('sort_order'),
       db.from('tips').select('*').order('sort_order'),
-      db.from('quizzes').select('*').order('id'),
-      db.from('tip_reads').select('tip_id').eq('user_id', uid),
-      db.from('quiz_answers').select('quiz_id,is_correct').eq('user_id', uid),
+      db.from('learn_questions').select('*').eq('active', true).order('sort_order'),
+      db.from('learn_test_progress').select('*').eq('user_id', uid),
+      db.from('learn_question_correct').select('question_id').eq('user_id', uid),
       db.from('reports').select('id', { count:'exact', head:true }).eq('user_id', uid),
       db.from('report_reviews').select('report_id').eq('reviewer_id', uid),
       db.from('cities').select('name').eq('active', true).order('name'),
       db.from('reports').select('id', { count:'exact', head:true }).eq('user_id', uid).eq('status','validado'),
     ]).then(function(r){
-      var prof=r[0], inc=r[1], act=r[2], tp=r[3], qz=r[4], tr=r[5], qa=r[6], rc=r[7], rv=r[8], ct=r[9], ap=r[10];
+      var prof=r[0], inc=r[1], act=r[2], tp=r[3], lq=r[4], ltp=r[5], lqc=r[6], rc=r[7], rv=r[8], ct=r[9], ap=r[10];
 
       // Si no existe el perfil (caso raro), crearlo mínimamente.
       if(prof.error || !prof.data){
@@ -1542,15 +1598,15 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       S.cities  = inc.data || [];
       S.actions = act.data || [];
       S.tips    = tp.data || [];
-      S.quizzes = qz.data || [];
-      (tr.data||[]).forEach(function(x){ S.myTipReads[x.tip_id]=1; });
-      (qa.data||[]).forEach(function(x){ S.myQuizAnswers[x.quiz_id]=x; });
+      S.learnQuestions = lq.data || [];
+      S.testProgress = {}; (ltp.data||[]).forEach(function(x){ S.testProgress[x.block]=x; });
+      S.myCorrectQuestions = {}; (lqc.data||[]).forEach(function(x){ S.myCorrectQuestions[x.question_id]=1; });
       (rv.data||[]).forEach(function(x){ S.myReviewedReports[x.report_id]=1; });
 
       S.stats.reports = rc.count||0;
       S.stats.approved = (ap && ap.count) || 0;
-      S.stats.tips = Object.keys(S.myTipReads).length;
-      S.stats.quizzes = (qa.data||[]).filter(function(a){return a.is_correct;}).length;
+      S.stats.tips = Object.keys(S.myCorrectQuestions).length;
+      S.stats.quizzes = Object.keys(S.testProgress).filter(function(b){ return S.testProgress[b].completed; }).length;
       S.stats.reviews = Object.keys(S.myReviewedReports).length;
 
       $('brandUser').textContent = S.profile.city ? ('📍 '+S.profile.city) : 'Prevención en tu barrio';
@@ -2262,9 +2318,12 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   // =====================================================================
   function showLearnView(v){
     $('learn-menu-view').classList.toggle('hide', v!=='menu');
-    $('learn-tips-view').classList.toggle('hide', v!=='tips');
-    $('learn-quiz-view').classList.toggle('hide', v!=='quizzes');
+    $('learn-resources-view').classList.toggle('hide', v!=='resources');
+    $('learn-tests-view').classList.toggle('hide', v!=='tests');
+    $('learn-testplay-view').classList.toggle('hide', v!=='testplay');
     $('learn-spot-view').classList.toggle('hide', v!=='spot');
+    if(v==='resources') renderResources();
+    if(v==='tests') renderTestsMenu();
     if(v==='spot') openSpotList();
   }
 
@@ -2380,88 +2439,347 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     if(awarded){ $('spotResult').innerHTML='<div class="spot-success">✓ Ya completaste este desafío. Tocá "Ver solución" para repasarlo.</div>'; }
   }
 
-  function updateTipsProgress(){
-    var total=S.tips.length, read=Object.keys(S.myTipReads).length;
-    $('tipsTotal').textContent=total; $('tipsReadCount').textContent=read;
-    $('tipsProg').style.width = total? Math.round(read/total*100)+'%':'0%';
-    $('statTips').textContent=read;
-  }
-
-  function renderTips(){
-    var list=$('tipsList'); list.innerHTML='';
-    if(!S.tips.length){ list.appendChild(el('div','empty','No hay tips cargados. ¿Aplicaste supabase-fix.sql?')); return; }
+  // =====================================================================
+  //  RECURSOS (antes "Tips") · solo lectura, organizada por categoría,
+  //  sin puntos ni seguimiento de "leído".
+  // =====================================================================
+  function renderResources(){
+    var list=$('resourcesList'); list.innerHTML='';
+    if(!S.tips.length){ list.appendChild(el('div','empty','Todavía no hay recursos cargados.')); return; }
     var lastCat=null;
     S.tips.forEach(function(tip){
       if(tip.category!==lastCat){ lastCat=tip.category; list.appendChild(el('div','tips-category', esc(tip.category))); }
-      var read = !!S.myTipReads[tip.id];
-      var item=el('button','tip-item'+(read?' read':'')); item.type='button';
-      item.innerHTML='<div class="tip-head"><div class="tip-title">'+esc(tip.title)+'</div><div class="tip-check" aria-hidden="true">✔</div></div><div class="tip-body">'+esc(tip.content)+'</div>';
+      var item=el('button','tip-item'); item.type='button';
+      item.innerHTML='<div class="tip-head"><div class="tip-title">'+esc(tip.title)+'</div></div><div class="tip-body">'+esc(tip.content)+'</div>';
       item.setAttribute('aria-expanded','false');
-      item.addEventListener('click', function(){ onTipClick(tip, item); });
+      item.addEventListener('click', function(){
+        item.classList.toggle('open');
+        item.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
+        track('resource_open', { tip_id:tip.id, category:tip.category||null });
+      });
       list.appendChild(item);
     });
-    updateTipsProgress();
   }
 
-  function onTipClick(tip, item){
-    item.classList.toggle('open');
-    item.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
-    if(S.myTipReads[tip.id]) return;
-    S.myTipReads[tip.id]=1; item.classList.add('read');
-    db.from('tip_reads').insert({ user_id:S.user.id, tip_id:tip.id }).then(function(ins){
-      if(ins.error && ins.error.code!=='23505') throw ins.error;
-      updateTipsProgress();
-      return awardPoints(PTS_TIP);
-    }).then(function(){ toast('+'+PTS_TIP+' pts · tip leído 📖'); })
-      .catch(function(e){ console.error(e); showErr(humanError(e,'No pudimos registrar la lectura del tip','Tocá el tip otra vez.')); });
-  }
+  // =====================================================================
+  //  TESTS (antes "Quizzes") · tests cortos y heterogéneos por tema,
+  //  con repaso general mezclado una vez completados los 4.
+  // =====================================================================
+  var PTS_PER_QUESTION = 2;
+  var TEST_BONUS_FULL = 15, TEST_BONUS_GOOD = 8;   // tests temáticos, bonus una sola vez
+  var REPASO_BONUS_FULL = 8;                        // repaso, bonus repetible
+  var TEST_BLOCKS = [
+    { key:'mosquito', icon:'🦟', title:'Conocé al mosquito' },
+    { key:'casa',     icon:'🏠', title:'Protegé tu casa' },
+    { key:'cuerpo',   icon:'🧴', title:'Protegé tu cuerpo' },
+    { key:'sintomas', icon:'🩺', title:'Reconocé los síntomas y actuá' }
+  ];
+  var TQ_TYPE_LABEL = { mcq:'Opción múltiple', truefalse:'Verdadero o falso', fillblank:'Completar', order:'Ordenar', multiselect:'Elegir varias', classify:'Clasificar' };
+  var TS = { block:null, questions:[], idx:0, correctCount:0, answered:false };
 
-  function renderQuizzes(){
-    var list=$('quizList'); list.innerHTML='';
-    if(!S.quizzes.length){ list.appendChild(el('div','empty','No hay quizzes cargados. ¿Aplicaste supabase-fix.sql?')); return; }
-    S.quizzes.forEach(function(q,i){
-      var opts = Array.isArray(q.options)? q.options : (function(){ try{return JSON.parse(q.options);}catch(e){return [];} })();
-      q._opts = opts;
-      var prev = S.myQuizAnswers[q.id];
-      var card=el('div','quiz-card');
-      var oh='';
-      opts.forEach(function(o,j){ oh+='<button class="quiz-opt" data-q="'+q.id+'" data-o="'+j+'">'+String.fromCharCode(97+j)+') '+esc(o)+'</button>'; });
-      card.innerHTML='<div class="quiz-q">'+(i+1)+'. '+esc(q.question)+'</div>'+oh+'<div class="quiz-feedback" id="fb-'+q.id+'"></div>';
+  function shuffleArr(arr){
+    var a=arr.slice();
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  // Evita que 3 o más preguntas seguidas sean del mismo tipo (dinámica heterogénea).
+  function antiRunShuffle(arr){
+    var a=arr.slice();
+    for(var i=2;i<a.length;i++){
+      if(a[i].type===a[i-1].type && a[i-1].type===a[i-2].type){
+        for(var j=i+1;j<a.length;j++){ if(a[j].type!==a[i-1].type){ var t=a[i]; a[i]=a[j]; a[j]=t; break; } }
+      }
+    }
+    return a;
+  }
+  function pickTestQuestions(block){
+    var pool = block==='repaso' ? S.learnQuestions.slice() : S.learnQuestions.filter(function(q){ return q.block===block; });
+    return antiRunShuffle(shuffleArr(pool).slice(0,10));
+  }
+  function blockInfo(key){ for(var i=0;i<TEST_BLOCKS.length;i++){ if(TEST_BLOCKS[i].key===key) return TEST_BLOCKS[i]; } return null; }
+
+  function renderTestsMenu(){
+    var list=$('testsMenuList'); list.innerHTML='';
+    var allDone = TEST_BLOCKS.every(function(b){ var p=S.testProgress[b.key]; return p && p.completed; });
+
+    TEST_BLOCKS.forEach(function(b){
+      var prog = S.testProgress[b.key];
+      var done = prog && prog.completed;
+      var card = el('button','test-card'+(done?' done':'')); card.type='button';
+      card.innerHTML =
+        '<div class="test-card-ic" aria-hidden="true">'+b.icon+'</div>'+
+        '<div class="test-card-body"><div class="test-card-title">'+esc(b.title)+'</div>'+
+        '<div class="test-card-sub">'+(done? ('✅ Completado · mejor resultado '+prog.best_score+'/10') : '10 preguntas') +'</div></div>'+
+        '<div class="test-card-arrow" aria-hidden="true">'+(done?'↻':'→')+'</div>';
+      card.setAttribute('aria-label', b.title+(done?', completado, mejor resultado '+prog.best_score+' de 10. Tocá para repetir.':'. Tocá para empezar.'));
+      card.addEventListener('click', function(){ startTest(b.key); });
       list.appendChild(card);
-      if(prev) markQuiz(q, prev, card);
     });
-    list.querySelectorAll('.quiz-opt').forEach(function(btn){ btn.addEventListener('click', function(){ answerQuiz(btn); }); });
+
+    var repasoCard = el('button','test-card repaso'+(allDone?'':' locked')); repasoCard.type='button'; repasoCard.disabled=!allDone;
+    repasoCard.innerHTML =
+      '<div class="test-card-ic" aria-hidden="true">🔁</div>'+
+      '<div class="test-card-body"><div class="test-card-title">Repaso general</div>'+
+      '<div class="test-card-sub">'+(allDone? 'Mezcla de todos los temas · se puede repetir' : 'Completá los 4 tests para desbloquearlo') +'</div></div>'+
+      '<div class="test-card-arrow" aria-hidden="true">'+(allDone?'→':'🔒')+'</div>';
+    repasoCard.setAttribute('aria-label', allDone ? 'Repaso general. Tocá para empezar.' : 'Repaso general, bloqueado hasta completar los 4 tests.');
+    if(allDone) repasoCard.addEventListener('click', function(){ startTest('repaso'); });
+    list.appendChild(repasoCard);
   }
 
-  function markQuiz(q, ans, card){
-    var buttons=card.querySelectorAll('.quiz-opt'); buttons.forEach(function(b){ b.disabled=true; });
-    var fb=card.querySelector('.quiz-feedback');
-    // No guardamos el índice elegido; si acertó, marcamos la correcta.
-    if(ans.is_correct){
-      if(buttons[q.correct_index]) buttons[q.correct_index].classList.add('correct');
-      fb.textContent='✅ ¡Correcto! '+(q.tip||''); fb.classList.remove('err'); fb.classList.add('show');
-    } else {
-      if(buttons[q.correct_index]) buttons[q.correct_index].classList.add('correct');
-      fb.textContent='La correcta era: '+esc((q._opts||[])[q.correct_index]||''); fb.classList.add('show','err');
+  function startTest(block){
+    var qs = pickTestQuestions(block);
+    if(!qs.length){ toast('Todavía no hay preguntas cargadas para este test.'); return; }
+    TS = { block:block, questions:qs, idx:0, correctCount:0, answered:false };
+    track('test_start', { block:block, questions:qs.length });
+    showLearnView('testplay');
+    renderTestQuestion();
+  }
+
+  function renderTestQuestion(){
+    var n=TS.questions.length, i=TS.idx, q=TS.questions[i];
+    $('testProgPill').textContent=(i+1)+' de '+n;
+    $('testProgBar').style.width = Math.round((i/n)*100)+'%';
+    TS.answered=false;
+    var body=$('testQuestionBody');
+    body.innerHTML =
+      '<div class="tq-card"><div class="tq-type-badge">'+esc(TQ_TYPE_LABEL[q.type]||q.type)+'</div>'+
+      '<div class="tq-prompt">'+esc(q.prompt)+'</div>'+
+      '<div id="tqAnswerArea"></div>'+
+      '<div class="tq-feedback" id="tqFeedback"></div>'+
+      '<button class="btn btn-accent hide" id="tqNextBtn" type="button">'+(i===n-1?'Ver resultado →':'Siguiente →')+'</button>'+
+      '</div>';
+    renderAnswerArea(q);
+    $('tqNextBtn').addEventListener('click', function(){ if(i===n-1) finishTest(); else { TS.idx++; renderTestQuestion(); } });
+  }
+
+  function renderAnswerArea(q){
+    if(q.type==='mcq') renderMcq(q);
+    else if(q.type==='truefalse') renderTruefalse(q);
+    else if(q.type==='fillblank') renderFillblank(q);
+    else if(q.type==='order') renderOrderQ(q);
+    else if(q.type==='multiselect') renderMultiselect(q);
+    else if(q.type==='classify') renderClassify(q);
+  }
+
+  function checkAnswer(isCorrect, meta){
+    if(TS.answered) return;
+    TS.answered = true;
+    var q = TS.questions[TS.idx];
+    var already = !!S.myCorrectQuestions[q.id];
+    var pts = 0;
+    if(isCorrect){ TS.correctCount++; if(!already) pts = PTS_PER_QUESTION; }
+    var fb=$('tqFeedback');
+    fb.className = 'tq-feedback show '+(isCorrect?'ok':'err');
+    fb.innerHTML = (isCorrect?'✅ ¡Correcto!':'❌ No era esa.') + (pts>0?' <b>+'+pts+' pts</b>':'') +
+      '<div class="tq-explain">'+esc(q.explanation)+'</div>';
+    $('tqNextBtn').classList.remove('hide');
+    if(isCorrect && !already){
+      S.myCorrectQuestions[q.id]=1;
+      $('statTips').textContent = Object.keys(S.myCorrectQuestions).length;
+      db.from('learn_question_correct').insert({ user_id:S.user.id, question_id:q.id }).then(function(ins){
+        if(ins.error && ins.error.code!=='23505'){ console.error(ins.error); return; }
+        if(pts>0) return awardPoints(pts);
+      }).catch(function(e){ console.error(e); });
     }
   }
 
-  function answerQuiz(btn){
-    var qid=Number(btn.dataset.q), oi=Number(btn.dataset.o);
-    if(S.myQuizAnswers[qid]) return;
-    var q=null; for(var i=0;i<S.quizzes.length;i++){ if(S.quizzes[i].id===qid){ q=S.quizzes[i]; break; } }
-    var card=btn.closest('.quiz-card');
-    var isCorrect = (oi===q.correct_index);
-    var buttons=card.querySelectorAll('.quiz-opt'); buttons.forEach(function(b){ b.disabled=true; });
-    var fb=card.querySelector('.quiz-feedback');
-    if(isCorrect){ btn.classList.add('correct'); fb.textContent='✅ ¡Correcto! '+(q.tip||''); fb.classList.remove('err'); fb.classList.add('show'); }
-    else { btn.classList.add('wrong'); if(buttons[q.correct_index]) buttons[q.correct_index].classList.add('correct'); fb.textContent='❌ La correcta era: '+esc((q._opts||[])[q.correct_index]||''); fb.classList.add('show','err'); }
+  function renderMcq(q){
+    var area=$('tqAnswerArea'); area.innerHTML='';
+    var wrap=el('div','tq-options');
+    q.payload.options.forEach(function(opt,idx){
+      var b=el('button','tq-opt'); b.type='button'; b.textContent=opt;
+      b.addEventListener('click', function(){
+        if(TS.answered) return;
+        checkAnswer(idx===q.payload.correct, { chosen:idx });
+        Array.prototype.forEach.call(wrap.children, function(bb,ii){
+          bb.disabled=true;
+          if(ii===q.payload.correct) bb.classList.add('correct');
+          else if(ii===idx) bb.classList.add('wrong');
+        });
+      });
+      wrap.appendChild(b);
+    });
+    area.appendChild(wrap);
+  }
 
-    S.myQuizAnswers[qid]={ quiz_id:qid, is_correct:isCorrect };
-    db.from('quiz_answers').insert({ user_id:S.user.id, quiz_id:qid, is_correct:isCorrect }).then(function(ins){
-      if(ins.error){ if(ins.error.code==='23505') return; throw ins.error; }
-      if(isCorrect){ S.stats.quizzes+=1; $('statQuizzes').textContent=S.stats.quizzes; return awardPoints(PTS_QUIZ).then(function(){ toast('+'+PTS_QUIZ+' pts 🎉'); }); }
-    }).catch(function(e){ console.error(e); showErr(humanError(e,'No pudimos registrar tu respuesta','Elegí una opción de nuevo.')); });
+  function renderTruefalse(q){
+    var area=$('tqAnswerArea'); area.innerHTML='';
+    var wrap=el('div','tq-tf-row');
+    [['Verdadero',true],['Falso',false]].forEach(function(pair,ii){
+      var b=el('button','tq-tf-btn'); b.type='button'; b.textContent=pair[0];
+      b.addEventListener('click', function(){
+        if(TS.answered) return;
+        checkAnswer(pair[1]===q.payload.correct, { chosen:pair[1] });
+        Array.prototype.forEach.call(wrap.children, function(bb,jj){
+          bb.disabled=true;
+          var isTrueBtn=(jj===0);
+          if(isTrueBtn===q.payload.correct) bb.classList.add('correct');
+          else if(jj===ii) bb.classList.add('wrong');
+        });
+      });
+      wrap.appendChild(b);
+    });
+    area.appendChild(wrap);
+  }
+
+  function renderFillblank(q){
+    var area=$('tqAnswerArea'); area.innerHTML='';
+    var sentence=el('div','tq-sentence', esc(q.prompt).replace('___','<span class="tq-blank" id="tqBlank">＿＿＿</span>'));
+    area.appendChild(sentence);
+    var wrap=el('div','tq-bank');
+    q.payload.bank.forEach(function(word){
+      var b=el('button','tq-chip'); b.type='button'; b.textContent=word;
+      b.addEventListener('click', function(){
+        if(TS.answered) return;
+        var ok=(word===q.payload.correct);
+        var blank=$('tqBlank'); blank.textContent=word; blank.classList.add(ok?'correct':'wrong');
+        checkAnswer(ok, { chosen:word });
+        Array.prototype.forEach.call(wrap.children, function(bb){ bb.disabled=true; if(bb.textContent===q.payload.correct) bb.classList.add('correct'); });
+      });
+      wrap.appendChild(b);
+    });
+    area.appendChild(wrap);
+  }
+
+  function renderOrderQ(q){
+    var area=$('tqAnswerArea'); area.innerHTML='';
+    var correctOrder=q.payload.items, shuffled=shuffleArr(correctOrder), picked=[];
+    var wrap=el('div','tq-order-list');
+    function draw(){
+      wrap.innerHTML='';
+      shuffled.forEach(function(item){
+        var pi=picked.indexOf(item);
+        var b=el('button','tq-order-item'+(pi>=0?' picked':'')); b.type='button';
+        b.innerHTML=(pi>=0?'<span class="tq-order-num">'+(pi+1)+'</span>':'')+esc(item);
+        if(pi<0){
+          b.addEventListener('click', function(){
+            if(TS.answered) return;
+            picked.push(item); draw();
+            if(picked.length===shuffled.length){
+              var ok=picked.every(function(it,idx){ return it===correctOrder[idx]; });
+              checkAnswer(ok, { chosen:picked });
+              if(!ok){
+                var box=el('div','tq-order-correct','Orden correcto: '+correctOrder.map(function(x,i2){ return (i2+1)+'. '+esc(x); }).join(' · '));
+                area.appendChild(box);
+              }
+            }
+          });
+        } else { b.disabled=true; }
+        wrap.appendChild(b);
+      });
+    }
+    draw();
+    area.appendChild(wrap);
+    var resetBtn=el('button','tq-reset-link','↺ Reiniciar orden'); resetBtn.type='button';
+    resetBtn.addEventListener('click', function(){ if(TS.answered) return; picked=[]; draw(); });
+    area.appendChild(resetBtn);
+  }
+
+  function renderMultiselect(q){
+    var area=$('tqAnswerArea'); area.innerHTML='';
+    var selected={};
+    var wrap=el('div','tq-options multi');
+    q.payload.options.forEach(function(opt,idx){
+      var b=el('button','tq-opt chip'); b.type='button'; b.textContent=opt;
+      b.addEventListener('click', function(){
+        if(TS.answered) return;
+        selected[idx]=!selected[idx]; b.classList.toggle('picked', !!selected[idx]);
+      });
+      wrap.appendChild(b);
+    });
+    area.appendChild(wrap);
+    var confirmBtn=el('button','btn btn-secondary tq-confirm-btn','Confirmar'); confirmBtn.type='button';
+    confirmBtn.addEventListener('click', function(){
+      if(TS.answered) return;
+      var chosen=Object.keys(selected).filter(function(k){return selected[k];}).map(Number).sort(function(a,b){return a-b;});
+      var correct=(q.payload.correct||[]).slice().sort(function(a,b){return a-b;});
+      var ok = chosen.length===correct.length && chosen.every(function(v,i2){ return v===correct[i2]; });
+      checkAnswer(ok, { chosen:chosen });
+      Array.prototype.forEach.call(wrap.children, function(bb,ii){
+        bb.disabled=true;
+        if(correct.indexOf(ii)>=0) bb.classList.add('correct'); else if(selected[ii]) bb.classList.add('wrong');
+      });
+      confirmBtn.disabled=true;
+    });
+    area.appendChild(confirmBtn);
+  }
+
+  function renderClassify(q){
+    var area=$('tqAnswerArea'); area.innerHTML='';
+    var assigned={}, items=q.payload.items, correctA=q.payload.correct_a||[], locked=false;
+    var wrap=el('div','tq-classify-list');
+    function draw(){
+      wrap.innerHTML='';
+      items.forEach(function(item, idx){
+        var done=assigned[idx], shouldBeA=correctA.indexOf(idx)>=0;
+        var rowOk = locked ? ((done==='a')===shouldBeA) : null;
+        var row=el('div','tq-classify-row'+(locked?(rowOk?' ok':' bad'):''));
+        row.innerHTML =
+          '<span class="tq-classify-item">'+esc(item)+(locked?(rowOk?' ✅':' ❌'):'')+'</span>'+
+          '<span class="tq-classify-btns">'+
+            '<button type="button" class="tq-classify-btn'+(done==='a'?' picked':'')+'"'+(locked?' disabled':'')+' data-idx="'+idx+'" data-b="a">'+esc(q.payload.bucket_a)+'</button>'+
+            '<button type="button" class="tq-classify-btn'+(done==='b'?' picked':'')+'"'+(locked?' disabled':'')+' data-idx="'+idx+'" data-b="b">'+esc(q.payload.bucket_b)+'</button>'+
+          '</span>';
+        wrap.appendChild(row);
+      });
+    }
+    draw();
+    area.appendChild(wrap);
+    wrap.addEventListener('click', function(e){
+      if(TS.answered) return;
+      var btn=e.target.closest('.tq-classify-btn'); if(!btn) return;
+      var idx=Number(btn.dataset.idx), b=btn.dataset.b;
+      assigned[idx]=b; draw();
+      if(Object.keys(assigned).length===items.length){
+        var ok = items.every(function(_,i2){ return (assigned[i2]==='a')===(correctA.indexOf(i2)>=0); });
+        locked=true; draw();
+        checkAnswer(ok, { assigned:assigned });
+      }
+    });
+  }
+
+  function finishTest(){
+    var n=TS.questions.length, correct=TS.correctCount, block=TS.block, pct=n?correct/n:0;
+    var bonus=0;
+    if(block==='repaso'){
+      if(correct===n) bonus=REPASO_BONUS_FULL;
+    } else {
+      var prog=S.testProgress[block] || { block:block, best_score:0, attempts:0, completed:false, bonus_awarded:false };
+      if(!prog.bonus_awarded){
+        if(correct===n) bonus=TEST_BONUS_FULL;
+        else if(correct>=Math.ceil(n*0.8)) bonus=TEST_BONUS_GOOD;
+      }
+      prog.attempts=(prog.attempts||0)+1;
+      prog.best_score=Math.max(prog.best_score||0, correct);
+      prog.completed=true;
+      if(bonus>0) prog.bonus_awarded=true;
+      S.testProgress[block]=prog;
+      db.from('learn_test_progress').upsert({
+        user_id:S.user.id, block:block, best_score:prog.best_score, attempts:prog.attempts,
+        completed:true, bonus_awarded:prog.bonus_awarded
+      }, { onConflict:'user_id,block' }).then(function(res){ if(res.error) console.error(res.error); });
+      S.stats.quizzes = Object.keys(S.testProgress).filter(function(b){ return S.testProgress[b].completed; }).length;
+      $('statQuizzes').textContent = S.stats.quizzes;
+    }
+    track('test_finish', { block:block, score:correct, total:n, bonus:bonus });
+
+    var msg = pct===1?'¡Perfecto! 🎉':pct>=0.8?'¡Muy bien! 💪':pct>=0.5?'Vas bien, seguí practicando 🙂':'Repasá el tema y volvé a intentarlo 📚';
+    var emoji = pct===1?'🏆':pct>=0.8?'🎉':pct>=0.5?'🙂':'📚';
+    $('testQuestionBody').innerHTML =
+      '<div class="tq-summary"><div class="tq-summary-emoji">'+emoji+'</div>'+
+      '<div class="tq-summary-score">'+correct+' / '+n+'</div>'+
+      '<div class="tq-summary-msg">'+msg+'</div>'+
+      (bonus>0?'<div class="tq-summary-bonus">+'+bonus+' pts de bonus por completar el test</div>':'')+
+      '<button class="btn btn-accent" id="testBackBtn" type="button">Volver a los tests</button></div>';
+    $('testProgBar').style.width='100%'; $('testProgPill').textContent=n+' de '+n;
+    $('testBackBtn').addEventListener('click', function(){ showLearnView('tests'); });
+    if(bonus>0) awardPoints(bonus).then(function(){ toast('+'+bonus+' pts de bonus 🎉'); });
+  }
+
+  function exitTest(){
+    if(!window.confirm('¿Salir del test? Perdés el progreso de este intento.')) return;
+    showLearnView('tests');
   }
 
   // =====================================================================
@@ -2703,6 +3021,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('actionInfoModal').addEventListener('click', function(e){ if(e.target.id==='actionInfoModal') closeActionInfo(); });
     $('celebrateBtn').addEventListener('click', closeCelebration);
     document.querySelectorAll('[data-learn]').forEach(function(x){ x.addEventListener('click', function(){ showLearnView(x.dataset.learn); }); });
+    $('testExitBtn').addEventListener('click', exitTest);
 
     $('modalCloseBtn').addEventListener('click', closeReviewModal);
     document.querySelector('.vote-btn[data-vote="correcto"]').addEventListener('click', function(){ castVote('correcto', null); });
