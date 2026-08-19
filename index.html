@@ -106,13 +106,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .setting-msg.ok{color:var(--ok)} .setting-msg.err{color:var(--danger)}
 .setting-current{font-size:12px;color:var(--muted);margin-bottom:10px;background:#F3ECE4;padding:9px 11px;border-radius:8px}
 /* Coach del primer reporte */
-.coach-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--accent-2),var(--accent-1));color:#fff;border-radius:14px;padding:12px 14px;margin-bottom:14px;box-shadow:var(--shadow);animation:htpop .3s ease}
-.coach-ic{font-size:26px;flex-shrink:0}
-.coach-tx{flex:1;display:flex;flex-direction:column;line-height:1.25;min-width:0}
-.coach-tx b{font-size:14px;font-weight:800}
-.coach-tx small{font-size:12px;opacity:.95}
-.coach-skip{background:rgba(255,255,255,.22);border:none;color:#fff;font-family:inherit;font-size:12px;font-weight:800;padding:8px 12px;min-height:40px;border-radius:10px;cursor:pointer;flex-shrink:0}
-.coach-hint{background:#E9F5EC;color:#1c6b4f;font-size:13px;font-weight:700;padding:10px 12px;border-radius:10px;margin-bottom:12px;text-align:center;line-height:1.35}
+
 /* Celebración milestone */
 .celebrate{position:fixed;inset:0;z-index:1100;background:linear-gradient(160deg,#2f7d5b,#1e8069 60%,#173a2e);display:none;align-items:center;justify-content:center;padding:26px;text-align:center}
 .celebrate.show{display:flex;animation:fade .3s ease}
@@ -283,6 +277,30 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .onb-title{font-family:'DM Serif Display',serif;font-size:24px;color:var(--primary);line-height:1.1;margin-bottom:10px}
 .onb-text{font-size:14.5px;color:var(--text);line-height:1.55;min-height:110px}
 .onb-dots{display:flex;gap:7px;justify-content:center;margin:16px 0 18px}
+.onb-install-area{margin:2px 0 14px}
+.onb-install-area.hide{display:none}
+.onb-install-btn{width:100%;margin-bottom:10px;min-height:50px}
+.onb-install-btn:disabled{opacity:.5;cursor:not-allowed}
+.onb-ios-steps{background:#F8F1E2;border-radius:12px;padding:12px 14px;text-align:left;font-size:13px;color:var(--text);line-height:1.5}
+.onb-ios-steps b{color:var(--primary);display:block;margin-bottom:4px}
+.onb-ios-steps ol{margin:0;padding-left:18px}
+.onb-ios-steps li{margin-bottom:2px}
+.onb-install-note{background:#E1F0E4;color:var(--ok);font-weight:700;border-radius:12px;padding:12px;text-align:center;font-size:13.5px}
+
+/* Tour guiado por la app (spotlight) */
+.tour-overlay{position:fixed;inset:0;z-index:1220;display:none}
+.tour-overlay.show{display:block;animation:fade .2s ease}
+.tour-spotlight{position:fixed;border-radius:18px;box-shadow:0 0 0 9999px rgba(20,10,25,.78);pointer-events:none;z-index:1221;opacity:0;transition:top .35s ease,left .35s ease,width .35s ease,height .35s ease,opacity .2s ease}
+.tour-spotlight.on{opacity:1}
+.tour-tooltip{position:fixed;left:14px;right:14px;bottom:calc(88px + env(safe-area-inset-bottom));background:var(--background);border-radius:18px;padding:18px 20px;box-shadow:var(--shadow-lg);z-index:1230;max-width:400px;margin:0 auto}
+.tour-dots{display:flex;gap:6px;justify-content:center;margin-bottom:12px}
+.tour-dot{width:7px;height:7px;border-radius:50%;background:#D8CBDA}
+.tour-dot.on{background:var(--accent-2);width:18px;border-radius:999px}
+.tour-tooltip-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--primary);margin-bottom:6px;text-align:center}
+.tour-tooltip-text{font-size:13.5px;color:var(--text);line-height:1.5;margin-bottom:14px;text-align:center}
+.tour-tooltip-actions{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.tour-skip-btn{background:none;border:none;color:var(--muted);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:11px 8px;min-height:44px;flex-shrink:0}
+.tour-tooltip-actions .btn{flex:1}
 .onb-dot{width:8px;height:8px;border-radius:50%;background:#D8CBDA;transition:background .2s,width .2s}
 .onb-dot.on{background:var(--accent-2);width:22px;border-radius:999px}
 .onb-actions{display:flex;gap:8px}
@@ -904,10 +922,25 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     <div class="onb-emoji" id="onbEmoji">🦟</div>
     <div class="onb-title" id="onbTitle"></div>
     <div class="onb-text" id="onbText"></div>
+    <div class="onb-install-area hide" id="onbInstallArea"></div>
     <div class="onb-dots" id="onbDots"></div>
     <div class="onb-actions">
       <button class="btn btn-secondary" id="onbBack">← Atrás</button>
       <button class="btn btn-accent" id="onbNext">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOUR GUIADO POR LA APP (spotlight, después de iniciar sesión) -->
+<div class="tour-overlay" id="tourOverlay">
+  <div class="tour-spotlight" id="tourSpotlight"></div>
+  <div class="tour-tooltip" id="tourTooltip" role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+    <div class="tour-dots" id="tourDots"></div>
+    <div class="tour-tooltip-title" id="tourTitle"></div>
+    <div class="tour-tooltip-text" id="tourText"></div>
+    <div class="tour-tooltip-actions">
+      <button class="tour-skip-btn" id="tourSkip" type="button">Saltar</button>
+      <button class="btn btn-accent" id="tourNext" type="button">Siguiente →</button>
     </div>
   </div>
 </div>
@@ -924,6 +957,22 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   var $ = function (id) { return document.getElementById(id); };
   function showErr(msg) { $('errText').textContent = msg; $('errBar').classList.add('show'); }
   $('errClose').addEventListener('click', function () { $('errBar').classList.remove('show'); });
+
+  // Capturamos el prompt nativo de instalación lo antes posible (si llega tarde, se pierde).
+  var deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+  });
+  function isStandaloneApp(){
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  }
+  function detectDevice(){
+    var ua = navigator.userAgent || '';
+    var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints||0) > 1);
+    var isAndroid = /Android/.test(ua);
+    return { isIOS: isIOS, isAndroid: isAndroid };
+  }
 
   // Placeholder para imágenes que no cargan (evita el ícono de "imagen rota")
   window.__PH = 'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="#E7DAC4"/><text x="60" y="72" font-size="46" text-anchor="middle">📷</text></svg>');
@@ -1314,30 +1363,140 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     { emoji:'📸', title:'Reportá y sumá puntos',
       text:'Cada acción que hacés y reportás con una foto suma puntos, te sube de nivel y ayuda a mapear dónde están los focos. Tu granito de arena cuenta un montón.' },
     { emoji:'🏆', title:'Comunidad y ranking',
-      text:'Cuando juntás puntos te volvés Revisor y validás los reportes de tus vecinos. Y competís sano en el ranking de tu comunidad. ¡Vamos que se puede!' }
+      text:'Cuando juntás puntos te volvés Revisor y validás los reportes de tus vecinos. Y competís sano en el ranking de tu comunidad. ¡Vamos que se puede!' },
+    { type:'install', emoji:'📲', title:'Instalá la app',
+      text:'Agregala a tu pantalla de inicio para abrirla como cualquier otra app, con notificaciones incluidas.' }
   ];
   var onbIdx=0;
   function showOnboarding(){ onbIdx=0; renderOnb(); $('onbOverlay').classList.add('show'); openModal('onbOverlay', finishOnboarding); }
   function renderOnb(){
-    var s=ONB[onbIdx];
+    var s=ONB[onbIdx], isInstall = s.type==='install';
     if(s.svg){ $('onbEmoji').innerHTML=s.svg; $('onbEmoji').classList.add('has-svg'); }
     else { $('onbEmoji').textContent=s.emoji; $('onbEmoji').classList.remove('has-svg'); }
     $('onbTitle').textContent=s.title; $('onbText').textContent=s.text;
+    $('onbInstallArea').classList.toggle('hide', !isInstall);
+    if(isInstall) renderInstallSlide();
     var dots=''; for(var i=0;i<ONB.length;i++){ dots+='<span class="onb-dot'+(i===onbIdx?' on':'')+'"></span>'; }
     $('onbDots').innerHTML=dots;
     $('onbBack').style.visibility = onbIdx===0 ? 'hidden' : 'visible';
-    $('onbNext').textContent = (onbIdx===ONB.length-1) ? '¡Empezar!' : 'Siguiente →';
+    $('onbNext').textContent = isInstall ? 'Continuar →' : ((onbIdx===ONB.length-1) ? '¡Empezar!' : 'Siguiente →');
+  }
+  function renderInstallSlide(){
+    var area=$('onbInstallArea');
+    if(isStandaloneApp()){
+      area.innerHTML='<div class="onb-install-note">🎉 Ya la tenés instalada</div>';
+      return;
+    }
+    var dev=detectDevice();
+    var showAndroid = dev.isAndroid || (!dev.isAndroid && !dev.isIOS);
+    var showIOS = dev.isIOS || (!dev.isAndroid && !dev.isIOS);
+    var html='';
+    if(showAndroid){
+      html += '<button type="button" class="btn btn-accent onb-install-btn" id="onbInstallAndroid"'+(deferredInstallPrompt?'':' disabled')+'>📲 Instalar en Android</button>';
+      if(!deferredInstallPrompt && dev.isAndroid) html += '<div class="onb-install-note" style="margin-bottom:10px;background:#F8F1E2;color:var(--muted)">El botón se activa apenas el navegador lo permite. Si no aparece, usá el menú ⋮ del navegador → «Instalar app».</div>';
+    }
+    if(showIOS){
+      html += '<div class="onb-ios-steps"><b>En iPhone / iPad:</b><ol><li>Tocá <b>Compartir</b> (el ícono de la flecha) en Safari</li><li>Elegí <b>«Agregar a inicio»</b></li></ol></div>';
+    }
+    area.innerHTML=html;
+    var ab=$('onbInstallAndroid');
+    if(ab) ab.addEventListener('click', function(){
+      if(!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(function(){ deferredInstallPrompt=null; renderInstallSlide(); }).catch(function(){});
+    });
   }
   function onbNext(){ if(onbIdx<ONB.length-1){ onbIdx++; renderOnb(); } else { finishOnboarding(); } }
   function onbBack(){ if(onbIdx>0){ onbIdx--; renderOnb(); } }
   function finishOnboarding(){
     $('onbOverlay').classList.remove('show'); closeModalFocus('onbOverlay');
+    try{ localStorage.setItem('pa_welcome_seen','1'); }catch(e){}
+    $('boot').classList.add('hide');
+    $('authScreen').classList.remove('hide');
+  }
+
+  // =====================================================================
+  //  TOUR GUIADO POR LA APP (spotlight) · una vez por cuenta, tras el
+  //  primer login, recorre las 5 secciones y termina invitando a hacer
+  //  el primer reporte. Reemplaza al viejo banner persistente.
+  // =====================================================================
+  var APP_TOUR_STEPS = [
+    { sec:'incidencia', selector:'.navbtn[data-sec="incidencia"]', title:'📍 Incidencia', text:'Acá ves el nivel de riesgo de dengue en tu municipio, actualizado semana a semana.' },
+    { sec:'aprender',   selector:'.navbtn[data-sec="aprender"]',   title:'🧠 Aprender',   text:'Recursos para leer con calma, y tests cortos para poner a prueba lo que sabés.' },
+    { sec:'reportar',   selector:'.navbtn[data-sec="reportar"]',   title:'📸 Reportar',   text:'El corazón de la Patrulla: reportá con una foto cada acción contra el mosquito.' },
+    { sec:'revisar',    selector:'.navbtn[data-sec="revisar"]',    title:'🔍 Revisar',    text:'Cuando sumes puntos, vas a poder validar los reportes de tus vecinos acá.' },
+    { sec:'progreso',   selector:'.navbtn[data-sec="progreso"]',   title:'🏆 Progreso',   text:'Tu nivel, tus estadísticas, y el ranking de tu municipio y tu región.' }
+  ];
+  var tourIdx=0;
+
+  function startAppTour(){
+    tourIdx=0;
+    $('tourOverlay').classList.add('show');
+    document.addEventListener('keydown', tourKeyHandler);
+    renderTourStep();
+  }
+  function renderTourDots(activeIdx){
+    var total=APP_TOUR_STEPS.length+1, html='';
+    for(var i=0;i<total;i++){ html+='<span class="tour-dot'+(i===activeIdx?' on':'')+'"></span>'; }
+    $('tourDots').innerHTML=html;
+  }
+  function positionSpotlightOn(target){
+    var sp=$('tourSpotlight');
+    if(!target){ sp.classList.remove('on'); return; }
+    var r=target.getBoundingClientRect(), pad=6;
+    sp.style.left=(r.left-pad)+'px'; sp.style.top=(r.top-pad)+'px';
+    sp.style.width=(r.width+pad*2)+'px'; sp.style.height=(r.height+pad*2)+'px';
+    sp.classList.add('on');
+  }
+  function focusTourNext(){ setTimeout(function(){ var b=$('tourNext'); if(b) b.focus(); }, 20); }
+  function renderTourStep(){
+    if(tourIdx < APP_TOUR_STEPS.length){
+      var step=APP_TOUR_STEPS[tourIdx];
+      showSection(step.sec);
+      requestAnimationFrame(function(){
+        positionSpotlightOn(document.querySelector(step.selector));
+        $('tourTitle').textContent=step.title; $('tourText').textContent=step.text;
+        renderTourDots(tourIdx);
+        $('tourNext').textContent='Siguiente →';
+        focusTourNext();
+      });
+    } else {
+      renderTourFinalStep();
+    }
+  }
+  function renderTourFinalStep(){
+    showSection('reportar');
+    requestAnimationFrame(function(){
+      var target = document.querySelector('#actionsGrid .action-card') || document.querySelector('#actionsGrid .ht-card') || $('actionsGrid');
+      positionSpotlightOn(target);
+      $('tourTitle').textContent='🎯 ¡Hagamos tu primer reporte!';
+      $('tourText').textContent='Elegí una acción que ya hayas hecho y sacale una foto. ¡Así de simple!';
+      renderTourDots(APP_TOUR_STEPS.length);
+      $('tourNext').textContent='¡Empezar!';
+      focusTourNext();
+    });
+  }
+  function tourNext(){ if(tourIdx<APP_TOUR_STEPS.length){ tourIdx++; renderTourStep(); } else { finishAppTour(); } }
+  function skipAppTour(){ finishAppTour(); }
+  function finishAppTour(){
+    $('tourOverlay').classList.remove('show');
+    $('tourSpotlight').classList.remove('on');
+    document.removeEventListener('keydown', tourKeyHandler);
     if(S.profile && !S.profile.onboarded){
       S.profile.onboarded=true;
       db.from('profiles').update({ onboarded:true }).eq('id', S.user.id).then(function(){}, function(){});
     }
     maybeSoftAskPush();
-    maybeStartFirstReportTour();
+  }
+  function tourKeyHandler(e){
+    if(e.key==='Escape'){ e.preventDefault(); skipAppTour(); return; }
+    if(e.key==='Tab'){
+      var f=focusableIn($('tourTooltip'));
+      if(!f.length) return;
+      var first=f[0], last=f[f.length-1];
+      if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+    }
   }
 
   // =====================================================================
@@ -1572,8 +1731,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       $('appScreen').classList.remove('hide');
       track('app_open', { auth_event: authEvent||'session_restore' });
       trackScreen(S.lastSection||'reportar');
-      if(S.profile && !S.profile.onboarded) showOnboarding();
-      else { maybeSoftAskPush(); maybeStartFirstReportTour(); }
+      if(S.profile && !S.profile.onboarded) startAppTour();
+      else { maybeSoftAskPush(); }
     }).catch(function(e){
       console.error(e);
       showErr(humanError(e,'No pudimos cargar tus datos','Revisá tu conexión y recargá la app.'));
@@ -1720,12 +1879,6 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function renderActions(){
     var wrap=$('actionsGrid'); wrap.innerHTML='';
-    if(coachActive && (S.stats.reports||0)===0){
-      var banner=el('div','coach-banner');
-      banner.innerHTML='<span class="coach-ic">🎯</span><div class="coach-tx"><b>¡Hagamos tu primer reporte!</b><small>Elegí una acción que hayas hecho 👇</small></div><button class="coach-skip" id="coachSkip">Saltar</button>';
-      wrap.appendChild(banner);
-      banner.querySelector('#coachSkip').addEventListener('click', function(ev){ ev.stopPropagation(); skipCoach(); });
-    }
     var actions=S.actions.filter(function(a){ return a.id!=='house_tour'; });
     if(!actions.length && !actionById('house_tour')){ wrap.appendChild(el('div','empty','No hay acciones disponibles. ¿Aplicaste supabase-fix.sql?')); return; }
 
@@ -1776,24 +1929,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function updateHtFab(){}  // (obsoleto: el House Tour volvió a la lista)
 
-  // ---- Tour del primer reporte (milestone) ----------------------------
-  var coachActive=false;
-  function coachDone(){ try{ return localStorage.getItem('pa_first_report_done')==='1'; }catch(e){ return false; } }
-  function markCoachDone(){ try{ localStorage.setItem('pa_first_report_done','1'); }catch(e){} }
-  function maybeStartFirstReportTour(){
-    if(coachDone()) return;
-    if((S.stats.reports||0) > 0){ markCoachDone(); return; }
-    coachActive=true; renderActions();  // agrega el banner guía a la lista
-  }
-  function skipCoach(){ coachActive=false; markCoachDone(); renderActions(); }
-  function coachStepHint(step){
-    var m={1:'📖 Leé de qué se trata y tocá «Entendido, continuar».',
-           2:'📷 Sacá o subí una foto de lo que hiciste.',
-           3:'📝 Sumá una nota si querés y tocá «Enviar reporte». ¡Ya casi!'};
-    return m[step]||'';
-  }
+  // (el guiado del primer reporte ahora es parte del tour por la app, ver APP_TOUR_STEPS)
   function showCelebration(pts){
-    coachActive=false; markCoachDone();
     $('celebratePts').textContent='+'+pts+' pts';
     var m=$('celebrateModal'); m.classList.add('show');
     openModal('celebrateModal', closeCelebration);
@@ -2035,10 +2172,6 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         else { attachLocation=gt.checked; }
       });
       $('privacyOpen').addEventListener('click', function(){ openPrivacy(false); });
-    }
-    if(coachActive){
-      var sc=flow.querySelector('.step-card');
-      if(sc){ var hint=el('div','coach-hint'); hint.textContent=coachStepHint(step); sc.insertBefore(hint, sc.firstChild); }
     }
   }
 
@@ -3047,6 +3180,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     $('onbNext').addEventListener('click', onbNext);
     $('onbBack').addEventListener('click', onbBack);
     $('onbSkip').addEventListener('click', finishOnboarding);
+    $('tourNext').addEventListener('click', tourNext);
+    $('tourSkip').addEventListener('click', skipAppTour);
     $('pushAskAccept').addEventListener('click', pushAskAccept);
     $('pushAskLater').addEventListener('click', pushAskLater);
     $('pushAskModal').addEventListener('click', function(e){ if(e.target.id==='pushAskModal') pushAskLater(); });
@@ -3108,8 +3243,13 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
     db.auth.getSession().then(function(res){
       if(S.recovery) return; // en medio de recuperación
-      if(res.data && res.data.session){ onAuthenticated(res.data.session.user); }
-      else { $('boot').classList.add('hide'); $('authScreen').classList.remove('hide'); }
+      if(res.data && res.data.session){ onAuthenticated(res.data.session.user); return; }
+      // Sin sesión: en la primera visita (nunca vista antes en este dispositivo) mostramos
+      // la bienvenida ANTES del login; si ya se vio, vamos directo al login.
+      $('boot').classList.add('hide');
+      var seenWelcome=false; try{ seenWelcome = localStorage.getItem('pa_welcome_seen')==='1'; }catch(e){}
+      if(!seenWelcome) showOnboarding();
+      else $('authScreen').classList.remove('hide');
     }).catch(function(e){ showErr('No pudimos conectar con el servidor. Revisá tu conexión a internet y recargá la app.'); $('boot').classList.add('hide'); $('authScreen').classList.remove('hide'); });
   }
   boot();
