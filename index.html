@@ -1411,6 +1411,11 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   function finishOnboarding(){
     $('onbOverlay').classList.remove('show'); closeModalFocus('onbOverlay');
     try{ localStorage.setItem('pa_welcome_seen','1'); }catch(e){}
+    if(S.user){
+      // Se estaba re-mirando el tutorial desde el perfil, con la sesión ya iniciada:
+      // solo cerramos el carrusel, sin tocar login ni la pantalla de la app.
+      return;
+    }
     $('boot').classList.add('hide');
     $('authScreen').classList.remove('hide');
   }
