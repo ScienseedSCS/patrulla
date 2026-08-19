@@ -380,7 +380,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .tip-body{font-size:12px;color:var(--text);margin-top:6px;line-height:1.5;display:none}
 .tip-item.open .tip-body{display:block}
 
-/* Tests (menú) */
+/* Quizzes (menú) */
 .test-card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:10px;cursor:pointer;display:flex;gap:14px;align-items:center;border:2px solid transparent;font-family:inherit;text-align:left;width:100%;transition:border-color .15s}
 .test-card:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
 .test-card.done{border-color:var(--ok)}
@@ -463,6 +463,13 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .spot-marker{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:3}
 .spot-hit{width:34px;height:34px;border-radius:50%;background:rgba(62,143,74,.28);border:3px solid var(--ok);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800;box-shadow:0 0 0 4px rgba(62,143,74,.18);animation:pop .3s ease}
 .spot-hit.reveal{background:rgba(226,155,46,.22);border-color:var(--warn)}
+/* Tipos nuevos (caso 2): no afectan a .spot-hit ni a .spot-hit.reveal de arriba */
+.spot-hit.type-warn{background:rgba(226,155,46,.28);border-color:var(--warn);box-shadow:0 0 0 4px rgba(226,155,46,.18)}
+.spot-hit.type-no{background:rgba(194,55,47,.28);border-color:var(--danger);box-shadow:0 0 0 4px rgba(194,55,47,.18)}
+.spot-hit.reveal-typed{border-style:dashed;opacity:.92}
+.spot-legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;font-size:11px;color:var(--muted);margin:8px 0 4px}
+.spot-legend span{display:inline-flex;align-items:center;gap:4px}
+.spot-legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
 @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 .spot-miss{width:26px;height:26px;border-radius:50%;background:rgba(194,55,47,.85);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;animation:fadeout 1s forwards}
 @keyframes fadeout{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
@@ -647,8 +654,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           <h2 class="section-title">🧠 Aprender</h2>
           <p class="section-sub">Conocé al mosquito y sumá puntos poniendo a prueba lo que aprendiste.</p>
           <div class="learn-menu">
-            <button type="button" class="learn-card" data-learn="resources"><div class="learn-icon" aria-hidden="true">📚</div><div><div class="learn-title">Recursos</div><div class="learn-sub">Leé la información con calma, por tema.</div><div class="learn-count">Sin apuro, sin puntos</div></div></button>
-            <button type="button" class="learn-card" data-learn="tests"><div class="learn-icon" aria-hidden="true">📝</div><div><div class="learn-title">Tests</div><div class="learn-sub">Tests cortos por tema. Sumás puntos si acertás.</div><div class="learn-count">+pts por test</div></div></button>
+            <button type="button" class="learn-card" data-learn="resources"><div class="learn-icon" aria-hidden="true">📚</div><div><div class="learn-title">Tips</div><div class="learn-sub">Leé la información con calma, por tema.</div><div class="learn-count">Sin apuro, sin puntos</div></div></button>
+            <button type="button" class="learn-card" data-learn="tests"><div class="learn-icon" aria-hidden="true">📝</div><div><div class="learn-title">Quizzes</div><div class="learn-sub">Quizzes cortos por tema. Sumás puntos si acertás.</div><div class="learn-count">+pts por quiz</div></div></button>
             <button type="button" class="learn-card" data-learn="spot"><div class="learn-icon" aria-hidden="true">🔍</div><div><div class="learn-title">Detectar criaderos</div><div class="learn-sub">Encontrá los focos de agua en la foto.</div><div class="learn-count">+pts por desafío</div></div></button>
           </div>
         </div>
@@ -656,7 +663,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         <!-- RECURSOS (antes "Tips"): lectura organizada por categoría, sin puntos -->
         <div id="learn-resources-view" class="hide">
           <button class="flow-back" data-learn="menu">← Volver</button>
-          <h2 class="section-title">📚 Recursos</h2>
+          <h2 class="section-title">📚 Tips</h2>
           <p class="section-sub">Todo lo que sabemos sobre prevención del dengue, organizado por tema. Tocá para leer.</p>
           <div id="resourcesList"></div>
         </div>
@@ -664,8 +671,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         <!-- TESTS (antes "Quizzes"): menú de tests temáticos + repaso general -->
         <div id="learn-tests-view" class="hide">
           <button class="flow-back" data-learn="menu">← Volver</button>
-          <h2 class="section-title">📝 Tests</h2>
-          <p class="section-sub">Tests cortos de hasta 10 preguntas. Si te equivocás, te explicamos por qué.</p>
+          <h2 class="section-title">📝 Quizzes</h2>
+          <p class="section-sub">Quizzes cortos de hasta 10 preguntas. Si te equivocás, te explicamos por qué.</p>
           <div id="testsMenuList"></div>
         </div>
 
@@ -705,7 +712,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           <div class="stats-grid">
             <div class="stat-card stat-clickable" id="cardSent"><div class="stat-num" id="statReports">0</div><div class="stat-label">Reportes enviados</div><div class="stat-hint">Ver / editar ›</div></div>
             <div class="stat-card"><div class="stat-num" id="statApproved">0</div><div class="stat-label">Reportes aprobados</div></div>
-            <div class="stat-card"><div class="stat-num" id="statQuizzes">0</div><div class="stat-label">Tests completados</div></div>
+            <div class="stat-card"><div class="stat-num" id="statQuizzes">0</div><div class="stat-label">Quizzes completados</div></div>
             <div class="stat-card"><div class="stat-num" id="statTips">0</div><div class="stat-label">Preguntas acertadas</div></div>
             <div class="stat-card"><div class="stat-num" id="statReviews">0</div><div class="stat-label">Revisiones</div></div>
           </div>
@@ -894,11 +901,11 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   <div class="modal">
     <div class="privacy-body" style="text-align:center">
       <div style="font-size:44px;margin-bottom:6px">🚪</div>
-      <h3 style="text-align:center">¿Salir del test?</h3>
+      <h3 style="text-align:center">¿Salir del quiz?</h3>
       <p>Perdés el progreso de este intento.</p>
       <div class="btn-row">
         <button class="btn btn-secondary" id="exitTestConfirm">Salir</button>
-        <button class="btn btn-accent" id="exitTestCancel">Seguir con el test</button>
+        <button class="btn btn-accent" id="exitTestCancel">Seguir con el quiz</button>
       </div>
     </div>
   </div>
@@ -1427,7 +1434,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   // =====================================================================
   var APP_TOUR_STEPS = [
     { sec:'incidencia', selector:'.navbtn[data-sec="incidencia"]', title:'📍 Incidencia', text:'Acá ves el nivel de riesgo de dengue en tu municipio, actualizado semana a semana.' },
-    { sec:'aprender',   selector:'.navbtn[data-sec="aprender"]',   title:'🧠 Aprender',   text:'Recursos para leer con calma, y tests cortos para poner a prueba lo que sabés.' },
+    { sec:'aprender',   selector:'.navbtn[data-sec="aprender"]',   title:'🧠 Aprender',   text:'Tips para leer con calma, y quizzes cortos para poner a prueba lo que sabés.' },
     { sec:'reportar',   selector:'.navbtn[data-sec="reportar"]',   title:'📸 Reportar',   text:'El corazón de la Patrulla: reportá con una foto cada acción contra el mosquito.' },
     { sec:'revisar',    selector:'.navbtn[data-sec="revisar"]',    title:'🔍 Revisar',    text:'Cuando sumes puntos, vas a poder validar los reportes de tus vecinos acá.' },
     { sec:'progreso',   selector:'.navbtn[data-sec="progreso"]',   title:'🏆 Progreso',   text:'Tu nivel, tus estadísticas, y el ranking de tu municipio y tu región.' }
@@ -2524,19 +2531,38 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   function openSpotGame(ch){
     var hotspots=parseHotspots(ch.hotspots);
     var found={}; var revealed=false; var awarded=!!S.mySpotDone[ch.id];
+    // hasTypes=false para el caso 1 (sus hotspots no traen "type") -> todo el texto
+    // de abajo queda IDÉNTICO al original. Solo cambia si el desafío usa los 3 tipos.
+    var hasTypes = hotspots.some(function(h){ return h.type && h.type!=='ok'; });
     var body=$('spotBody');
+    var legendHtml = hasTypes
+      ? '<div class="spot-legend"><span><i style="background:var(--ok)"></i>Riesgo real</span><span><i style="background:var(--warn)"></i>Vigilar</span><span><i style="background:var(--danger)"></i>No es riesgo</span></div>'
+      : '';
+    var hintHtml = hasTypes
+      ? 'Tocá cada elemento de la escena. Te vamos a decir si es un riesgo real, algo para vigilar, o si no representa un problema.'
+      : 'Tocá los lugares con agua estancada: baldes, floreros, platos de macetas, canaletas, tanques sin tapa…';
     body.innerHTML =
       '<button class="flow-back" id="spotBack">← Otros desafíos</button>'+
-      '<div class="spot-hud"><div><div class="spot-hud-count"><span id="spotFound">0</span> / '+hotspots.length+'</div><div class="spot-hud-label">focos encontrados</div></div>'+
+      '<div class="spot-hud"><div><div class="spot-hud-count"><span id="spotFound">0</span> / '+hotspots.length+'</div><div class="spot-hud-label">'+(hasTypes?'elementos revisados':'focos encontrados')+'</div></div>'+
       '<div style="text-align:right"><div class="spot-hud-count">+'+ch.points+'</div><div class="spot-hud-label">puntos</div></div></div>'+
+      legendHtml+
       '<div class="spot-stage" id="spotStage"><img id="spotImg" src="'+esc(ch.image_url)+'" alt="'+esc(ch.title)+'" draggable="false"></div>'+
       '<div id="spotResult"></div>'+
       '<div class="spot-actions"><button class="btn btn-secondary" id="spotReveal">Ver solución</button></div>'+
-      '<div class="spot-hint">Tocá los lugares con agua estancada: baldes, floreros, platos de macetas, canaletas, tanques sin tapa…</div>';
+      '<div class="spot-hint">'+hintHtml+'</div>';
 
     $('spotBack').addEventListener('click', function(){ renderSpotList(); });
 
     function updateCount(){ $('spotFound').textContent=Object.keys(found).length; }
+
+    function markerClass(type, isReveal){
+      var cls='spot-hit';
+      if(type==='warn') cls+=' type-warn';
+      else if(type==='no') cls+=' type-no';
+      if(isReveal) cls += type ? ' reveal-typed' : ' reveal';  // caso 1 (sin type) conserva su reveal de siempre
+      return cls;
+    }
+    function markerIcon(type){ return type==='warn' ? '!' : (type==='no' ? '✕' : '✓'); }
 
     function placeMarker(hx, hy, cls, txt, label){
       var m=el('div','spot-marker'); m.style.left=(hx*100)+'%'; m.style.top=(hy*100)+'%';
@@ -2547,7 +2573,9 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
     function checkComplete(){
       if(Object.keys(found).length>=hotspots.length && hotspots.length){
-        $('spotResult').innerHTML='<div class="spot-success">🎉 ¡Encontraste todos los criaderos!</div>';
+        $('spotResult').innerHTML = hasTypes
+          ? '<div class="spot-success">🎉 ¡Completaste el desafío! Revisaste todos los elementos.</div>'
+          : '<div class="spot-success">🎉 ¡Encontraste todos los criaderos!</div>';
         completeChallenge();
       }
     }
@@ -2573,7 +2601,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       }
       if(hitIdx>=0){
         found[hitIdx]=1; var hs=hotspots[hitIdx];
-        placeMarker(hs.x, hs.y, 'spot-hit', '✓', hs.label);
+        placeMarker(hs.x, hs.y, markerClass(hs.type,false), markerIcon(hs.type), hs.label);
         updateCount(); checkComplete();
       } else {
         placeMarker(fx, fy, 'spot-miss', '✗', null);
@@ -2583,8 +2611,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
     $('spotReveal').addEventListener('click', function(){
       if(revealed) return; revealed=true;
-      hotspots.forEach(function(hs,i){ if(!found[i]) placeMarker(hs.x, hs.y, 'spot-hit reveal', '!', hs.label); });
-      $('spotResult').innerHTML='<div class="spot-success" style="background:#FBF3E0;color:#8A6A1E">Estos son los focos. Recordá revisarlos en tu casa cada semana.</div>';
+      hotspots.forEach(function(hs,i){ if(!found[i]) placeMarker(hs.x, hs.y, markerClass(hs.type,true), hasTypes?markerIcon(hs.type):'!', hs.label); });
+      $('spotResult').innerHTML = hasTypes
+        ? '<div class="spot-success" style="background:#FBF3E0;color:#8A6A1E">Así quedaron clasificados todos los elementos. ¡El ojo se entrena mirando seguido!</div>'
+        : '<div class="spot-success" style="background:#FBF3E0;color:#8A6A1E">Estos son los focos. Recordá revisarlos en tu casa cada semana.</div>';
       this.disabled=true;
       completeChallenge();
     });
@@ -2685,16 +2715,16 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     repasoCard.innerHTML =
       '<div class="test-card-ic" aria-hidden="true">🔁</div>'+
       '<div class="test-card-body"><div class="test-card-title">Repaso general</div>'+
-      '<div class="test-card-sub">'+(allDone? ('Mezcla de todos los temas · hasta '+repasoMax+' pts · repetible') : 'Completá los 4 tests para desbloquearlo') +'</div></div>'+
+      '<div class="test-card-sub">'+(allDone? ('Mezcla de todos los temas · hasta '+repasoMax+' pts · repetible') : 'Completá los 4 quizzes para desbloquearlo') +'</div></div>'+
       '<div class="test-card-arrow" aria-hidden="true">'+(allDone?'→':'🔒')+'</div>';
-    repasoCard.setAttribute('aria-label', allDone ? ('Repaso general, hasta '+repasoMax+' puntos. Tocá para empezar.') : 'Repaso general, bloqueado hasta completar los 4 tests.');
+    repasoCard.setAttribute('aria-label', allDone ? ('Repaso general, hasta '+repasoMax+' puntos. Tocá para empezar.') : 'Repaso general, bloqueado hasta completar los 4 quizzes.');
     if(allDone) repasoCard.addEventListener('click', function(){ startTest('repaso'); });
     list.appendChild(repasoCard);
   }
 
   function startTest(block){
     var qs = pickTestQuestions(block);
-    if(!qs.length){ toast('Todavía no hay preguntas cargadas para este test.'); return; }
+    if(!qs.length){ toast('Todavía no hay preguntas cargadas para este quiz.'); return; }
     TS = { block:block, questions:qs, idx:0, correctCount:0, answered:false, sessionPoints:0 };
     track('test_start', { block:block, questions:qs.length });
     showLearnView('testplay');
@@ -2952,10 +2982,10 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     var emoji = pct===1?'🏆':pct>=0.8?'🎉':pct>=0.5?'🙂':'📚';
     var totalHtml = '';
     if(total>0){
-      totalHtml = '<div class="tq-summary-total">🎉 Ganaste <b>+'+total+' pts</b> en este test</div>'+
+      totalHtml = '<div class="tq-summary-total">🎉 Ganaste <b>+'+total+' pts</b> en este quiz</div>'+
         (bonus>0?'<div class="tq-summary-bonus">Incluye +'+bonus+' pts de bonus por completarlo</div>':'');
     } else if(alreadyHadBonus){
-      totalHtml = '<div class="tq-summary-bonus">Ya habías ganado los puntos de este test — repetirlo te ayuda a repasar 🙂</div>';
+      totalHtml = '<div class="tq-summary-bonus">Ya habías ganado los puntos de este quiz — repetirlo te ayuda a repasar 🙂</div>';
     }
     $('testQuestionBody').innerHTML =
       '<div class="tq-summary"><div class="tq-summary-emoji">'+emoji+'</div>'+
