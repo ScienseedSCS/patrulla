@@ -458,8 +458,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .spot-hud{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(135deg,var(--primary),var(--primary-soft));color:#fff;border-radius:12px;padding:10px 14px;margin-bottom:10px}
 .spot-hud-count{font-family:'DM Serif Display',serif;font-size:18px}
 .spot-hud-label{font-size:11px;opacity:.85}
-.spot-stage{position:relative;width:100%;border-radius:14px;overflow:hidden;box-shadow:var(--shadow);line-height:0;background:#DDD1BD;touch-action:manipulation}
-.spot-stage img{width:100%;height:auto;display:block;-webkit-user-select:none;user-select:none}
+.spot-stage{position:relative;width:100%;border-radius:14px;overflow:visible;box-shadow:var(--shadow);line-height:0;background:#DDD1BD;touch-action:manipulation}
+.spot-stage img{width:100%;height:auto;display:block;border-radius:14px;-webkit-user-select:none;user-select:none}
 .spot-marker{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:3}
 .spot-hit{width:34px;height:34px;border-radius:50%;background:rgba(62,143,74,.28);border:3px solid var(--ok);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800;box-shadow:0 0 0 4px rgba(62,143,74,.18);animation:pop .3s ease}
 .spot-hit.reveal{background:rgba(226,155,46,.22);border-color:var(--warn)}
@@ -473,7 +473,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 .spot-miss{width:26px;height:26px;border-radius:50%;background:rgba(194,55,47,.85);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;animation:fadeout 1s forwards}
 @keyframes fadeout{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
-.spot-label{position:absolute;transform:translate(-50%,-140%);background:rgba(20,10,25,.82);color:#fff;font-size:12px;font-weight:700;padding:3px 7px;border-radius:6px;white-space:nowrap;z-index:4;pointer-events:none;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.spot-label{position:absolute;transform:translate(-50%,-140%);background:rgba(20,10,25,.90);color:#fff;font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;white-space:normal;width:max-content;max-width:180px;text-align:center;line-height:1.35;z-index:4;pointer-events:none;box-shadow:0 3px 12px rgba(0,0,0,.28);transition:opacity .4s ease}
+.spot-label.fadeout{opacity:0}
 .spot-actions{display:flex;gap:8px;margin-top:12px}
 .spot-actions .btn{flex:1}
 .spot-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.4}
@@ -2529,6 +2530,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   }
 
   function openSpotGame(ch){
+    var SPOT_TAP_TOLERANCE = 0.08; // radio mínimo de toque (más generoso que el guardado en la base)
     var hotspots=parseHotspots(ch.hotspots);
     var found={}; var revealed=false; var awarded=!!S.mySpotDone[ch.id];
     // hasTypes=false para el caso 1 (sus hotspots no traen "type") -> todo el texto
@@ -2564,11 +2566,32 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     }
     function markerIcon(type){ return type==='warn' ? '!' : (type==='no' ? '✕' : '✓'); }
 
-    function placeMarker(hx, hy, cls, txt, label){
+    function placeMarker(hx, hy, cls, txt, label, opts){
+      opts = opts || {};
       var m=el('div','spot-marker'); m.style.left=(hx*100)+'%'; m.style.top=(hy*100)+'%';
       m.innerHTML='<div class="'+cls+'">'+(txt||'')+'</div>';
       $('spotStage').appendChild(m);
-      if(label){ var l=el('div','spot-label',esc(label)); l.style.left=(hx*100)+'%'; l.style.top=(hy*100)+'%'; $('spotStage').appendChild(l); }
+      if(!label) return;
+      var l=el('div','spot-label',esc(label));
+      l.style.left=(hx*100)+'%'; l.style.top=(hy*100)+'%';
+      $('spotStage').appendChild(l);
+      // Evitar que la etiqueta quede recortada contra el borde de la pantalla
+      requestAnimationFrame(function(){
+        var lr=l.getBoundingClientRect(), margin=8;
+        var tx='-50%', ty='-140%';
+        if(lr.left<margin) tx='0%';
+        else if(lr.right>window.innerWidth-margin) tx='-100%';
+        if(lr.top<margin) ty='16%';
+        l.style.transform='translate('+tx+','+ty+')';
+      });
+      // El ícono queda para siempre; el texto se lee un rato y después se esfuma solo
+      // (salvo en "Ver solución", donde interesa que se pueda repasar con calma).
+      if(!opts.persistent){
+        setTimeout(function(){
+          l.classList.add('fadeout');
+          setTimeout(function(){ if(l.parentNode) l.parentNode.removeChild(l); }, 450);
+        }, 3500);
+      }
     }
 
     function checkComplete(){
@@ -2593,11 +2616,12 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       if(revealed) return;
       var rect=this.getBoundingClientRect();
       var fx=(ev.clientX-rect.left)/rect.width, fy=(ev.clientY-rect.top)/rect.height;
-      var hitIdx=-1;
+      var hitIdx=-1, bestDist=Infinity;
       for(var i=0;i<hotspots.length;i++){
         if(found[i]) continue;
-        var hs=hotspots[i], dx=fx-hs.x, dy=fy-hs.y;
-        if(Math.sqrt(dx*dx+dy*dy) <= (hs.r||0.06)){ hitIdx=i; break; }
+        var hs=hotspots[i], dx=fx-hs.x, dy=fy-hs.y, dist=Math.sqrt(dx*dx+dy*dy);
+        var tol=Math.max(hs.r||0.06, SPOT_TAP_TOLERANCE);  // área de toque más generosa para el dedo
+        if(dist<=tol && dist<bestDist){ bestDist=dist; hitIdx=i; }
       }
       if(hitIdx>=0){
         found[hitIdx]=1; var hs=hotspots[hitIdx];
@@ -2611,7 +2635,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
     $('spotReveal').addEventListener('click', function(){
       if(revealed) return; revealed=true;
-      hotspots.forEach(function(hs,i){ if(!found[i]) placeMarker(hs.x, hs.y, markerClass(hs.type,true), hasTypes?markerIcon(hs.type):'!', hs.label); });
+      hotspots.forEach(function(hs,i){ if(!found[i]) placeMarker(hs.x, hs.y, markerClass(hs.type,true), hasTypes?markerIcon(hs.type):'!', hs.label, { persistent:true }); });
       $('spotResult').innerHTML = hasTypes
         ? '<div class="spot-success" style="background:#FBF3E0;color:#8A6A1E">Así quedaron clasificados todos los elementos. ¡El ojo se entrena mirando seguido!</div>'
         : '<div class="spot-success" style="background:#FBF3E0;color:#8A6A1E">Estos son los focos. Recordá revisarlos en tu casa cada semana.</div>';
