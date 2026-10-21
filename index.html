@@ -443,6 +443,8 @@ svg.z1 .rm-name:not(.main){display:none}
 /* Detectar criaderos · explicación del foco y modo «marcas» */
 .spot-info{margin-top:12px;background:var(--card);border-left:4px solid var(--ok);border-radius:0 12px 12px 0;padding:10px 12px;font-size:13px;line-height:1.5;color:var(--text);box-shadow:var(--shadow)}
 .spot-info:empty{display:none}
+.spot-info.warn{border-left-color:var(--warn)} .spot-info.no{border-left-color:var(--danger)}
+.spot-info .spot-kind{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:2px}
 .spot-info b{display:block;color:var(--primary);margin-bottom:2px}
 .spot-info ul{margin:6px 0 0;padding-left:18px}
 .spot-info li{margin-bottom:3px}
@@ -2945,7 +2947,8 @@ svg.z1 .rm-name:not(.main){display:none}
   // Explicación de un foco (campos opcionales del hotspot: info y lista)
   function spotInfoHtml(hs){
     if(!hs || (!hs.info && !hs.lista)) return '';
-    return '<b>'+esc(hs.label||'')+'</b>'+(hs.info?esc(hs.info):'')+
+    var kind = hs.type==='ok' ? 'Criadero real' : (hs.type==='warn' ? 'A vigilar' : (hs.type==='no' ? 'No es criadero' : ''));
+    return (kind?'<span class="spot-kind">'+kind+'</span>':'')+'<b>'+esc(hs.label||'')+'</b>'+(hs.info?esc(hs.info):'')+
       (Array.isArray(hs.lista)&&hs.lista.length ? '<ul>'+hs.lista.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul>' : '');
   }
 
@@ -3078,6 +3081,7 @@ svg.z1 .rm-name:not(.main){display:none}
       if(hitIdx>=0){
         found[hitIdx]=1; var hs=hotspots[hitIdx];
         placeMarker(hs.x, hs.y, markerClass(hs.type,false), markerIcon(hs.type), hs.label);
+        $('spotInfo').className = 'spot-info'+(hs.type==='warn'?' warn':(hs.type==='no'?' no':''));
         $('spotInfo').innerHTML = spotInfoHtml(hs);
         updateCount(); checkComplete();
       } else {
