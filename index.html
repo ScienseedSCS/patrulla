@@ -188,25 +188,38 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .rm-nav button:disabled{opacity:.35;cursor:default}
 .rm-nav button:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
 .rm-nav span{font-size:12px;font-weight:800;color:var(--primary);min-width:64px;text-align:center}
-.risk-map{height:300px;border-radius:12px;overflow:hidden;background:#EFE8DC;position:relative;z-index:0}
-.risk-map .empty{padding-top:120px}
+.risk-map{position:relative;border-radius:12px;overflow:hidden;background:#F6F1E8}
+.risk-map svg{display:block;width:100%;height:auto;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.rm-bg{fill:#F6F1E8}
+.rm-fill{fill:#CDBFD0;fill-opacity:.45;stroke:none}
+.rm-fill.bajo{fill:var(--ok)} .rm-fill.medio{fill:var(--warn)} .rm-fill.alto{fill:var(--danger)}
+.rm-road{fill:none;stroke:#9C8FA0;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;pointer-events:none}
+.rm-road.trunk,.rm-road.motorway{stroke:#5A4560}
+.rm-road.primary,.rm-road.secondary,.rm-road.tertiary{stroke:#7C6C84}
+.rm-road.rail{stroke:#8A6A4A;stroke-dasharray:6 4}
+.rm-sec{fill:transparent;stroke:#331F3A;stroke-width:2;stroke-linejoin:round;vector-effect:non-scaling-stroke;cursor:pointer}
+.rm-sec:hover{fill:rgba(255,255,255,.12)}
+.rm-sec.sel{stroke-width:4;fill:rgba(255,255,255,.18)}
+.rm-sec:focus{outline:none} .rm-sec:focus-visible{stroke:var(--accent-2);stroke-width:5}
+.rm-lbl{pointer-events:none} .rm-lbl circle{fill:#331F3A} .rm-lbl text{fill:#fff;font:800 34px Raleway,sans-serif;text-anchor:middle}
+.rm-name{pointer-events:none} .rm-name text{font:700 30px Raleway,sans-serif;fill:#4A2F54;text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:#F6F1E8;stroke-width:9px;stroke-linejoin:round}
+svg.z1 .rm-name:not(.main){display:none}
+.rm-zoom{position:absolute;top:8px;right:8px;display:flex;flex-direction:column;gap:6px}
+.rm-zoom button{width:40px;height:40px;border-radius:10px;border:none;background:#fff;color:var(--primary);font-size:20px;font-weight:800;box-shadow:0 2px 8px rgba(51,31,58,.2);cursor:pointer}
+.rm-zoom button:disabled{opacity:.4;cursor:default}
+.rm-zoom button:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
+.rm-credit{position:absolute;right:6px;bottom:4px;font-size:10px;color:var(--muted);background:rgba(246,241,232,.85);padding:1px 5px;border-radius:5px;pointer-events:none}
+.rm-info{margin-top:10px;background:#FBF7EF;border-radius:12px;padding:12px;min-height:58px}
+.rm-info-name{font-family:'DM Serif Display',serif;font-size:17px;color:var(--primary);line-height:1.2}
+.rm-info-row{display:flex;align-items:center;gap:10px;margin-top:6px}
+.rm-info-edi{font-size:13px;font-weight:800;color:var(--primary)}
+.rm-hint{font-size:13px;color:var(--muted)}
 .rm-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11.5px;color:var(--muted);margin-top:10px}
 .rm-legend span{display:inline-flex;align-items:center;gap:5px}
 .rm-dot{width:11px;height:11px;border-radius:50%;display:inline-block;background:#CDBFD0;flex-shrink:0}
 .rm-dot.bajo{background:var(--ok)} .rm-dot.medio{background:var(--warn)} .rm-dot.alto{background:var(--danger)}
-.rm-list{list-style:none;margin-top:12px;border-top:1px solid #EFE6F0}
-.rm-list li{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid #EFE6F0;font-size:13px}
-.rm-list .rm-name{flex:1;min-width:0}
-.rm-list .rm-name b{color:var(--primary)}
-.rm-list .rm-name small{display:block;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rm-list .rm-val{font-size:12px;font-weight:800;color:var(--primary);text-align:right;white-space:nowrap}
-.rm-challenge{display:inline-block;font-size:10.5px;font-weight:800;color:#7A1F1A;background:#FBE3E1;border-radius:999px;padding:2px 7px;margin-top:3px}
 .rm-src{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.45}
 .risk-others{font-family:'DM Serif Display',serif;font-size:17px;color:var(--primary);margin:18px 0 8px}
-.leaflet-tooltip.rm-label{background:var(--primary);color:#fff;border:none;border-radius:999px;font-family:'Raleway',sans-serif;font-weight:800;font-size:11px;padding:2px 7px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-.leaflet-tooltip.rm-label:before{display:none}
-.leaflet-popup-content{font-family:'Raleway',sans-serif;font-size:13px;line-height:1.4;color:var(--text)}
-.leaflet-popup-content b{color:var(--primary)}
 
 /* Reportar */
 .actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -1817,8 +1830,9 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       db.from('cities').select('*').eq('active', true).order('name'),
       db.from('reports').select('id', { count:'exact', head:true }).eq('user_id', uid).eq('status','validado'),
       db.from('ovi_sectores').select('*'),
+      db.from('ovi_calles').select('*'),
     ]).then(function(r){
-      var sect=r[11];
+      var sect=r[11], call=r[12];
       var prof=r[0], inc=r[1], act=r[2], tp=r[3], lq=r[4], ltp=r[5], lqc=r[6], rc=r[7], rv=r[8], ct=r[9], ap=r[10];
 
       // Si no existe el perfil (caso raro), crearlo mínimamente.
@@ -1837,7 +1851,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       S.pushPrefs = normalizePushPrefs(prof.data.push_prefs);
       S.tourStations = Array.isArray(prof.data.tour_stations) ? prof.data.tour_stations : null;
       // Si todavía no se corrió 11_riesgo-ovitrampas.sql, estas consultas dan error y la pestaña queda sin datos.
-      S.ovi = { indices:(inc && !inc.error && inc.data) || [], sectores:(sect && !sect.error && sect.data) || [] };
+      S.ovi = { indices:(inc && !inc.error && inc.data) || [], sectores:(sect && !sect.error && sect.data) || [], calles:{} };
+      if(call && !call.error && call.data) call.data.forEach(function(c){ S.ovi.calles[c.localidad]=c.calles; });
       S.actions = act.data || [];
       S.tips    = tp.data || [];
       S.learnQuestions = lq.data || [];
@@ -1907,9 +1922,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     alto:  'Riesgo alto. Es momento de actuar: eliminá todo lo que acumule agua, limpiá canaletas y desagües y sumá a tus vecinos.'
   };
   var MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  var LEAFLET_VER = '1.9.4';
-  var RM = { map:null, layer:null, fitted:false, weeks:[], idx:0, code:null, sectors:[] };
-  var _leafletP = null;
+  var RM = { weeks:[], idx:0, code:null, sectors:[], sel:null, view:null, viewKey:null, H:0 };
 
   function nf(n, d){ return Number(n).toLocaleString('es-AR', { maximumFractionDigits:(d==null?1:d) }); }
   function parseISO(s){ var p=String(s).split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
@@ -1980,7 +1993,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
   function renderRiskHero(wrap, name){
     var code=cityCode(name), weeks=riskWeeksFor(code), w=weeks[0];
-    RM.sectors=[]; RM.weeks=[];
+    RM.sectors=[]; RM.weeks=[]; RM.sel=null;
     var hero=el('article','card risk-hero'+(w && w.city.nivel ? ' '+w.city.nivel : ''));
     if(!w){
       hero.innerHTML =
@@ -2034,6 +2047,12 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       '<div class="rh-trend-cap">Evolución de las últimas semanas</div>';
   }
 
+  function sectorSort(a,b){
+    var na=parseFloat(a.sector), nb=parseFloat(b.sector);
+    if(!isNaN(na) && !isNaN(nb)) return na-nb;
+    return String(a.sector).localeCompare(String(b.sector));
+  }
+
   function riskMapCard(){
     var card=el('article','card risk-map-card');
     card.innerHTML =
@@ -2043,24 +2062,18 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           '<span id="rmWeek" aria-live="polite"></span>'+
           '<button type="button" id="rmNext" aria-label="Semana siguiente">›</button>'+
         '</div></div>'+
-      '<div id="riskMap" class="risk-map" role="img" aria-label="Mapa de los sectores de vigilancia coloreados por nivel de riesgo. El detalle está en la lista de abajo."></div>'+
+      '<div class="risk-map" id="riskMap"></div>'+
+      '<div class="rm-info" id="rmInfo" aria-live="polite"><span class="rm-hint">Tocá un sector del mapa para ver su riesgo.</span></div>'+
       '<div class="rm-legend" aria-hidden="true">'+
         '<span><i class="rm-dot bajo"></i>Bajo (EDI &lt; 25)</span>'+
         '<span><i class="rm-dot medio"></i>Medio (25 a 45)</span>'+
         '<span><i class="rm-dot alto"></i>Alto (45 o más)</span>'+
         '<span><i class="rm-dot"></i>Sin dato</span>'+
       '</div>'+
-      '<ul class="rm-list" id="rmList"></ul>'+
-      '<div class="rm-src">Datos de la red de ovitrampas de Fundación Mundo Sano. Cada sector tiene varias trampas; el EDI es el promedio de huevos en las trampas que tuvieron huevos.</div>';
+      '<div class="rm-src">Datos de la red de ovitrampas de Fundación Mundo Sano. El EDI es el promedio de huevos en las trampas que tuvieron huevos.</div>';
     card.querySelector('#rmPrev').addEventListener('click', function(){ if(RM.idx<RM.weeks.length-1){ RM.idx++; updateRiskWeek(); } });
     card.querySelector('#rmNext').addEventListener('click', function(){ if(RM.idx>0){ RM.idx--; updateRiskWeek(); } });
     return card;
-  }
-
-  function sectorSort(a,b){
-    var na=parseFloat(a.sector), nb=parseFloat(b.sector);
-    if(!isNaN(na) && !isNaN(nb)) return na-nb;
-    return String(a.sector).localeCompare(String(b.sector));
   }
 
   function updateRiskWeek(){
@@ -2069,84 +2082,220 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     var prev=$('rmPrev'), next=$('rmNext');
     if(prev) prev.disabled = (RM.idx>=RM.weeks.length-1);
     if(next) next.disabled = (RM.idx<=0);
-    var list=$('rmList');
-    if(list){
-      list.innerHTML = RM.sectors.slice().sort(sectorSort).map(function(s){
-        var r=w.sectors[s.sector], nivel=r && r.nivel;
-        return '<li><i class="rm-dot '+(nivel||'')+'"></i>'+
-          '<div class="rm-name"><b>'+esc(s.nombre||('Sector '+s.sector))+'</b>'+
-            (s.barrios ? '<small>'+esc(s.barrios)+'</small>' : '')+
-            (nivel==='alto' && RM.idx===0 ? '<span class="rm-challenge">🎯 Desafío de la semana: bajemos el riesgo</span>' : '')+
-          '</div>'+
-          '<div class="rm-val">'+(nivel ? esc(cap(nivel)) : 'Sin dato')+
-            (r && r.edi!=null ? '<br><span style="font-weight:600;color:var(--muted)">EDI '+nf(r.edi)+'</span>' : '')+
-          '</div></li>';
-      }).join('');
-    }
     drawRiskMap();
+    showSectorInfo(RM.sel);
   }
 
-  function loadLeaflet(){
-    if(window.L) return Promise.resolve();
-    if(_leafletP) return _leafletP;
-    _leafletP = new Promise(function(resolve, reject){
-      var base='https://cdnjs.cloudflare.com/ajax/libs/leaflet/'+LEAFLET_VER+'/';
-      var css=document.createElement('link'); css.rel='stylesheet'; css.href=base+'leaflet.css';
-      document.head.appendChild(css);
-      var js=document.createElement('script'); js.src=base+'leaflet.js';
-      js.onload=function(){ resolve(); };
-      js.onerror=function(){ _leafletP=null; reject(new Error('leaflet')); };
-      document.head.appendChild(js);
-    });
-    return _leafletP;
+  function sectorRings(g){
+    if(!g) return [];
+    if(g.type==='Polygon') return g.coordinates || [];
+    if(g.type==='MultiPolygon') return [].concat.apply([], g.coordinates || []);
+    return [];
+  }
+  function ringCentroid(r){
+    var a=0, cx=0, cy=0;
+    for(var i=0;i<r.length-1;i++){
+      var f=r[i][0]*r[i+1][1]-r[i+1][0]*r[i][1];
+      a+=f; cx+=(r[i][0]+r[i+1][0])*f; cy+=(r[i][1]+r[i+1][1])*f;
+    }
+    if(Math.abs(a)<1e-12){ var sx=0, sy=0; r.forEach(function(p){ sx+=p[0]; sy+=p[1]; }); return [sx/r.length, sy/r.length]; }
+    return [cx/(3*a), cy/(3*a)];
   }
 
-  function cssVar(name, fb){
-    var v=getComputedStyle(document.documentElement).getPropertyValue(name);
-    return (v && v.trim()) || fb;
-  }
+  // Mapa dibujado a mano en SVG: sectores (ovi_sectores) + calles
+  // (ovi_calles, descargadas una vez de OpenStreetMap). No depende de
+  // ningún servicio externo. Zoom con botones, pellizco, rueda y arrastre.
+  var RM_W = 1000, RM_ZMAX = 5;
+  var RISK_ROAD_W = { motorway:3.2, trunk:3.2, primary:2.6, secondary:2.2, tertiary:2, unclassified:1.1, residential:1, living_street:1, rail:2 };
 
   function drawRiskMap(){
     var box=$('riskMap'); if(!box || !RM.sectors.length) return;
-    var sec=$('sec-incidencia');
-    if(!sec || !sec.classList.contains('active')) return;   // se dibuja al abrir la pestaña
-    loadLeaflet().then(function(){
-      box=$('riskMap'); if(!box) return;
-      if(RM.map && RM.map.getContainer()!==box){ RM.map.remove(); RM.map=null; RM.layer=null; RM.fitted=false; }
-      if(!RM.map){
-        RM.map = L.map(box, { scrollWheelZoom:false, attributionControl:true, zoomSnap:0.25 });
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-          maxZoom:19, subdomains:'abcd',
-          attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>'
-        }).addTo(RM.map);
+    var w=RM.weeks[RM.idx] || { sectors:{} };
+    // Zona visible = sectores + un margen alrededor para ver los alrededores
+    var minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity;
+    RM.sectors.forEach(function(s){ sectorRings(s.geom).forEach(function(r){ r.forEach(function(p){
+      if(p[0]<minX) minX=p[0]; if(p[0]>maxX) maxX=p[0]; if(p[1]<minY) minY=p[1]; if(p[1]>maxY) maxY=p[1];
+    }); }); });
+    if(minX===Infinity) return;
+    var mX=(maxX-minX)*0.18, mY=(maxY-minY)*0.18;
+    minX-=mX; maxX+=mX; minY-=mY; maxY+=mY;
+    var k=Math.cos(((minY+maxY)/2)*Math.PI/180);
+    var sc=RM_W/((maxX-minX)*k), H=Math.round((maxY-minY)*sc);
+    function px(p){ return [(p[0]-minX)*k*sc, (maxY-p[1])*sc]; }
+    function pathOf(line){ return 'M'+line.map(function(p){ var q=px(p); return q[0].toFixed(1)+','+q[1].toFixed(1); }).join('L'); }
+    RM.H=H;
+
+    var fills='', outlines='', labels='', roads='', names='';
+    RM.sectors.slice().sort(sectorSort).forEach(function(s){
+      var r=w.sectors[s.sector], nivel=(r && r.nivel) || 'nodata';
+      var d=sectorRings(s.geom).map(function(ring){ return pathOf(ring)+'Z'; }).join('');
+      var name=s.barrios || s.nombre || ('Sector '+s.sector);
+      var aria=name+': '+(r && r.nivel ? 'riesgo '+r.nivel+(r.edi!=null?', EDI '+nf(r.edi):'') : 'sin dato esta semana');
+      fills+='<path class="rm-fill '+nivel+'" d="'+d+'" fill-rule="evenodd"/>';
+      outlines+='<path class="rm-sec'+(RM.sel===s.sector?' sel':'')+'" data-sec="'+esc(s.sector)+'" d="'+d+'" fill-rule="evenodd" tabindex="0" role="button" aria-label="'+esc(aria)+'"/>';
+      var outer=sectorRings(s.geom)[0]; if(!outer) return;
+      var c=px(ringCentroid(outer));
+      labels+='<g class="rm-lbl" data-x="'+c[0].toFixed(1)+'" data-y="'+c[1].toFixed(1)+'"><circle r="34"/><text dy="12">'+esc(s.sector)+'</text></g>';
+    });
+
+    var calles=(S.ovi.calles||{})[RM.code] || [];
+    var byName={};
+    calles.forEach(function(l){
+      if(!l || !l.c || l.c.length<2) return;
+      roads+='<path class="rm-road '+esc(l.t)+'" d="'+pathOf(l.c)+'" style="stroke-width:'+(RISK_ROAD_W[l.t]||1)+'px"/>';
+      if(l.n && /^(motorway|trunk|primary|secondary|tertiary)$/.test(l.t)){
+        var len=0; for(var i=1;i<l.c.length;i++){ var a=px(l.c[i-1]), b=px(l.c[i]); len+=Math.hypot(b[0]-a[0], b[1]-a[1]); }
+        if(!byName[l.n] || byName[l.n].len<len) byName[l.n]={ len:len, c:l.c, t:l.t };
       }
-      var w=RM.weeks[RM.idx] || { sectors:{} };
-      var colors={ bajo:cssVar('--ok','#3E8F4A'), medio:cssVar('--warn','#E29B2E'), alto:cssVar('--danger','#C2372F') };
-      var fc={ type:'FeatureCollection', features: RM.sectors.map(function(s){
-        return { type:'Feature', geometry:s.geom, properties:{ sector:s.sector, nombre:s.nombre, barrios:s.barrios } };
-      }) };
-      if(RM.layer){ RM.layer.remove(); RM.layer=null; }
-      RM.layer = L.geoJSON(fc, {
-        style:function(f){
-          var r=w.sectors[f.properties.sector], nivel=r && r.nivel;
-          return { color:'#331F3A', weight:1.5, opacity:.8, fillColor:(nivel?colors[nivel]:'#B9AEBE'), fillOpacity:(nivel?.45:.25) };
-        },
-        onEachFeature:function(f, layer){
-          var p=f.properties, r=w.sectors[p.sector], nivel=r && r.nivel;
-          layer.bindTooltip(String(p.sector), { permanent:true, direction:'center', className:'rm-label' });
-          layer.bindPopup(
-            '<b>'+esc(p.nombre||('Sector '+p.sector))+'</b><br>'+
-            (nivel ? ('Riesgo '+esc(nivel)+(r.edi!=null?' · EDI '+nf(r.edi):'')+(r.opi!=null?' · '+nf(r.opi,0)+' % positivas':'')) : 'Sin dato esta semana')+
-            (p.barrios ? '<br><span style="color:var(--muted);font-size:12px">'+esc(p.barrios)+'</span>' : '')
-          );
+    });
+    // Un rótulo por calle principal, en el tramo más largo, si cae dentro de la zona
+    Object.keys(byName).forEach(function(n){
+      var it=byName[n], pts=it.c.map(px).filter(function(q){ return q[0]>=90 && q[0]<=RM_W-90 && q[1]>=90 && q[1]<=H-90; });
+      if(pts.length<2) return;
+      var tot=0; for(var j=1;j<pts.length;j++) tot+=Math.hypot(pts[j][0]-pts[j-1][0], pts[j][1]-pts[j-1][1]);
+      var half=tot/2, acc=0;
+      for(var i=1;i<pts.length;i++){
+        var a=pts[i-1], b=pts[i], seg=Math.hypot(b[0]-a[0], b[1]-a[1]);
+        if(acc+seg>=half){
+          var f=seg?(half-acc)/seg:0, x=a[0]+(b[0]-a[0])*f, y=a[1]+(b[1]-a[1])*f;
+          if(x<0 || x>RM_W || y<0 || y>H) break;
+          var ang=Math.atan2(b[1]-a[1], b[0]-a[0])*180/Math.PI; if(ang>90) ang-=180; if(ang<-90) ang+=180;
+          var label=n.replace(/^Avenida /,'Av. ').replace(/^Ruta Nacional (\d+).*$/,'Ruta Nac. $1').replace(/^Ruta Provincial /,'Ruta Prov. ');
+          names+='<g class="rm-name'+(it.t==='trunk'||it.t==='motorway'?' main':'')+'" data-x="'+x.toFixed(1)+'" data-y="'+y.toFixed(1)+'" data-a="'+ang.toFixed(1)+'"><text>'+esc(label)+'</text></g>';
+          break;
         }
-      }).addTo(RM.map);
-      if(!RM.fitted){ RM.map.fitBounds(RM.layer.getBounds(), { padding:[12,12] }); RM.fitted=true; }
-      setTimeout(function(){ if(RM.map) RM.map.invalidateSize(); }, 60);
-    }).catch(function(){
-      var b=$('riskMap'); if(b) b.innerHTML='<div class="empty">No pudimos cargar el mapa. Revisá tu conexión: la lista de abajo tiene los mismos datos.</div>';
+        acc+=seg;
+      }
+    });
+
+    box.innerHTML =
+      '<svg viewBox="0 0 '+RM_W+' '+H+'" role="group" aria-label="Mapa de sectores de vigilancia">'+
+        '<rect class="rm-bg" x="-5000" y="-5000" width="'+(RM_W+10000)+'" height="'+(H+10000)+'"/>'+
+        fills+'<g class="rm-roads">'+roads+'</g>'+outlines+'<g class="rm-names">'+names+'</g>'+labels+
+      '</svg>'+
+      '<div class="rm-zoom">'+
+        '<button type="button" data-z="in" aria-label="Acercar">+</button>'+
+        '<button type="button" data-z="out" aria-label="Alejar">−</button>'+
+        '<button type="button" data-z="reset" aria-label="Ver todo el mapa">⤢</button>'+
+      '</div>'+
+      (calles.length ? '<div class="rm-credit">© colaboradores de OpenStreetMap</div>' : '');
+
+    if(!RM.view || RM.viewKey!==RM.code+'|'+H){ RM.view={ z:1, cx:RM_W/2, cy:H/2 }; RM.viewKey=RM.code+'|'+H; }
+    applyRiskView();
+    wireRiskMap(box);
+  }
+
+  function clampRiskView(){
+    var v=RM.view, H=RM.H||RM_W;
+    v.z=Math.max(1, Math.min(RM_ZMAX, v.z));
+    var hw=RM_W/v.z/2, hh=H/v.z/2;
+    v.cx=Math.max(hw, Math.min(RM_W-hw, v.cx));
+    v.cy=Math.max(hh, Math.min(H-hh, v.cy));
+  }
+
+  function applyRiskView(){
+    var box=$('riskMap'); if(!box) return;
+    var svg=box.querySelector('svg'); if(!svg) return;
+    clampRiskView();
+    var v=RM.view, H=RM.H, w=RM_W/v.z, h=H/v.z;
+    svg.setAttribute('viewBox', (v.cx-w/2).toFixed(2)+' '+(v.cy-h/2).toFixed(2)+' '+w.toFixed(2)+' '+h.toFixed(2));
+    var inv=1/v.z;
+    svg.querySelectorAll('.rm-lbl').forEach(function(g){
+      g.setAttribute('transform','translate('+g.getAttribute('data-x')+','+g.getAttribute('data-y')+') scale('+inv+')');
+    });
+    svg.querySelectorAll('.rm-name').forEach(function(g){
+      g.setAttribute('transform','translate('+g.getAttribute('data-x')+','+g.getAttribute('data-y')+') rotate('+g.getAttribute('data-a')+') scale('+inv+')');
+    });
+    svg.classList.toggle('z1', v.z<1.6);
+    svg.style.touchAction = v.z>1.01 ? 'none' : 'pan-y';
+    var bi=box.querySelector('[data-z="in"]'), bo=box.querySelector('[data-z="out"]');
+    if(bi) bi.disabled = v.z>=RM_ZMAX-0.01;
+    if(bo) bo.disabled = v.z<=1.01;
+  }
+
+  // Zoom manteniendo fijo el punto (sx, sy) en coordenadas del SVG
+  function zoomRiskAt(factor, sx, sy){
+    var v=RM.view, nz=Math.max(1, Math.min(RM_ZMAX, v.z*factor)), f=v.z/nz;
+    v.cx = sx + (v.cx-sx)*f; v.cy = sy + (v.cy-sy)*f; v.z = nz;
+    applyRiskView();
+  }
+
+  function svgPoint(svg, clientX, clientY){
+    var r=svg.getBoundingClientRect(), v=RM.view, w=RM_W/v.z, h=RM.H/v.z;
+    return [ (v.cx-w/2) + (clientX-r.left)/r.width*w, (v.cy-h/2) + (clientY-r.top)/r.height*h ];
+  }
+
+  function wireRiskMap(box){
+    var svg=box.querySelector('svg');
+    box.querySelectorAll('[data-z]').forEach(function(b){
+      b.addEventListener('click', function(){
+        var z=b.getAttribute('data-z'), v=RM.view;
+        if(z==='reset'){ v.z=1; v.cx=RM_W/2; v.cy=RM.H/2; applyRiskView(); }
+        else zoomRiskAt(z==='in'?1.6:1/1.6, v.cx, v.cy);
+      });
+    });
+    svg.addEventListener('wheel', function(e){
+      e.preventDefault();
+      var p=svgPoint(svg, e.clientX, e.clientY);
+      zoomRiskAt(e.deltaY<0?1.25:0.8, p[0], p[1]);
+    }, { passive:false });
+
+    // Arrastre (con zoom) y pellizco
+    var ptrs={}, moved=0, last=null, pinch=null;
+    svg.addEventListener('pointerdown', function(e){
+      ptrs[e.pointerId]={ x:e.clientX, y:e.clientY };
+      moved=0; last={ x:e.clientX, y:e.clientY };
+      var ids=Object.keys(ptrs);
+      if(ids.length===2){
+        var a=ptrs[ids[0]], b=ptrs[ids[1]];
+        pinch={ d:Math.hypot(a.x-b.x, a.y-b.y), z:RM.view.z };
+      }
+    });
+    svg.addEventListener('pointermove', function(e){
+      if(!ptrs[e.pointerId]) return;
+      ptrs[e.pointerId]={ x:e.clientX, y:e.clientY };
+      var ids=Object.keys(ptrs);
+      if(ids.length===2 && pinch){
+        var a=ptrs[ids[0]], b=ptrs[ids[1]], d=Math.hypot(a.x-b.x, a.y-b.y);
+        var mid=svgPoint(svg, (a.x+b.x)/2, (a.y+b.y)/2);
+        zoomRiskAt((pinch.z*d/pinch.d)/RM.view.z, mid[0], mid[1]);
+        moved=99; e.preventDefault(); return;
+      }
+      if(ids.length===1 && RM.view.z>1.01 && last){
+        var r=svg.getBoundingClientRect(), dx=e.clientX-last.x, dy=e.clientY-last.y;
+        moved+=Math.abs(dx)+Math.abs(dy);
+        RM.view.cx -= dx/r.width*(RM_W/RM.view.z);
+        RM.view.cy -= dy/r.height*(RM.H/RM.view.z);
+        last={ x:e.clientX, y:e.clientY };
+        applyRiskView();
+      }
+    });
+    var up=function(e){ delete ptrs[e.pointerId]; if(Object.keys(ptrs).length<2) pinch=null; last=null; };
+    svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up); svg.addEventListener('pointerleave', up);
+
+    svg.querySelectorAll('.rm-sec').forEach(function(p){
+      var pick=function(byKey){
+        RM.sel=p.getAttribute('data-sec');
+        svg.querySelectorAll('.rm-sec').forEach(function(q){ q.classList.toggle('sel', q===p); });
+        showSectorInfo(RM.sel);
+        if(byKey) p.focus({ preventScroll:true });
+      };
+      p.addEventListener('click', function(){ if(moved>8) return; pick(false); });
+      p.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); pick(true); } });
     });
   }
+
+  function showSectorInfo(code){
+    var box=$('rmInfo'); if(!box) return;
+    var s=null; RM.sectors.forEach(function(x){ if(x.sector===code) s=x; });
+    if(!s){ box.innerHTML='<span class="rm-hint">Tocá un sector del mapa para ver su riesgo.</span>'; return; }
+    var w=RM.weeks[RM.idx] || { sectors:{} }, r=w.sectors[s.sector], nivel=r && r.nivel;
+    box.innerHTML =
+      '<div class="rm-info-name">'+esc(s.barrios || s.nombre || ('Sector '+s.sector))+'</div>'+
+      '<div class="rm-info-row">'+(nivel ? '<span class="risk-badge '+nivel+'">Riesgo '+esc(nivel)+'</span>' : '<span class="rm-hint">Sin dato esta semana</span>')+
+        (r && r.edi!=null ? '<span class="rm-info-edi">EDI '+nf(r.edi)+'</span>' : '')+'</div>';
+  }
+
 
   // =====================================================================
   //  REPORTAR
@@ -3487,7 +3636,6 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     if(sec==='aprender') showLearnView('menu');
     if(sec==='revisar') renderRevisar();
     if(sec==='progreso') showProgTab('me');
-    if(sec==='incidencia') drawRiskMap();
     updateHtFab();
   }
 

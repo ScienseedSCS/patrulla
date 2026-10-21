@@ -271,7 +271,7 @@ body.locked .wrap{display:none}
         <label class="ovi-drop" id="oviDrop">
           <input type="file" id="oviInput" accept=".geojson,.json,application/geo+json,application/json" multiple>
           <b>📂 Elegí o arrastrá los .geojson</b>
-          <span>Podés elegir varios a la vez (sectores y semanas). Nada se guarda hasta que confirmes.</span>
+          <span>Podés elegir varios a la vez (sectores, calles y semanas). Nada se guarda hasta que confirmes.</span>
         </label>
         <label class="ovi-check"><input type="checkbox" id="oviPrueba" checked>
           <span><b>Son datos de prueba.</b> Solo los ven las cuentas administradoras, con un cartel de «Datos de prueba». Desmarcalo únicamente para cargar datos reales de Mundo Sano.</span></label>
@@ -753,7 +753,7 @@ body.locked .wrap{display:none}
   //  - Índices: si la cabecera trae "indices" se usan esos; si no, se
   //    calculan (EDI = huevos / trampas positivas; OPI = % positivas).
   // =====================================================================
-  var OVI = { cities:[], codes:{}, sectoresPorLoc:{}, files:[] };
+  var OVI = { cities:[], codes:{}, sectoresPorLoc:{}, sectorBox:{}, files:[] };
   var RE_SEMANA = /^se([1-9]|[1-4][0-9]|5[0-3])$/;
   var RE_FECHA = /^\d{4}-\d{2}-\d{2}$/;
   var RE_FH = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
@@ -788,6 +788,8 @@ body.locked .wrap{display:none}
     var d;
     try { d = JSON.parse(text); } catch(e){ R.errors.push('No es un JSON válido.'); return R; }
     if(!d || d.type!=='FeatureCollection' || !Array.isArray(d.features)){ R.errors.push('No es un FeatureCollection de GeoJSON.'); return R; }
+    var gt0 = d.features[0] && d.features[0].geometry && d.features[0].geometry.type;
+    if(gt0==='LineString' || gt0==='MultiLineString') return oviAnalyzeCalles(R, d);
     if(d.version_formato===undefined || d.fecha_hora_generacion===undefined){ R.errors.push('Faltan version_formato o fecha_hora_generacion en la cabecera: el fichero no se procesa.'); return R; }
     if(d.version_formato!==1){ R.errors.push('version_formato '+JSON.stringify(d.version_formato)+' desconocida (se espera 1).'); return R; }
     if(typeof d.fecha_hora_generacion!=='string' || !RE_FH.test(d.fecha_hora_generacion)){ R.errors.push('fecha_hora_generacion debe ser UTC con Z (2026-11-10T14:02:31Z).'); return R; }
@@ -813,6 +815,54 @@ body.locked .wrap{display:none}
 
     if(R.kind==='sectores') return oviAnalyzeSectores(R, d);
     return oviAnalyzeSemana(R, d);
+  }
+
+  // Calles exportadas de overpass-turbo (OpenStreetMap). No traen la
+  // localidad: se deduce comparando con los sectores cargados.
+  var OVI_TIPOS = { motorway:1, trunk:1, primary:1, secondary:1, tertiary:1, unclassified:1, residential:1, living_street:1, rail:1 };
+  function oviAnalyzeCalles(R, d){
+    R.kind='calles';
+    var out=[], minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity;
+    var r5=function(v){ return Math.round(v*1e5)/1e5; };
+    d.features.forEach(function(f){
+      var p=(f && f.properties) || {}, g=f && f.geometry; if(!g) return;
+      var t = p.highway || (p.railway==='rail' ? 'rail' : null);
+      if(!t || !OVI_TIPOS[t]) return;
+      var lines = g.type==='LineString' ? [g.coordinates] : (g.type==='MultiLineString' ? g.coordinates : []);
+      lines.forEach(function(c){
+        if(!Array.isArray(c) || c.length<2 || c.some(function(x){ return !okLonLat(x); })) return;
+        var cc=c.map(function(x){ return [r5(x[0]), r5(x[1])]; });
+        cc.forEach(function(x){ if(x[0]<minX) minX=x[0]; if(x[0]>maxX) maxX=x[0]; if(x[1]<minY) minY=x[1]; if(x[1]>maxY) maxY=x[1]; });
+        var o={ t:t, c:cc }; if(p.name) o.n=String(p.name);
+        out.push(o);
+      });
+    });
+    if(!out.length){ R.errors.push('No encontramos calles en el fichero.'); return R; }
+    // ¿De qué localidad son? La que tenga sectores dentro de esta zona.
+    var cands=Object.keys(OVI.sectorBox||{}).filter(function(code){
+      var b=OVI.sectorBox[code], cx=(b[0]+b[2])/2, cy=(b[1]+b[3])/2;
+      return cx>=minX && cx<=maxX && cy>=minY && cy<=maxY;
+    });
+    if(cands.length!==1){ R.errors.push(cands.length ? 'Las calles coinciden con más de una localidad.' : 'No sabemos de qué localidad son estas calles: cargá primero (o a la vez) su mapa de sectores.'); return R; }
+    R.loc=cands[0];
+    // Quitar las que quedan muy lejos de los sectores (márgen: el doble de la zona)
+    var b=OVI.sectorBox[R.loc], mx=(b[2]-b[0]), my=(b[3]-b[1]);
+    var box=[b[0]-mx, b[1]-my, b[2]+mx, b[3]+my];
+    var antes=out.length;
+    out=out.filter(function(o){ return o.c.some(function(x){ return x[0]>=box[0] && x[0]<=box[2] && x[1]>=box[1] && x[1]<=box[3]; }); });
+    if(antes-out.length) R.infos.push((antes-out.length)+' tramos muy alejados del pueblo no se guardan.');
+    R.calles=out;
+    R.infos.push('Calles de OpenStreetMap (licencia ODbL): la app muestra el crédito «© colaboradores de OpenStreetMap».');
+    return R;
+  }
+
+  function sectorBoxOf(list){
+    var b=[Infinity,Infinity,-Infinity,-Infinity];
+    list.forEach(function(g){
+      var rings = !g ? [] : (g.type==='Polygon' ? g.coordinates : (g.type==='MultiPolygon' ? [].concat.apply([], g.coordinates) : []));
+      rings.forEach(function(r){ r.forEach(function(x){ if(x[0]<b[0]) b[0]=x[0]; if(x[1]<b[1]) b[1]=x[1]; if(x[0]>b[2]) b[2]=x[0]; if(x[1]>b[3]) b[3]=x[1]; }); });
+    });
+    return b[0]===Infinity ? null : b;
   }
 
   function oviAnalyzeSectores(R, d){
@@ -904,6 +954,9 @@ body.locked .wrap{display:none}
       var c=R.trampas.filter(function(t){ return t.huevos!=null; }).length;
       meta = 'Ovitrampas · <b>'+esc(R.loc)+'</b> · '+esc(R.semana.temporada)+' · '+esc(R.semana.semana)+' ('+esc(R.semana.desde)+' a '+esc(R.semana.hasta)+')<br>'+
         R.trampas.length+' trampas ('+c+' con conteo'+(R.descartadas?', '+R.descartadas+' descartadas':'')+') · generado '+esc(R.generado);
+    } else if(R.kind==='calles' && R.calles){
+      var con=R.calles.filter(function(c){ return c.n; }).length;
+      meta = 'Calles del mapa · <b>'+esc(R.loc)+'</b> · '+R.calles.length+' tramos ('+con+' con nombre)';
     } else if(R.kind==='sectores' && R.sectores){
       meta = 'Mapa de sectores · <b>'+esc(R.loc)+'</b> · '+R.sectores.length+' sectores: '+esc(R.sectores.map(function(s){ return s.sector; }).join(', '));
     }
@@ -949,10 +1002,18 @@ body.locked .wrap{display:none}
       });
     })).then(function(list){
       // Si en el lote viene un mapa de sectores, no avisar que falta
-      list.forEach(function(x){ try{ var d=JSON.parse(x.text), g=d.features&&d.features[0]&&d.features[0].geometry; if(g && /Polygon/.test(g.type)) OVI.sectoresPorLoc[d.features[0].properties.localidad]=OVI.sectoresPorLoc[d.features[0].properties.localidad]||-1; }catch(e){} });
+      list.forEach(function(x){ try{
+        var d=JSON.parse(x.text), g=d.features&&d.features[0]&&d.features[0].geometry;
+        if(g && /Polygon/.test(g.type)){
+          var loc=d.features[0].properties.localidad;
+          OVI.sectoresPorLoc[loc]=OVI.sectoresPorLoc[loc]||-1;
+          var bx=sectorBoxOf(d.features.map(function(f){ return f.geometry; })); if(bx) OVI.sectorBox[loc]=bx;
+        }
+      }catch(e){} });
       OVI.files = list.map(function(x){ return oviAnalyze(x.name, x.text); })
         .sort(function(a,b){ // sectores primero, después semanas en orden
-          if(a.kind!==b.kind) return a.kind==='sectores'?-1:1;
+          var ord={ sectores:0, calles:1, semana:2 };
+          if(a.kind!==b.kind) return (ord[a.kind]==null?3:ord[a.kind]) - (ord[b.kind]==null?3:ord[b.kind]);
           return ((a.semana&&a.semana.desde)||'') < ((b.semana&&b.semana.desde)||'') ? -1 : 1;
         });
       oviRenderFiles();
@@ -971,6 +1032,8 @@ body.locked .wrap{display:none}
       chain = chain.then(function(){
         var call = R.kind==='sectores'
           ? db.rpc('ovi_cargar_sectores', { p_localidad:R.loc, p_sectores:R.sectores, p_archivo:R.name })
+          : R.kind==='calles'
+          ? db.rpc('ovi_cargar_calles', { p_localidad:R.loc, p_calles:R.calles, p_archivo:R.name })
           : db.rpc('ovi_cargar_semana', {
               p_localidad:R.loc, p_temporada:R.semana.temporada, p_semana:R.semana.semana,
               p_desde:R.semana.desde, p_hasta:R.semana.hasta, p_generado_at:R.generado,
@@ -986,7 +1049,7 @@ body.locked .wrap{display:none}
       oviRenderFiles();
       var r=$('oviResult');
       r.className='ovi-result '+(fails.length?'err':'ok');
-      r.textContent = ok+' archivo(s) cargado(s)'+(prueba?' como prueba':'')+'.'+(fails.length?' Fallaron '+fails.length+'. Si dice que falta una función, corré 11_riesgo-ovitrampas.sql.':' Ya se ven en la app.');
+      r.textContent = ok+' archivo(s) cargado(s)'+(prueba?' como prueba':'')+'.'+(fails.length?' Fallaron '+fails.length+'. Si dice que falta una función, corré 11_riesgo-ovitrampas.sql y 12_mapa-calles.sql.':' Ya se ven en la app.');
       oviLoadState();
     });
   }
@@ -997,7 +1060,8 @@ body.locked .wrap{display:none}
     Promise.all([
       db.from('cities').select('*').order('name'),
       db.from('ovi_indices').select('localidad,temporada,semana,desde,hasta,edi,nivel,fuente,es_prueba,generado_at').eq('sector','').order('desde',{ ascending:false }).limit(500),
-      db.from('ovi_sectores').select('localidad,sector')
+      db.from('ovi_sectores').select('localidad,sector,geom'),
+      db.from('ovi_calles').select('localidad,actualizado_at')
     ]).then(function(r){
       if(r[0].error){ box.innerHTML='<div class="panel-error">No pudimos leer las localidades.</div>'; return; }
       OVI.cities = r[0].data || [];
@@ -1006,17 +1070,22 @@ body.locked .wrap{display:none}
         box.innerHTML='<div class="panel-error">Falta correr <span class="mono">11_riesgo-ovitrampas.sql</span> en Supabase (tablas ovi_* y códigos de localidad).</div>';
         return;
       }
-      OVI.sectoresPorLoc = {}; (r[2].data||[]).forEach(function(s){ OVI.sectoresPorLoc[s.localidad]=(OVI.sectoresPorLoc[s.localidad]||0)+1; });
+      OVI.sectoresPorLoc = {}; var geoms={};
+      (r[2].data||[]).forEach(function(s){ OVI.sectoresPorLoc[s.localidad]=(OVI.sectoresPorLoc[s.localidad]||0)+1; (geoms[s.localidad]=geoms[s.localidad]||[]).push(s.geom); });
+      OVI.sectorBox = {}; Object.keys(geoms).forEach(function(l){ var bx=sectorBoxOf(geoms[l]); if(bx) OVI.sectorBox[l]=bx; });
+      var callesOk = !r[3].error, calles={}; (r[3].data||[]).forEach(function(c){ calles[c.localidad]=c.actualizado_at; });
       var last={}; (r[1].data||[]).forEach(function(x){ var k=x.localidad+(x.es_prueba?'|p':'|r'); if(!last[k]) last[k]=x; });
       var hasTest = (r[1].data||[]).some(function(x){ return x.es_prueba; });
       var wk=function(x){ return x ? (esc(x.semana)+' '+oviLvl(x.nivel)+' <span style="color:var(--muted-2)">EDI '+fmt1(x.edi)+'</span>') : '<span style="color:var(--muted-2)">—</span>'; };
-      box.innerHTML = '<div class="table-scroll"><table class="data-table"><thead><tr><th>Localidad</th><th>Última semana real</th><th>Última de prueba</th><th>Sectores</th><th></th></tr></thead><tbody>'+
+      box.innerHTML = '<div class="table-scroll"><table class="data-table"><thead><tr><th>Localidad</th><th>Última semana real</th><th>Última de prueba</th><th>Sectores</th><th>Calles</th><th></th></tr></thead><tbody>'+
         OVI.cities.filter(function(c){ return c.codigo; }).map(function(c){
           return '<tr><td>'+esc(c.name)+'<br><span class="mono" style="font-size:10.5px;color:var(--muted-2)">'+esc(c.codigo)+'</span></td>'+
             '<td>'+wk(last[c.codigo+'|r'])+'</td><td>'+wk(last[c.codigo+'|p'])+'</td>'+
             '<td class="num">'+(OVI.sectoresPorLoc[c.codigo]||'—')+'</td>'+
+            '<td class="num">'+(calles[c.codigo] ? '✓' : '—')+'</td>'+
             '<td><button class="ghost-btn" data-patrulla="'+esc(c.codigo)+'" title="Fichero para la carpeta patrulla/ del SharePoint">⬇ Fichero Patrulla</button></td></tr>';
         }).join('')+'</tbody></table></div>'+
+        (callesOk ? '' : '<div class="panel-error" style="padding:10px 0;text-align:left">Falta correr <span class="mono">12_mapa-calles.sql</span> para poder cargar calles.</div>')+
         (hasTest ? '<div class="ovi-actions"><button class="ghost-btn" id="oviDelTest">🗑 Borrar datos de prueba</button></div>' : '');
       box.querySelectorAll('[data-patrulla]').forEach(function(b){ b.addEventListener('click', function(){ oviDownloadPatrulla(b.getAttribute('data-patrulla')); }); });
       var del=$('oviDelTest');
