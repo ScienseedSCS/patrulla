@@ -162,6 +162,54 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .risk-badge.bajo{background:var(--ok)} .risk-badge.medio{background:var(--warn)}
 .risk-badge.alto{background:var(--danger)} .risk-badge.critico{background:var(--crit)}
 
+/* Nivel de riesgo local (ovitrampas) */
+.risk-hero{position:relative;overflow:hidden;border-top:6px solid #CDBFD0}
+.risk-hero.bajo{border-top-color:var(--ok)} .risk-hero.medio{border-top-color:var(--warn)} .risk-hero.alto{border-top-color:var(--danger)}
+.rh-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.rh-city{font-family:'DM Serif Display',serif;font-size:22px;color:var(--primary);line-height:1.1}
+.rh-week{font-size:12px;color:var(--muted);margin-top:3px}
+.rh-metric{margin-top:12px;font-size:13px;color:var(--text);line-height:1.45}
+.rh-metric b{font-size:26px;font-family:'DM Serif Display',serif;color:var(--primary);font-weight:400;margin-right:4px}
+.rh-msg{margin-top:10px;font-size:13.5px;line-height:1.5;color:var(--text);background:#FBF7EF;border-radius:12px;padding:10px 12px}
+.rh-stale{margin-top:8px;font-size:12px;color:#8A5A12;background:#FFF4DE;border-radius:10px;padding:8px 10px}
+.rh-trend{display:flex;align-items:flex-end;gap:6px;height:74px;margin-top:14px;padding-top:4px}
+.rh-tcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.rh-tbar{width:100%;max-width:28px;border-radius:6px 6px 2px 2px;min-height:3px;background:#CDBFD0}
+.rh-tbar.bajo{background:var(--ok)} .rh-tbar.medio{background:var(--warn)} .rh-tbar.alto{background:var(--danger)}
+.rh-tcol.now .rh-tbar{outline:2px solid var(--primary);outline-offset:1px}
+.rh-tlbl{font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap}
+.rh-tcol.now .rh-tlbl{color:var(--primary);font-weight:800}
+.rh-trend-cap{font-size:11px;color:var(--muted);margin-top:6px}
+.test-ribbon{background:repeating-linear-gradient(45deg,#FFF4DE,#FFF4DE 10px,#FCE7BF 10px,#FCE7BF 20px);color:#7A4E0B;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:6px 10px;border-radius:8px;margin-bottom:10px;text-align:center}
+.rm-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.rm-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--primary)}
+.rm-nav{display:flex;align-items:center;gap:4px}
+.rm-nav button{width:44px;height:44px;border-radius:50%;border:none;background:rgba(51,31,58,.07);color:var(--primary);font-size:18px;font-weight:800;cursor:pointer}
+.rm-nav button:disabled{opacity:.35;cursor:default}
+.rm-nav button:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
+.rm-nav span{font-size:12px;font-weight:800;color:var(--primary);min-width:64px;text-align:center}
+.risk-map{height:300px;border-radius:12px;overflow:hidden;background:#EFE8DC;position:relative;z-index:0}
+.risk-map .empty{padding-top:120px}
+.rm-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11.5px;color:var(--muted);margin-top:10px}
+.rm-legend span{display:inline-flex;align-items:center;gap:5px}
+.rm-dot{width:11px;height:11px;border-radius:50%;display:inline-block;background:#CDBFD0;flex-shrink:0}
+.rm-dot.bajo{background:var(--ok)} .rm-dot.medio{background:var(--warn)} .rm-dot.alto{background:var(--danger)}
+.rm-list{list-style:none;margin-top:12px;border-top:1px solid #EFE6F0}
+.rm-list li{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid #EFE6F0;font-size:13px}
+.rm-list .rm-name{flex:1;min-width:0}
+.rm-list .rm-name b{color:var(--primary)}
+.rm-list .rm-name small{display:block;color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rm-list .rm-val{font-size:12px;font-weight:800;color:var(--primary);text-align:right;white-space:nowrap}
+.rm-challenge{display:inline-block;font-size:10.5px;font-weight:800;color:#7A1F1A;background:#FBE3E1;border-radius:999px;padding:2px 7px;margin-top:3px}
+.rm-src{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.45}
+.rh-tips p{font-size:13.5px;line-height:1.5;margin-bottom:10px;color:var(--text)}
+.rh-tips .rh-health{background:#EEF6F3;border-radius:12px;padding:10px 12px;font-size:13px}
+.risk-others{font-family:'DM Serif Display',serif;font-size:17px;color:var(--primary);margin:18px 0 8px}
+.leaflet-tooltip.rm-label{background:var(--primary);color:#fff;border:none;border-radius:999px;font-family:'Raleway',sans-serif;font-weight:800;font-size:11px;padding:2px 7px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.leaflet-tooltip.rm-label:before{display:none}
+.leaflet-popup-content{font-family:'Raleway',sans-serif;font-size:13px;line-height:1.4;color:var(--text)}
+.leaflet-popup-content b{color:var(--primary)}
+
 /* Reportar */
 .actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .action-card{background:var(--card);border-radius:var(--radius);padding:12px 10px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s;display:flex;flex-direction:column;gap:6px;position:relative;border:2px solid transparent;font-family:inherit;text-align:left;width:100%}
@@ -628,8 +676,8 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 
       <!-- INCIDENCIA -->
       <section class="section" id="sec-incidencia">
-        <h2 class="section-title">📍 Incidencia local</h2>
-        <p class="section-sub">Mapa de riesgo por ciudad. Reforzá la prevención donde más se necesita.</p>
+        <h2 class="section-title">📍 Nivel de riesgo local</h2>
+        <p class="section-sub">Riesgo de dengue según las ovitrampas de Mundo Sano, actualizado semana a semana.</p>
         <div id="incidenciaList"><div class="loading">Cargando…</div></div>
       </section>
 
@@ -783,7 +831,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     </div>
 
     <nav class="bottomnav" aria-label="Navegación principal">
-      <button class="navbtn" data-sec="incidencia"><span class="em">📍</span>Incidencia</button>
+      <button class="navbtn" data-sec="incidencia"><span class="em">📍</span>Riesgo</button>
       <button class="navbtn" data-sec="aprender"><span class="em">🧠</span>Aprender</button>
       <button class="navbtn active" data-sec="reportar" aria-current="page"><span class="em">📸</span>Reportar</button>
       <button class="navbtn" data-sec="revisar"><span class="em">🔍</span>Revisar</button>
@@ -1080,6 +1128,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function el(tag, cls, html){ var e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; }
   function cap(s){ return s? s.charAt(0).toUpperCase()+s.slice(1): s; }
+  function isoDaysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
   function toast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(function(){t.classList.remove('show');},2200); }
 
   // Estado de error de carga, con botón de reintentar (evita dejar la pantalla vacía)
@@ -1213,6 +1262,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   }
 
   var CITY_LIST = [];
+  var CITY_CODES = {};   // nombre del municipio → código del contrato con Mundo Sano
   function fillCitySelect(sel, current){
     if(!sel) return;
     sel.innerHTML='<option value="">Elegí tu ciudad…</option>';
@@ -1434,7 +1484,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   //  el primer reporte. Reemplaza al viejo banner persistente.
   // =====================================================================
   var APP_TOUR_STEPS = [
-    { sec:'incidencia', selector:'.navbtn[data-sec="incidencia"]', title:'📍 Incidencia', text:'Acá ves el nivel de riesgo de dengue en tu municipio, actualizado semana a semana.' },
+    { sec:'incidencia', selector:'.navbtn[data-sec="incidencia"]', title:'📍 Nivel de riesgo', text:'Acá ves el nivel de riesgo de dengue en tu municipio y en tu sector, según las ovitrampas de Mundo Sano, semana a semana.' },
     { sec:'aprender',   selector:'.navbtn[data-sec="aprender"]',   title:'🧠 Aprender',   text:'Tips para leer con calma, y quizzes cortos para poner a prueba lo que sabés.' },
     { sec:'reportar',   selector:'.navbtn[data-sec="reportar"]',   title:'📸 Reportar',   text:'El corazón de la Patrulla: reportá con una foto cada acción contra el mosquito.' },
     { sec:'revisar',    selector:'.navbtn[data-sec="revisar"]',    title:'🔍 Revisar',    text:'Cuando sumes puntos, vas a poder validar los reportes de tus vecinos acá.' },
@@ -1758,7 +1808,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     var uid = S.user.id;
     return Promise.all([
       db.from('profiles').select('*').eq('id', uid).single(),
-      db.from('incidence').select('*').order('city'),
+      db.from('ovi_indices').select('*').gte('desde', isoDaysAgo(200)).order('desde', { ascending:false }).limit(2000),
       db.from('action_types').select('*').order('sort_order'),
       db.from('tips').select('*').order('sort_order'),
       db.from('learn_questions').select('*').eq('active', true).order('sort_order'),
@@ -1766,9 +1816,11 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       db.from('learn_question_correct').select('question_id').eq('user_id', uid),
       db.from('reports').select('id', { count:'exact', head:true }).eq('user_id', uid),
       db.from('report_reviews').select('report_id').eq('reviewer_id', uid),
-      db.from('cities').select('name').eq('active', true).order('name'),
+      db.from('cities').select('*').eq('active', true).order('name'),
       db.from('reports').select('id', { count:'exact', head:true }).eq('user_id', uid).eq('status','validado'),
+      db.from('ovi_sectores').select('*'),
     ]).then(function(r){
+      var sect=r[11];
       var prof=r[0], inc=r[1], act=r[2], tp=r[3], lq=r[4], ltp=r[5], lqc=r[6], rc=r[7], rv=r[8], ct=r[9], ap=r[10];
 
       // Si no existe el perfil (caso raro), crearlo mínimamente.
@@ -1777,13 +1829,17 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
           .then(function(){ return loadEverything(); });
       }
 
-      if(ct && !ct.error && ct.data && ct.data.length){ CITY_LIST = ct.data.map(function(c){ return c.name; }); }
+      if(ct && !ct.error && ct.data && ct.data.length){
+        CITY_LIST = ct.data.map(function(c){ return c.name; });
+        CITY_CODES = {}; ct.data.forEach(function(c){ if(c.codigo) CITY_CODES[c.name]=c.codigo; });
+      }
       else if(!CITY_LIST.length){ CITY_LIST = CITIES_FALLBACK.slice(); }
       S.profile = prof.data;
       S.geoConsent = (prof.data.geo_consent === true);
       S.pushPrefs = normalizePushPrefs(prof.data.push_prefs);
       S.tourStations = Array.isArray(prof.data.tour_stations) ? prof.data.tour_stations : null;
-      S.cities  = inc.data || [];
+      // Si todavía no se corrió 11_riesgo-ovitrampas.sql, estas consultas dan error y la pestaña queda sin datos.
+      S.ovi = { indices:(inc && !inc.error && inc.data) || [], sectores:(sect && !sect.error && sect.data) || [] };
       S.actions = act.data || [];
       S.tips    = tp.data || [];
       S.learnQuestions = lq.data || [];
@@ -1840,44 +1896,270 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
   }
 
   // =====================================================================
-  //  INCIDENCIA
+  //  NIVEL DE RIESGO LOCAL (ovitrampas de Mundo Sano)
+  //  Datos: ovi_indices (EDI/OPI/nivel por semana, de la localidad y de
+  //  cada sector) y ovi_sectores (polígonos). Las trampas individuales no
+  //  se cargan en la app a propósito (privacidad de las viviendas).
+  //  Las filas es_prueba solo llegan a los admins (RLS).
   // =====================================================================
+  var RISK_LEVELS = ['bajo','medio','alto'];
+  var RISK_TEXT = {
+    bajo:  'Riesgo bajo. ¡Seguí así! Una recorrida por tu casa una vez por semana mantiene a raya al mosquito.',
+    medio: 'Riesgo medio. Esta semana revisá patios, macetas, canaletas y cualquier recipiente que junte agua: vacialo, tapalo o dalo vuelta.',
+    alto:  'Riesgo alto. Es momento de actuar: eliminá todo lo que acumule agua, limpiá canaletas y desagües y sumá a tus vecinos.'
+  };
+  var MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var LEAFLET_VER = '1.9.4';
+  var RM = { map:null, layer:null, fitted:false, weeks:[], idx:0, code:null, sectors:[] };
+  var _leafletP = null;
+
+  function nf(n, d){ return Number(n).toLocaleString('es-AR', { maximumFractionDigits:(d==null?1:d) }); }
+  function parseISO(s){ var p=String(s).split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function weekRange(desde, hasta){
+    var a=parseISO(desde), b=parseISO(hasta);
+    if(a.getMonth()===b.getMonth()) return a.getDate()+' al '+b.getDate()+' de '+MONTHS_ES[b.getMonth()];
+    return a.getDate()+' de '+MONTHS_ES[a.getMonth()]+' al '+b.getDate()+' de '+MONTHS_ES[b.getMonth()];
+  }
+  function weekNum(semana){ return String(semana||'').replace(/^se/i,''); }
+  function cityCode(name){ return (CITY_CODES && CITY_CODES[name]) || null; }
+
+  // Filas de una localidad, agrupadas por semana (más nueva primero).
+  // Si hay datos reales se usan solo esos; si no, los de prueba.
+  function riskWeeksFor(code){
+    if(!code) return [];
+    var rows=(S.ovi.indices||[]).filter(function(r){ return r.localidad===code; });
+    if(!rows.length) return [];
+    var real=rows.filter(function(r){ return !r.es_prueba; });
+    if(real.length) rows=real;
+    var byWeek={}, order=[];
+    rows.forEach(function(r){
+      var k=r.temporada+'|'+r.semana;
+      if(!byWeek[k]){ byWeek[k]={ key:k, temporada:r.temporada, semana:r.semana, desde:r.desde, hasta:r.hasta, city:null, sectors:{}, prueba:!!r.es_prueba }; order.push(k); }
+      if(r.sector==='') byWeek[k].city=r; else byWeek[k].sectors[r.sector]=r;
+    });
+    return order.map(function(k){ return byWeek[k]; })
+      .filter(function(w){ return w.city; })
+      .sort(function(a,b){ return a.desde<b.desde?1:(a.desde>b.desde?-1:0); });
+  }
+
+  function riskBadge(nivel){
+    return nivel ? '<span class="risk-badge '+nivel+'">'+esc(cap(nivel))+'</span>' : '';
+  }
+
   function renderIncidencia(){
     var wrap=$('incidenciaList'); wrap.innerHTML='';
-    var incByCity={}; (S.cities||[]).forEach(function(c){ incByCity[c.city]=c; });
-    var names = (CITY_LIST && CITY_LIST.length) ? CITY_LIST.slice() : Object.keys(incByCity);
-    Object.keys(incByCity).forEach(function(n){ if(names.indexOf(n)<0) names.push(n); });
-    if(!names.length){ wrap.appendChild(el('div','empty','Todavía no hay ciudades cargadas.')); return; }
-    names.forEach(function(cityName){
-      var c=incByCity[cityName], mine=S.profile.city===cityName;
-      if(c){
-        var risk=c.risk_level||'bajo';
-        var card=el('article','card risk-card '+risk+(mine?' mine':''));
-        card.innerHTML =
-          '<div style="flex:1">'+
-            '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+
-              '<div class="risk-city">'+esc(cityName)+'</div>'+
-              '<span class="risk-badge '+risk+'">'+esc(cap(risk))+'</span>'+
-              (mine?'<span class="tag" style="background:var(--accent);color:var(--primary)">Tu ciudad</span>':'')+
-            '</div>'+
-            '<div class="risk-cases">'+(c.cases_week||0)+' casos reportados esta semana</div>'+
-            '<div class="risk-msg">'+esc(c.message||'')+'</div>'+
-          '</div>';
-        wrap.appendChild(card);
-      } else {
-        var card2=el('article','card risk-card'+(mine?' mine':''));
-        card2.style.borderLeftColor='#CDBFD0';
-        card2.innerHTML =
-          '<div style="flex:1">'+
-            '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+
-              '<div class="risk-city">'+esc(cityName)+'</div>'+
-              (mine?'<span class="tag" style="background:var(--accent);color:var(--primary)">Tu ciudad</span>':'')+
-            '</div>'+
-            '<div class="risk-cases" style="margin-top:6px">Sin datos de incidencia aún</div>'+
-          '</div>';
-        wrap.appendChild(card2);
-      }
+    var names=(CITY_LIST && CITY_LIST.length) ? CITY_LIST.slice() : [];
+    var mine=S.profile.city || '';
+    if(mine && names.indexOf(mine)<0) names.unshift(mine);
+    if(!names.length){ wrap.appendChild(el('div','empty','Todavía no hay municipios cargados.')); return; }
+
+    if(mine){ renderRiskHero(wrap, mine); }
+
+    var others=names.filter(function(n){ return n!==mine; });
+    if(others.length){
+      wrap.appendChild(el('h3','risk-others', mine ? 'Otros municipios' : 'Municipios'));
+      others.forEach(function(n){ wrap.appendChild(riskCityCard(n)); });
+    }
+  }
+
+  function riskCityCard(name){
+    var weeks=riskWeeksFor(cityCode(name)), w=weeks[0];
+    var nivel=w && w.city.nivel;
+    var card=el('article','card risk-card'+(nivel?' '+nivel:''));
+    if(!nivel) card.style.borderLeftColor='#CDBFD0';
+    card.innerHTML =
+      '<div style="flex:1">'+
+        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+
+          '<div class="risk-city">'+esc(name)+'</div>'+ riskBadge(nivel)+
+          (w && w.prueba ? '<span class="tag">Prueba</span>' : '')+
+        '</div>'+
+        '<div class="risk-cases" style="margin-top:4px">'+
+          (w ? ('Semana '+esc(weekNum(w.semana))+' · '+esc(weekRange(w.desde,w.hasta))) : 'Sin datos de ovitrampas aún')+
+        '</div>'+
+      '</div>';
+    return card;
+  }
+
+  function renderRiskHero(wrap, name){
+    var code=cityCode(name), weeks=riskWeeksFor(code), w=weeks[0];
+    RM.sectors=[]; RM.weeks=[];
+    var hero=el('article','card risk-hero'+(w && w.city.nivel ? ' '+w.city.nivel : ''));
+    if(!w){
+      hero.innerHTML =
+        '<div class="rh-top"><div><div class="rh-city">'+esc(name)+'</div>'+
+        '<div class="rh-week">Tu municipio</div></div></div>'+
+        '<div class="rh-msg">Todavía no hay datos de ovitrampas para tu municipio. Cuando Mundo Sano publique el conteo semanal, vas a ver acá el nivel de riesgo de tu ciudad y de cada sector.</div>';
+      wrap.appendChild(hero);
+      wrap.appendChild(riskTipsCard());
+      return;
+    }
+    var c=w.city, nivel=c.nivel;
+    var staleDays=Math.round((new Date() - parseISO(w.hasta))/86400000);
+    var html = (w.prueba ? '<div class="test-ribbon">Datos de prueba · solo los ven administradores</div>' : '')+
+      '<div class="rh-top"><div><div class="rh-city">'+esc(name)+'</div>'+
+        '<div class="rh-week">Semana '+esc(weekNum(w.semana))+' · '+esc(weekRange(w.desde,w.hasta))+'</div></div>'+
+        (nivel ? '<span class="risk-badge '+nivel+'">Riesgo '+esc(nivel)+'</span>' : '')+
+      '</div>';
+    if(c.edi!=null){
+      html += '<div class="rh-metric"><b>'+nf(c.edi)+'</b> huevos por ovitrampa positiva (índice EDI)'+
+        (c.opi!=null ? '<br>'+nf(c.opi,0)+' % de las ovitrampas revisadas tuvieron huevos' : '')+'</div>';
+    } else {
+      html += '<div class="rh-metric">Esta semana no hubo conteo de huevos.</div>';
+    }
+    if(nivel) html += '<div class="rh-msg">'+esc(RISK_TEXT[nivel])+'</div>';
+    if(staleDays>21) html += '<div class="rh-stale">⏳ Este es el último dato publicado. Puede que la vigilancia esté en pausa.</div>';
+    html += riskTrendHtml(weeks);
+    hero.innerHTML = html;
+    wrap.appendChild(hero);
+
+    // Mapa por sector (si la localidad tiene sectores cargados)
+    var sectors=(S.ovi.sectores||[]).filter(function(s){ return s.localidad===code; });
+    if(sectors.length){
+      RM.code=code; RM.weeks=weeks; RM.idx=0; RM.sectors=sectors;
+      wrap.appendChild(riskMapCard());
+      updateRiskWeek();
+    }
+    wrap.appendChild(riskTipsCard());
+  }
+
+  function riskTrendHtml(weeks){
+    var list=weeks.slice(0,8).reverse();
+    if(list.length<2) return '';
+    var max=25*2; list.forEach(function(w){ if(w.city.edi!=null && +w.city.edi>max) max=+w.city.edi; });
+    var cols=list.map(function(w,i){
+      var v=w.city.edi, h=(v==null?0:Math.max(4, Math.round((+v/max)*100)));
+      var now=(i===list.length-1);
+      return '<div class="rh-tcol'+(now?' now':'')+'">'+
+        '<div class="rh-tbar '+(w.city.nivel||'')+'" style="height:'+h+'%"></div>'+
+        '<div class="rh-tlbl">S'+esc(weekNum(w.semana))+'</div></div>';
+    }).join('');
+    var desc=list.map(function(w){ return 'semana '+weekNum(w.semana)+': '+(w.city.edi==null?'sin dato':nf(w.city.edi)); }).join(', ');
+    return '<div class="rh-trend" role="img" aria-label="Evolución del índice EDI. '+esc(desc)+'">'+cols+'</div>'+
+      '<div class="rh-trend-cap">Evolución de las últimas semanas</div>';
+  }
+
+  function riskMapCard(){
+    var card=el('article','card risk-map-card');
+    card.innerHTML =
+      '<div class="rm-head"><div class="rm-title">Riesgo por sector</div>'+
+        '<div class="rm-nav">'+
+          '<button type="button" id="rmPrev" aria-label="Semana anterior">‹</button>'+
+          '<span id="rmWeek" aria-live="polite"></span>'+
+          '<button type="button" id="rmNext" aria-label="Semana siguiente">›</button>'+
+        '</div></div>'+
+      '<div id="riskMap" class="risk-map" role="img" aria-label="Mapa de los sectores de vigilancia coloreados por nivel de riesgo. El detalle está en la lista de abajo."></div>'+
+      '<div class="rm-legend" aria-hidden="true">'+
+        '<span><i class="rm-dot bajo"></i>Bajo (EDI &lt; 25)</span>'+
+        '<span><i class="rm-dot medio"></i>Medio (25 a 45)</span>'+
+        '<span><i class="rm-dot alto"></i>Alto (45 o más)</span>'+
+        '<span><i class="rm-dot"></i>Sin dato</span>'+
+      '</div>'+
+      '<ul class="rm-list" id="rmList"></ul>'+
+      '<div class="rm-src">Datos de la red de ovitrampas de Fundación Mundo Sano. Cada sector tiene varias trampas; el EDI es el promedio de huevos en las trampas que tuvieron huevos.</div>';
+    card.querySelector('#rmPrev').addEventListener('click', function(){ if(RM.idx<RM.weeks.length-1){ RM.idx++; updateRiskWeek(); } });
+    card.querySelector('#rmNext').addEventListener('click', function(){ if(RM.idx>0){ RM.idx--; updateRiskWeek(); } });
+    return card;
+  }
+
+  function sectorSort(a,b){
+    var na=parseFloat(a.sector), nb=parseFloat(b.sector);
+    if(!isNaN(na) && !isNaN(nb)) return na-nb;
+    return String(a.sector).localeCompare(String(b.sector));
+  }
+
+  function updateRiskWeek(){
+    var w=RM.weeks[RM.idx]; if(!w) return;
+    var lbl=$('rmWeek'); if(lbl) lbl.textContent='Semana '+weekNum(w.semana);
+    var prev=$('rmPrev'), next=$('rmNext');
+    if(prev) prev.disabled = (RM.idx>=RM.weeks.length-1);
+    if(next) next.disabled = (RM.idx<=0);
+    var list=$('rmList');
+    if(list){
+      list.innerHTML = RM.sectors.slice().sort(sectorSort).map(function(s){
+        var r=w.sectors[s.sector], nivel=r && r.nivel;
+        return '<li><i class="rm-dot '+(nivel||'')+'"></i>'+
+          '<div class="rm-name"><b>'+esc(s.nombre||('Sector '+s.sector))+'</b>'+
+            (s.barrios ? '<small>'+esc(s.barrios)+'</small>' : '')+
+            (nivel==='alto' && RM.idx===0 ? '<span class="rm-challenge">🎯 Desafío de la semana: bajemos el riesgo</span>' : '')+
+          '</div>'+
+          '<div class="rm-val">'+(nivel ? esc(cap(nivel)) : 'Sin dato')+
+            (r && r.edi!=null ? '<br><span style="font-weight:600;color:var(--muted)">EDI '+nf(r.edi)+'</span>' : '')+
+          '</div></li>';
+      }).join('');
+    }
+    drawRiskMap();
+  }
+
+  function loadLeaflet(){
+    if(window.L) return Promise.resolve();
+    if(_leafletP) return _leafletP;
+    _leafletP = new Promise(function(resolve, reject){
+      var base='https://cdnjs.cloudflare.com/ajax/libs/leaflet/'+LEAFLET_VER+'/';
+      var css=document.createElement('link'); css.rel='stylesheet'; css.href=base+'leaflet.css';
+      document.head.appendChild(css);
+      var js=document.createElement('script'); js.src=base+'leaflet.js';
+      js.onload=function(){ resolve(); };
+      js.onerror=function(){ _leafletP=null; reject(new Error('leaflet')); };
+      document.head.appendChild(js);
     });
+    return _leafletP;
+  }
+
+  function cssVar(name, fb){
+    var v=getComputedStyle(document.documentElement).getPropertyValue(name);
+    return (v && v.trim()) || fb;
+  }
+
+  function drawRiskMap(){
+    var box=$('riskMap'); if(!box || !RM.sectors.length) return;
+    var sec=$('sec-incidencia');
+    if(!sec || !sec.classList.contains('active')) return;   // se dibuja al abrir la pestaña
+    loadLeaflet().then(function(){
+      box=$('riskMap'); if(!box) return;
+      if(RM.map && RM.map.getContainer()!==box){ RM.map.remove(); RM.map=null; RM.layer=null; RM.fitted=false; }
+      if(!RM.map){
+        RM.map = L.map(box, { scrollWheelZoom:false, attributionControl:true, zoomSnap:0.25 });
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+          maxZoom:19, subdomains:'abcd',
+          attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>'
+        }).addTo(RM.map);
+      }
+      var w=RM.weeks[RM.idx] || { sectors:{} };
+      var colors={ bajo:cssVar('--ok','#3E8F4A'), medio:cssVar('--warn','#E29B2E'), alto:cssVar('--danger','#C2372F') };
+      var fc={ type:'FeatureCollection', features: RM.sectors.map(function(s){
+        return { type:'Feature', geometry:s.geom, properties:{ sector:s.sector, nombre:s.nombre, barrios:s.barrios } };
+      }) };
+      if(RM.layer){ RM.layer.remove(); RM.layer=null; }
+      RM.layer = L.geoJSON(fc, {
+        style:function(f){
+          var r=w.sectors[f.properties.sector], nivel=r && r.nivel;
+          return { color:'#331F3A', weight:1.5, opacity:.8, fillColor:(nivel?colors[nivel]:'#B9AEBE'), fillOpacity:(nivel?.45:.25) };
+        },
+        onEachFeature:function(f, layer){
+          var p=f.properties, r=w.sectors[p.sector], nivel=r && r.nivel;
+          layer.bindTooltip(String(p.sector), { permanent:true, direction:'center', className:'rm-label' });
+          layer.bindPopup(
+            '<b>'+esc(p.nombre||('Sector '+p.sector))+'</b><br>'+
+            (nivel ? ('Riesgo '+esc(nivel)+(r.edi!=null?' · EDI '+nf(r.edi):'')+(r.opi!=null?' · '+nf(r.opi,0)+' % positivas':'')) : 'Sin dato esta semana')+
+            (p.barrios ? '<br><span style="color:var(--muted);font-size:12px">'+esc(p.barrios)+'</span>' : '')
+          );
+        }
+      }).addTo(RM.map);
+      if(!RM.fitted){ RM.map.fitBounds(RM.layer.getBounds(), { padding:[12,12] }); RM.fitted=true; }
+      setTimeout(function(){ if(RM.map) RM.map.invalidateSize(); }, 60);
+    }).catch(function(){
+      var b=$('riskMap'); if(b) b.innerHTML='<div class="empty">No pudimos cargar el mapa. Revisá tu conexión: la lista de abajo tiene los mismos datos.</div>';
+    });
+  }
+
+  function riskTipsCard(){
+    var card=el('article','card rh-tips');
+    card.innerHTML =
+      '<p><b>Tus acciones te protegen a vos y a tus vecinos.</b> Cada recipiente que vaciás es un criadero menos en tu sector.</p>'+
+      '<p class="rh-health">🩺 Si tenés fiebre, dolor de cabeza, de cuerpo o detrás de los ojos, acercate al centro de salud y no te automediques.</p>'+
+      '<button type="button" class="btn btn-accent" id="riskGoReport" style="margin-top:4px">📸 Reportar una acción</button>';
+    card.querySelector('#riskGoReport').addEventListener('click', function(){ showSection('reportar'); });
+    return card;
   }
 
   // =====================================================================
@@ -3219,6 +3501,7 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     if(sec==='aprender') showLearnView('menu');
     if(sec==='revisar') renderRevisar();
     if(sec==='progreso') showProgTab('me');
+    if(sec==='incidencia') drawRiskMap();
     updateHtFab();
   }
 

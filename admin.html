@@ -140,6 +140,55 @@ input[type=date]{color-scheme:dark}
 
 footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);line-height:1.6}
 
+/* Login de administradores */
+.hide{display:none !important}
+body.locked .wrap{display:none}
+.gate{max-width:420px;margin:12vh auto 0;padding:0 18px}
+.gate .panel{padding:26px 24px}
+.gate h2{font-size:24px;color:#fff;margin:14px 0 4px}
+.gate p{font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 16px}
+.gate label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;margin:12px 0 6px}
+.gate input{width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--cream);font-family:inherit;font-size:14px;padding:11px 12px;border-radius:10px}
+.gate input:focus{outline:2px solid var(--teal);outline-offset:1px}
+.gate .retry-btn{width:100%;padding:12px;font-size:14px;margin-top:18px}
+.gate-msg{min-height:18px;font-size:12.5px;color:var(--coral);margin-top:12px;line-height:1.45}
+.ghost-btn{background:none;border:1px solid var(--border);color:var(--cream);font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:9px;cursor:pointer}
+.ghost-btn:hover{background:var(--panel-2)}
+.session-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:18px;font-size:12.5px;color:var(--muted)}
+.session-bar b{color:var(--cream)}
+
+/* Ovitrampas */
+.ovi-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+@media(max-width:980px){ .ovi-grid{grid-template-columns:1fr} }
+.ovi-drop{display:block;border:2px dashed rgba(63,187,160,.45);border-radius:14px;padding:22px 16px;text-align:center;cursor:pointer;background:rgba(63,187,160,.05);transition:background .15s}
+.ovi-drop:hover,.ovi-drop.over{background:rgba(63,187,160,.12)}
+.ovi-drop b{display:block;color:#fff;font-size:14px;margin-bottom:4px}
+.ovi-drop span{font-size:12px;color:var(--muted)}
+.ovi-drop input{display:none}
+.ovi-check{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--cream);margin:12px 0 4px;line-height:1.4}
+.ovi-check input{margin-top:2px;accent-color:var(--gold)}
+.ovi-file{background:var(--panel-2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-top:12px}
+.ovi-file-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ovi-file-name{font-family:'JetBrains Mono',monospace;font-size:12px;color:#fff;word-break:break-all}
+.ovi-file-meta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
+.ovi-st{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:999px}
+.ovi-st.ok{background:rgba(142,214,90,.16);color:var(--lime)}
+.ovi-st.err{background:rgba(226,105,95,.18);color:var(--coral)}
+.ovi-st.done{background:rgba(63,187,160,.18);color:var(--teal)}
+.ovi-msgs{margin:8px 0 0;padding-left:18px;font-size:12px;line-height:1.5}
+.ovi-msgs li.e{color:var(--coral)}
+.ovi-msgs li.w{color:var(--gold)}
+.ovi-msgs li.i{color:var(--muted)}
+.lvl{font-size:10.5px;font-weight:800;text-transform:uppercase;padding:2px 7px;border-radius:999px;color:#0E1613}
+.lvl.bajo{background:#5FBF6E} .lvl.medio{background:#F0B04A} .lvl.alto{background:#E2695F;color:#fff}
+.tag-prueba{font-size:10px;font-weight:800;color:var(--gold);border:1px solid rgba(244,209,139,.5);border-radius:999px;padding:1px 7px;margin-left:6px}
+.ovi-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.ovi-result{font-size:12.5px;margin-top:10px;line-height:1.5}
+.ovi-result.ok{color:var(--lime)} .ovi-result.err{color:var(--coral)}
+.ovi-h{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;margin:0 0 10px}
+.ovi-help{font-size:11.5px;color:var(--muted-2);line-height:1.55;margin-top:12px}
+.ovi-help code{font-family:'JetBrains Mono',monospace;color:var(--muted)}
+
 @media(max-width:980px){
   .grid, .grid.g3{grid-template-columns:1fr}
 }
@@ -150,7 +199,24 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
 }
 </style>
 </head>
-<body>
+<body class="locked">
+
+<div class="gate" id="gate">
+  <div class="panel">
+    <div class="brand"><div class="brand-logo">🦟</div><div class="brand-tx"><h1>Centro de Monitoreo</h1><span>PATRULLA ANTIMOSQUITO · FUNDACIÓN MUNDO SANO</span></div></div>
+    <h2>Acceso de administradores</h2>
+    <p>Entrá con tu cuenta de la app. Solo pueden pasar las cuentas habilitadas como administradoras.</p>
+    <form id="gateForm" novalidate>
+      <label for="gateEmail">Email</label>
+      <input type="email" id="gateEmail" autocomplete="username" required>
+      <label for="gatePass">Contraseña</label>
+      <input type="password" id="gatePass" autocomplete="current-password" required>
+      <button type="submit" class="retry-btn" id="gateBtn">Entrar</button>
+    </form>
+    <div class="gate-msg" id="gateMsg" role="alert"></div>
+    <button type="button" class="ghost-btn hide" id="gateLogout" style="margin-top:12px">Cerrar sesión y entrar con otra cuenta</button>
+  </div>
+</div>
 
 <div class="wrap">
 
@@ -186,8 +252,42 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
   <div class="range-label" id="rangeLabel"></div>
   <div style="margin-bottom:16px"></div>
 
-  <div class="warn-banner">
-    ⚠️ <span><b>Panel sin inicio de sesión (etapa temporal).</b> Por ahora cualquiera con este enlace puede ver los números agregados. No lo compartas públicamente — vamos a agregar el login de administradores más adelante.</span>
+  <div class="session-bar">
+    <span id="sessionWho">—</span>
+    <button type="button" class="ghost-btn" id="logoutBtn">Cerrar sesión</button>
+  </div>
+
+  <div class="panel wide" id="panel-ovi" style="margin-bottom:22px">
+    <div class="panel-head">
+      <div><div class="panel-title">🧪 Nivel de riesgo · ovitrampas de Mundo Sano</div>
+        <div class="panel-sub">Cargá los ficheros GeoJSON del intercambio: el conteo semanal y el mapa de sectores. La pestaña «Riesgo» de la app se actualiza al instante.</div></div>
+      <button class="icon-btn" id="oviRefresh" title="Actualizar estado" aria-label="Actualizar estado">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+      </button>
+    </div>
+    <div class="ovi-grid">
+      <div>
+        <div class="ovi-h">Cargar ficheros</div>
+        <label class="ovi-drop" id="oviDrop">
+          <input type="file" id="oviInput" accept=".geojson,.json,application/geo+json,application/json" multiple>
+          <b>📂 Elegí o arrastrá los .geojson</b>
+          <span>Podés elegir varios a la vez (sectores y semanas). Nada se guarda hasta que confirmes.</span>
+        </label>
+        <label class="ovi-check"><input type="checkbox" id="oviPrueba" checked>
+          <span><b>Son datos de prueba.</b> Solo los ven las cuentas administradoras, con un cartel de «Datos de prueba». Desmarcalo únicamente para cargar datos reales de Mundo Sano.</span></label>
+        <div id="oviFiles"></div>
+        <div class="ovi-actions">
+          <button type="button" class="retry-btn" id="oviUpload" disabled>Cargar</button>
+          <button type="button" class="ghost-btn hide" id="oviClear">Limpiar lista</button>
+        </div>
+        <div class="ovi-result" id="oviResult" role="status"></div>
+      </div>
+      <div>
+        <div class="ovi-h">Estado por localidad</div>
+        <div id="oviState"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+        <div class="ovi-help">Cada semana se reemplaza entera al volver a cargarla; las semanas anteriores quedan como historial. Una localidad nueva se habilita poniéndole su código en <code>cities.codigo</code>. «Fichero Patrulla» descarga el GeoJSON que va a la carpeta <code>patrulla/</code> del SharePoint (por ahora sin lecturas).</div>
+      </div>
+    </div>
   </div>
 
   <div class="kpi-row" id="kpiRow">
@@ -592,6 +692,367 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
     }).join('');
   }
 
+  // =====================================================================
+  //  LOGIN DE ADMINISTRADORES
+  //  Misma cuenta que en la app. Solo entra quien tenga profiles.is_admin
+  //  (se activa desde el SQL Editor; la app ya no deja auto-asignárselo).
+  // =====================================================================
+  var _unlocked = false;
+  function showGate(msg, canLogout){
+    document.body.classList.add('locked');
+    $('gate').classList.remove('hide');
+    $('gateMsg').textContent = msg || '';
+    $('gateLogout').classList.toggle('hide', !canLogout);
+    $('gateForm').classList.toggle('hide', !!canLogout);
+  }
+  function unlock(email, username){
+    document.body.classList.remove('locked');
+    $('gate').classList.add('hide');
+    $('sessionWho').innerHTML = 'Sesión de administrador: <b>'+esc(username||email)+'</b>'+(username&&email?' · '+esc(email):'');
+    if(_unlocked) return;
+    _unlocked = true;
+    setPreset(30);
+    loadAll();
+    oviLoadState();
+  }
+  function checkAdmin(session){
+    if(!session){ showGate('', false); return; }
+    var email = (session.user && session.user.email) || '';
+    db.from('profiles').select('username,is_admin').eq('id', session.user.id).single().then(function(r){
+      if(r.error || !r.data){ showGate('No encontramos el perfil de '+email+'.', true); return; }
+      if(!r.data.is_admin){ showGate('La cuenta '+email+' no tiene permisos de administrador. Pedí que la habiliten desde el SQL Editor de Supabase.', true); return; }
+      unlock(email, r.data.username);
+    }, function(){ showGate('No pudimos verificar la cuenta. Revisá la conexión.', true); });
+  }
+  function doLogout(){ db.auth.signOut().then(function(){ location.reload(); }); }
+
+  function initGate(){
+    $('gateForm').addEventListener('submit', function(ev){
+      ev.preventDefault();
+      var email=$('gateEmail').value.trim(), pass=$('gatePass').value;
+      if(!email || !pass){ $('gateMsg').textContent='Completá el email y la contraseña.'; return; }
+      var btn=$('gateBtn'); btn.disabled=true; btn.textContent='Entrando…'; $('gateMsg').textContent='';
+      db.auth.signInWithPassword({ email:email, password:pass }).then(function(r){
+        btn.disabled=false; btn.textContent='Entrar';
+        if(r.error){ $('gateMsg').textContent='Email o contraseña incorrectos.'; return; }
+        checkAdmin(r.data.session);
+      });
+    });
+    $('gateLogout').addEventListener('click', doLogout);
+    $('logoutBtn').addEventListener('click', doLogout);
+    db.auth.getSession().then(function(r){ checkAdmin(r.data && r.data.session); });
+  }
+
+  // =====================================================================
+  //  OVITRAMPAS · carga de ficheros GeoJSON de Mundo Sano
+  //  Formato: "Intercambio de datos de ovitrampas" (versión 2026-10-02).
+  //  - Fichero semanal: un Point por trampa (localidad, temporada, semana,
+  //    desde, hasta, trampa, sector, huevos).
+  //  - Fichero de sectores: un Polygon/MultiPolygon por sector (localidad,
+  //    sector, nombre?, barrios?).
+  //  - Índices: si la cabecera trae "indices" se usan esos; si no, se
+  //    calculan (EDI = huevos / trampas positivas; OPI = % positivas).
+  // =====================================================================
+  var OVI = { cities:[], codes:{}, sectoresPorLoc:{}, files:[] };
+  var RE_SEMANA = /^se([1-9]|[1-4][0-9]|5[0-3])$/;
+  var RE_FECHA = /^\d{4}-\d{2}-\d{2}$/;
+  var RE_FH = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
+  var RE_CODIGO = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+  function oviNivel(edi){ if(edi==null || isNaN(edi)) return null; return edi<25?'bajo':(edi<45?'medio':'alto'); }
+  function oviLvl(n){ return n ? '<span class="lvl '+n+'">'+n+'</span>' : '<span style="color:var(--muted-2)">—</span>'; }
+  function fmt1(n){ return n==null ? '—' : Number(n).toLocaleString('es-AR',{maximumFractionDigits:2}); }
+  function validDate(s){
+    if(typeof s!=='string' || !RE_FECHA.test(s)) return false;
+    var d=new Date(s+'T00:00:00Z'); return !isNaN(d) && d.toISOString().slice(0,10)===s;
+  }
+  function isoWeek(s){
+    var d=new Date(s+'T00:00:00Z'), day=(d.getUTCDay()+6)%7;
+    d.setUTCDate(d.getUTCDate()-day+3);
+    var y=d.getUTCFullYear(), jan4=new Date(Date.UTC(y,0,4));
+    return 1+Math.round(((d-jan4)/86400000 - 3 + ((jan4.getUTCDay()+6)%7))/7);
+  }
+  function addDays(s,n){ var d=new Date(s+'T00:00:00Z'); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10); }
+  function okLonLat(c){ return Array.isArray(c) && c.length>=2 && typeof c[0]==='number' && typeof c[1]==='number' && c[0]>=-180 && c[0]<=180 && c[1]>=-90 && c[1]<=90; }
+
+  function calcIdx(list){
+    var cont=list.filter(function(h){ return h!=null; }), pos=cont.filter(function(h){ return h>0; });
+    var sum=pos.reduce(function(a,b){ return a+b; },0);
+    return { total:list.length, contadas:cont.length, positivas:pos.length,
+      edi: cont.length ? (pos.length ? Math.round(sum/pos.length*100)/100 : 0) : null,
+      opi: cont.length ? Math.round(1000*pos.length/cont.length)/10 : null };
+  }
+
+  function oviAnalyze(fileName, text){
+    var R = { name:fileName, kind:null, errors:[], warnings:[], infos:[], loc:null };
+    var d;
+    try { d = JSON.parse(text); } catch(e){ R.errors.push('No es un JSON válido.'); return R; }
+    if(!d || d.type!=='FeatureCollection' || !Array.isArray(d.features)){ R.errors.push('No es un FeatureCollection de GeoJSON.'); return R; }
+    if(d.version_formato===undefined || d.fecha_hora_generacion===undefined){ R.errors.push('Faltan version_formato o fecha_hora_generacion en la cabecera: el fichero no se procesa.'); return R; }
+    if(d.version_formato!==1){ R.errors.push('version_formato '+JSON.stringify(d.version_formato)+' desconocida (se espera 1).'); return R; }
+    if(typeof d.fecha_hora_generacion!=='string' || !RE_FH.test(d.fecha_hora_generacion)){ R.errors.push('fecha_hora_generacion debe ser UTC con Z (2026-11-10T14:02:31Z).'); return R; }
+    R.generado = d.fecha_hora_generacion;
+    if(typeof d.aviso==='string') R.infos.push(d.aviso);
+    if(!d.features.length){ R.errors.push('El fichero no trae ninguna trampa ni sector.'); return R; }
+
+    var p1 = (d.features[0] && d.features[0].properties) || {};
+    if(p1.trampa_id!==undefined || p1.fecha_colocacion!==undefined){ R.errors.push('Este es un fichero de Patrulla (lecturas de vecinos, carpeta patrulla/), no el de Mundo Sano. No se carga acá.'); return R; }
+    var g0 = d.features[0] && d.features[0].geometry && d.features[0].geometry.type;
+    R.kind = (g0==='Polygon' || g0==='MultiPolygon') ? 'sectores' : 'semana';
+
+    // Localidad: única, conocida y coherente con el nombre del fichero
+    var locs={}; d.features.forEach(function(f){ var l=f && f.properties && f.properties.localidad; locs[String(l)]=1; });
+    var lk=Object.keys(locs);
+    if(lk.length!==1){ R.errors.push('Las filas traen más de una localidad ('+lk.join(', ')+'): el fichero no se procesa.'); return R; }
+    R.loc = lk[0];
+    if(!RE_CODIGO.test(R.loc)){ R.errors.push('Código de localidad inválido: '+R.loc); return R; }
+    if(!OVI.codes[R.loc]){ R.errors.push('La localidad '+R.loc+' no está en la tabla cities (columna codigo). Agregala antes de cargar datos.'); return R; }
+    var base = fileName.replace(/\.(geo)?json$/i,'').split('__')[0];
+    if(OVI.codes[base] && base!==R.loc){ R.errors.push('El nombre del fichero ('+base+') no coincide con la localidad de las filas ('+R.loc+').'); return R; }
+    if(!OVI.codes[base] && !RE_CODIGO.test(base)) R.warnings.push('El nombre del fichero no es el código de la localidad. Lo cargamos igual (en el intercambio real se llama '+R.loc+'.geojson).');
+
+    if(R.kind==='sectores') return oviAnalyzeSectores(R, d);
+    return oviAnalyzeSemana(R, d);
+  }
+
+  function oviAnalyzeSectores(R, d){
+    var out=[], seen={};
+    d.features.forEach(function(f, i){
+      var p=(f && f.properties) || {}, g=f && f.geometry;
+      var s = (p.sector==null ? '' : String(p.sector)).trim();
+      if(!g || (g.type!=='Polygon' && g.type!=='MultiPolygon')){ R.warnings.push('Fila '+(i+1)+': no es un polígono, se descarta.'); return; }
+      if(!s){ R.warnings.push('Fila '+(i+1)+': sin código de sector, se descarta.'); return; }
+      var rings = g.type==='Polygon' ? g.coordinates : [].concat.apply([], g.coordinates||[]);
+      var bad = !Array.isArray(rings) || !rings.length || rings.some(function(r){ return !Array.isArray(r) || r.length<4 || r.some(function(c){ return !okLonLat(c); }); });
+      if(bad){ R.warnings.push('Sector '+s+': coordenadas inválidas, se descarta.'); return; }
+      if(seen[s]){ R.errors.push('Sector '+s+' repetido.'); return; }
+      seen[s]=1;
+      out.push({ sector:s, nombre:(p.nombre!=null?String(p.nombre):null), barrios:(p.barrios!=null?String(p.barrios):null), geom:g });
+    });
+    if(!out.length) R.errors.push('No quedó ningún sector válido.');
+    R.sectores = out;
+    return R;
+  }
+
+  function oviAnalyzeSemana(R, d){
+    var p0 = (d.features[0] && d.features[0].properties) || {};
+    var temp=p0.temporada, sem=p0.semana, desde=p0.desde, hasta=p0.hasta;
+    var mixed = d.features.some(function(f){ var p=(f&&f.properties)||{}; return p.temporada!==temp || p.semana!==sem || p.desde!==desde || p.hasta!==hasta; });
+    if(mixed){ R.errors.push('Las trampas no son todas de la misma temporada/semana: el fichero debe traer una sola semana.'); return R; }
+    if(typeof temp!=='string' || !/^\d{4}\/\d{4}$/.test(temp) || (+temp.slice(5) !== +temp.slice(0,4)+1)){ R.errors.push('Temporada inválida: '+temp+' (ej. 2026/2027).'); return R; }
+    if(typeof sem!=='string' || !RE_SEMANA.test(sem)){ R.errors.push('Semana inválida: '+sem+' (ej. se45, sin cero delante).'); return R; }
+    if(!validDate(desde) || !validDate(hasta)){ R.errors.push('desde/hasta no son fechas AAAA-MM-DD.'); return R; }
+    if(new Date(desde+'T00:00:00Z').getUTCDay()!==1 || addDays(desde,6)!==hasta){ R.errors.push('desde/hasta deben ser el lunes y el domingo de la semana ('+desde+' – '+hasta+').'); return R; }
+    var n=+sem.slice(2);
+    if(isoWeek(desde)!==n){ R.errors.push('La semana '+sem+' no corresponde al lunes '+desde+' (es la se'+isoWeek(desde)+').'); return R; }
+    var y=+desde.slice(0,4), t1=+temp.slice(0,4);
+    if((n>=31 && y!==t1) || (n<=30 && y!==t1+1)) R.warnings.push('La semana '+sem+' de '+y+' no parece de la temporada '+temp+' (va de la se31 a la se30 siguiente).');
+
+    var traps=[], byNum={}, dupe={};
+    d.features.forEach(function(f, i){
+      var p=(f && f.properties) || {}, g=f && f.geometry, lbl='Trampa '+(p.trampa!=null?p.trampa:'(fila '+(i+1)+')');
+      if(!g || g.type!=='Point' || !okLonLat(g.coordinates)){ R.warnings.push(lbl+': posición inválida, se descarta.'); return; }
+      if(typeof p.trampa!=='number' || !Number.isInteger(p.trampa) || p.trampa<=0){ R.warnings.push(lbl+': número de trampa inválido, se descarta.'); return; }
+      if(p.huevos!==null && !(typeof p.huevos==='number' && Number.isInteger(p.huevos) && p.huevos>=0)){ R.warnings.push(lbl+': huevos debe ser un entero ≥ 0 o null ('+JSON.stringify(p.huevos)+'), se descarta.'); return; }
+      var sec = p.sector==null ? '' : p.sector;
+      if(typeof sec!=='string'){ R.warnings.push(lbl+': el sector debería ser texto ("3"), lo convertimos.'); sec=String(sec); }
+      if(byNum[p.trampa]){ dupe[p.trampa]=1; return; }
+      byNum[p.trampa]=1;
+      traps.push({ trampa:p.trampa, sector:sec.trim(), huevos:p.huevos, lon:Math.round(g.coordinates[0]*1000)/1000, lat:Math.round(g.coordinates[1]*1000)/1000 });
+    });
+    var dk=Object.keys(dupe);
+    if(dk.length){ traps=traps.filter(function(t){ return !dupe[t.trampa]; }); R.warnings.push('Trampas repetidas en la semana, se descartan: '+dk.join(', ')+'.'); }
+    R.descartadas = d.features.length - traps.length;
+    if(!traps.length){ R.errors.push('No quedó ninguna trampa válida.'); return R; }
+
+    // Índices calculados (para comparar o para usar si no vienen)
+    var secs={}; traps.forEach(function(t){ if(t.sector) (secs[t.sector]=secs[t.sector]||[]).push(t.huevos); });
+    var calc={ localidad:calcIdx(traps.map(function(t){ return t.huevos; })), sectores:{} };
+    Object.keys(secs).forEach(function(s){ calc.sectores[s]=calcIdx(secs[s]); });
+
+    var hdr = d.indices, idx=null;
+    if(hdr && typeof hdr==='object'){
+      var okN=function(o){ return o && typeof o==='object' && (o.edi===null || typeof o.edi==='number') && (o.opi===undefined || o.opi===null || typeof o.opi==='number'); };
+      idx={};
+      if(hdr.localidad!==undefined){ if(okN(hdr.localidad)) idx.localidad=hdr.localidad; else R.warnings.push('indices.localidad no es válido; se calcula.'); }
+      if(hdr.sectores && typeof hdr.sectores==='object'){
+        idx.sectores={};
+        Object.keys(hdr.sectores).forEach(function(s){
+          if(okN(hdr.sectores[s])) idx.sectores[s]=hdr.sectores[s]; else R.warnings.push('indices del sector '+s+' no son válidos; se calculan.');
+          if(!secs[s]) R.warnings.push('indices trae el sector '+s+', pero no hay trampas de ese sector.');
+        });
+      }
+      var diffs=[];
+      if(idx.localidad && idx.localidad.edi!=null && calc.localidad.edi!=null && Math.abs(idx.localidad.edi-calc.localidad.edi)>0.05) diffs.push('localidad');
+      Object.keys(idx.sectores||{}).forEach(function(s){ var a=idx.sectores[s], b=calc.sectores[s]; if(a && b && a.edi!=null && b.edi!=null && Math.abs(a.edi-b.edi)>0.05) diffs.push('sector '+s); });
+      if(diffs.length) R.infos.push('El EDI que manda Mundo Sano difiere del que calcula el panel en: '+diffs.join(', ')+'. Se usa el de Mundo Sano (revisar la fórmula si la diferencia es grande).');
+    } else {
+      R.warnings.push('El fichero no trae índices: los calcula el panel (EDI = huevos / trampas positivas; OPI = % de trampas positivas). Confirmar la fórmula con Mundo Sano.');
+    }
+    if(Object.keys(secs).length && !OVI.sectoresPorLoc[R.loc]) R.warnings.push('Todavía no hay mapa de sectores cargado para '+R.loc+': la app mostrará solo el nivel general hasta que se cargue.');
+    if(traps.some(function(t){ return !t.sector; }) && Object.keys(secs).length) R.infos.push(traps.filter(function(t){ return !t.sector; }).length+' trampa(s) sin sector: cuentan solo para el nivel de la localidad.');
+
+    R.semana = { temporada:temp, semana:sem, desde:desde, hasta:hasta };
+    R.trampas = traps; R.calc = calc; R.indices = idx;
+    return R;
+  }
+
+  function oviFileHtml(R, i){
+    var st = R.uploaded ? '<span class="ovi-st done">Cargado</span>' : (R.errors.length ? '<span class="ovi-st err">No se carga</span>' : '<span class="ovi-st ok">Listo</span>');
+    var meta='';
+    if(R.kind==='semana' && R.semana){
+      var c=R.trampas.filter(function(t){ return t.huevos!=null; }).length;
+      meta = 'Ovitrampas · <b>'+esc(R.loc)+'</b> · '+esc(R.semana.temporada)+' · '+esc(R.semana.semana)+' ('+esc(R.semana.desde)+' a '+esc(R.semana.hasta)+')<br>'+
+        R.trampas.length+' trampas ('+c+' con conteo'+(R.descartadas?', '+R.descartadas+' descartadas':'')+') · generado '+esc(R.generado);
+    } else if(R.kind==='sectores' && R.sectores){
+      meta = 'Mapa de sectores · <b>'+esc(R.loc)+'</b> · '+R.sectores.length+' sectores: '+esc(R.sectores.map(function(s){ return s.sector; }).join(', '));
+    }
+    var msgs = R.errors.map(function(m){ return '<li class="e">'+esc(m)+'</li>'; }).concat(
+      R.warnings.map(function(m){ return '<li class="w">'+esc(m)+'</li>'; }),
+      R.infos.map(function(m){ return '<li class="i">'+esc(m)+'</li>'; })).join('');
+    var table='';
+    if(R.kind==='semana' && R.calc && !R.errors.length){
+      var rows=[{ s:'', lbl:'Toda la localidad' }].concat(Object.keys(R.calc.sectores).sort(function(a,b){ return (parseFloat(a)-parseFloat(b))||a.localeCompare(b); }).map(function(s){ return { s:s, lbl:'Sector '+s }; }));
+      table = '<div class="table-scroll" style="margin-top:10px;max-height:280px"><table class="data-table"><thead><tr><th>Ámbito</th><th>Trampas</th><th>Positivas</th><th>EDI</th><th>OPI</th><th>Nivel</th><th>Fuente</th></tr></thead><tbody>'+
+        rows.map(function(r){
+          var c = r.s==='' ? R.calc.localidad : R.calc.sectores[r.s];
+          var m = R.indices ? (r.s==='' ? R.indices.localidad : (R.indices.sectores||{})[r.s]) : null;
+          var edi = m ? m.edi : c.edi, opi = (m && m.opi!=null) ? m.opi : c.opi;
+          return '<tr><td>'+esc(r.lbl)+'</td><td class="num">'+c.contadas+'/'+c.total+'</td><td class="num">'+c.positivas+'</td>'+
+            '<td class="num">'+fmt1(edi)+'</td><td class="num">'+(opi==null?'—':fmt1(opi)+' %')+'</td><td>'+oviLvl(oviNivel(edi))+'</td>'+
+            '<td class="num">'+(m?'Mundo Sano':'calculado')+'</td></tr>';
+        }).join('')+'</tbody></table></div>';
+    }
+    return '<div class="ovi-file"><div class="ovi-file-head"><div class="ovi-file-name">'+esc(R.name)+'</div>'+st+'</div>'+
+      (meta?'<div class="ovi-file-meta">'+meta+'</div>':'')+(msgs?'<ul class="ovi-msgs">'+msgs+'</ul>':'')+table+'</div>';
+  }
+
+  function oviRenderFiles(){
+    var box=$('oviFiles');
+    box.innerHTML = OVI.files.map(oviFileHtml).join('');
+    var n = OVI.files.filter(function(R){ return !R.errors.length && !R.uploaded; }).length;
+    $('oviUpload').disabled = !n;
+    $('oviUpload').textContent = n ? ('Cargar '+n+' archivo'+(n>1?'s':'')) : 'Cargar';
+    $('oviClear').classList.toggle('hide', !OVI.files.length);
+  }
+
+  function oviPickFiles(fileList){
+    $('oviResult').textContent=''; $('oviResult').className='ovi-result';
+    var files=[].slice.call(fileList||[]);
+    if(!files.length) return;
+    Promise.all(files.map(function(f){
+      return new Promise(function(res){
+        var rd=new FileReader();
+        rd.onload=function(){ res({ name:f.name, text:String(rd.result||'') }); };
+        rd.onerror=function(){ res({ name:f.name, text:'' }); };
+        rd.readAsText(f, 'utf-8');
+      });
+    })).then(function(list){
+      // Si en el lote viene un mapa de sectores, no avisar que falta
+      list.forEach(function(x){ try{ var d=JSON.parse(x.text), g=d.features&&d.features[0]&&d.features[0].geometry; if(g && /Polygon/.test(g.type)) OVI.sectoresPorLoc[d.features[0].properties.localidad]=OVI.sectoresPorLoc[d.features[0].properties.localidad]||-1; }catch(e){} });
+      OVI.files = list.map(function(x){ return oviAnalyze(x.name, x.text); })
+        .sort(function(a,b){ // sectores primero, después semanas en orden
+          if(a.kind!==b.kind) return a.kind==='sectores'?-1:1;
+          return ((a.semana&&a.semana.desde)||'') < ((b.semana&&b.semana.desde)||'') ? -1 : 1;
+        });
+      oviRenderFiles();
+    });
+  }
+
+  function oviUploadAll(){
+    var prueba = $('oviPrueba').checked;
+    var todo = OVI.files.filter(function(R){ return !R.errors.length && !R.uploaded; });
+    if(!todo.length) return;
+    if(!prueba && !confirm('Vas a cargar '+todo.length+' archivo(s) como DATOS REALES: los verán todos los vecinos en la app. ¿Seguimos?')) return;
+    var btn=$('oviUpload'); btn.disabled=true; btn.textContent='Cargando…';
+    var ok=0, fails=[];
+    var chain=Promise.resolve();
+    todo.forEach(function(R){
+      chain = chain.then(function(){
+        var call = R.kind==='sectores'
+          ? db.rpc('ovi_cargar_sectores', { p_localidad:R.loc, p_sectores:R.sectores, p_archivo:R.name })
+          : db.rpc('ovi_cargar_semana', {
+              p_localidad:R.loc, p_temporada:R.semana.temporada, p_semana:R.semana.semana,
+              p_desde:R.semana.desde, p_hasta:R.semana.hasta, p_generado_at:R.generado,
+              p_trampas:R.trampas, p_indices:R.indices, p_es_prueba:prueba, p_archivo:R.name,
+              p_descartadas:R.descartadas||0, p_avisos:(R.warnings.length?R.warnings:null) });
+        return call.then(function(res){
+          if(res.error){ fails.push(R.name+': '+res.error.message); R.errors.push('Error al cargar: '+res.error.message); }
+          else { ok++; R.uploaded=true; }
+        });
+      });
+    });
+    chain.then(function(){
+      oviRenderFiles();
+      var r=$('oviResult');
+      r.className='ovi-result '+(fails.length?'err':'ok');
+      r.textContent = ok+' archivo(s) cargado(s)'+(prueba?' como prueba':'')+'.'+(fails.length?' Fallaron '+fails.length+'. Si dice que falta una función, corré 11_riesgo-ovitrampas.sql.':' Ya se ven en la app.');
+      oviLoadState();
+    });
+  }
+
+  function oviLoadState(){
+    var box=$('oviState');
+    box.innerHTML='<div class="panel-loading"><div class="spinner"></div>Cargando…</div>';
+    Promise.all([
+      db.from('cities').select('*').order('name'),
+      db.from('ovi_indices').select('localidad,temporada,semana,desde,hasta,edi,nivel,fuente,es_prueba,generado_at').eq('sector','').order('desde',{ ascending:false }).limit(500),
+      db.from('ovi_sectores').select('localidad,sector')
+    ]).then(function(r){
+      if(r[0].error){ box.innerHTML='<div class="panel-error">No pudimos leer las localidades.</div>'; return; }
+      OVI.cities = r[0].data || [];
+      OVI.codes = {}; OVI.cities.forEach(function(c){ if(c.codigo) OVI.codes[c.codigo]=c; });
+      if(r[1].error || r[2].error || !Object.keys(OVI.codes).length){
+        box.innerHTML='<div class="panel-error">Falta correr <span class="mono">11_riesgo-ovitrampas.sql</span> en Supabase (tablas ovi_* y códigos de localidad).</div>';
+        return;
+      }
+      OVI.sectoresPorLoc = {}; (r[2].data||[]).forEach(function(s){ OVI.sectoresPorLoc[s.localidad]=(OVI.sectoresPorLoc[s.localidad]||0)+1; });
+      var last={}; (r[1].data||[]).forEach(function(x){ var k=x.localidad+(x.es_prueba?'|p':'|r'); if(!last[k]) last[k]=x; });
+      var hasTest = (r[1].data||[]).some(function(x){ return x.es_prueba; });
+      var wk=function(x){ return x ? (esc(x.semana)+' '+oviLvl(x.nivel)+' <span style="color:var(--muted-2)">EDI '+fmt1(x.edi)+'</span>') : '<span style="color:var(--muted-2)">—</span>'; };
+      box.innerHTML = '<div class="table-scroll"><table class="data-table"><thead><tr><th>Localidad</th><th>Última semana real</th><th>Última de prueba</th><th>Sectores</th><th></th></tr></thead><tbody>'+
+        OVI.cities.filter(function(c){ return c.codigo; }).map(function(c){
+          return '<tr><td>'+esc(c.name)+'<br><span class="mono" style="font-size:10.5px;color:var(--muted-2)">'+esc(c.codigo)+'</span></td>'+
+            '<td>'+wk(last[c.codigo+'|r'])+'</td><td>'+wk(last[c.codigo+'|p'])+'</td>'+
+            '<td class="num">'+(OVI.sectoresPorLoc[c.codigo]||'—')+'</td>'+
+            '<td><button class="ghost-btn" data-patrulla="'+esc(c.codigo)+'" title="Fichero para la carpeta patrulla/ del SharePoint">⬇ Fichero Patrulla</button></td></tr>';
+        }).join('')+'</tbody></table></div>'+
+        (hasTest ? '<div class="ovi-actions"><button class="ghost-btn" id="oviDelTest">🗑 Borrar datos de prueba</button></div>' : '');
+      box.querySelectorAll('[data-patrulla]').forEach(function(b){ b.addEventListener('click', function(){ oviDownloadPatrulla(b.getAttribute('data-patrulla')); }); });
+      var del=$('oviDelTest');
+      if(del) del.addEventListener('click', function(){
+        if(!confirm('¿Borrar todos los datos de PRUEBA de ovitrampas? Los datos reales no se tocan.')) return;
+        db.rpc('ovi_borrar_prueba', { p_localidad:null }).then(function(res){
+          if(res.error) alert('No se pudo borrar: '+res.error.message);
+          oviLoadState();
+        });
+      });
+      // volver a pintar los archivos elegidos (por si cambió el estado)
+      if(OVI.files.length) oviRenderFiles();
+    });
+  }
+
+  // Fichero de Scienseed (sección 3 del contrato). La app todavía no
+  // registra ovitrampas de vecinos, así que va con la lista vacía.
+  function oviDownloadPatrulla(code){
+    var obj = { type:'FeatureCollection', version_formato:1,
+      fecha_hora_generacion: new Date().toISOString().replace(/\.\d{3}Z$/,'Z'), features:[] };
+    var blob = new Blob([JSON.stringify(obj, null, 2)+'\n'], { type:'application/geo+json' });
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=code+'.geojson';
+    document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+
+  function initOvi(){
+    var input=$('oviInput'), drop=$('oviDrop');
+    input.addEventListener('change', function(){ oviPickFiles(input.files); input.value=''; });
+    ['dragenter','dragover'].forEach(function(t){ drop.addEventListener(t, function(e){ e.preventDefault(); drop.classList.add('over'); }); });
+    ['dragleave','drop'].forEach(function(t){ drop.addEventListener(t, function(e){ e.preventDefault(); drop.classList.remove('over'); }); });
+    drop.addEventListener('drop', function(e){ oviPickFiles(e.dataTransfer && e.dataTransfer.files); });
+    $('oviUpload').addEventListener('click', oviUploadAll);
+    $('oviClear').addEventListener('click', function(){ OVI.files=[]; oviRenderFiles(); $('oviResult').textContent=''; });
+    $('oviRefresh').addEventListener('click', oviLoadState);
+  }
+
   function loadAll(){
     loadKpis(); loadActivity(); loadSignups(); loadMapViews(); loadRanking();
     loadScreenTime(); loadReportTypes(); loadHouseTour(); loadPush(); loadCityBreakdown();
@@ -626,8 +1087,8 @@ footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);lin
     loadAll(); setTimeout(function(){ self.classList.remove('spin'); }, 700);
   });
 
-  setPreset(30);
-  loadAll();
+  initOvi();
+  initGate();
 })();
 </script>
 </body>
