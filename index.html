@@ -202,8 +202,6 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .rm-list .rm-val{font-size:12px;font-weight:800;color:var(--primary);text-align:right;white-space:nowrap}
 .rm-challenge{display:inline-block;font-size:10.5px;font-weight:800;color:#7A1F1A;background:#FBE3E1;border-radius:999px;padding:2px 7px;margin-top:3px}
 .rm-src{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.45}
-.rh-tips p{font-size:13.5px;line-height:1.5;margin-bottom:10px;color:var(--text)}
-.rh-tips .rh-health{background:#EEF6F3;border-radius:12px;padding:10px 12px;font-size:13px}
 .risk-others{font-family:'DM Serif Display',serif;font-size:17px;color:var(--primary);margin:18px 0 8px}
 .leaflet-tooltip.rm-label{background:var(--primary);color:#fff;border:none;border-radius:999px;font-family:'Raleway',sans-serif;font-weight:800;font-size:11px;padding:2px 7px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
 .leaflet-tooltip.rm-label:before{display:none}
@@ -1990,7 +1988,6 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
         '<div class="rh-week">Tu municipio</div></div></div>'+
         '<div class="rh-msg">Todavía no hay datos de ovitrampas para tu municipio. Cuando Mundo Sano publique el conteo semanal, vas a ver acá el nivel de riesgo de tu ciudad y de cada sector.</div>';
       wrap.appendChild(hero);
-      wrap.appendChild(riskTipsCard());
       return;
     }
     var c=w.city, nivel=c.nivel;
@@ -2019,7 +2016,6 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
       wrap.appendChild(riskMapCard());
       updateRiskWeek();
     }
-    wrap.appendChild(riskTipsCard());
   }
 
   function riskTrendHtml(weeks){
@@ -2150,16 +2146,6 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
     }).catch(function(){
       var b=$('riskMap'); if(b) b.innerHTML='<div class="empty">No pudimos cargar el mapa. Revisá tu conexión: la lista de abajo tiene los mismos datos.</div>';
     });
-  }
-
-  function riskTipsCard(){
-    var card=el('article','card rh-tips');
-    card.innerHTML =
-      '<p><b>Tus acciones te protegen a vos y a tus vecinos.</b> Cada recipiente que vaciás es un criadero menos en tu sector.</p>'+
-      '<p class="rh-health">🩺 Si tenés fiebre, dolor de cabeza, de cuerpo o detrás de los ojos, acercate al centro de salud y no te automediques.</p>'+
-      '<button type="button" class="btn btn-accent" id="riskGoReport" style="margin-top:4px">📸 Reportar una acción</button>';
-    card.querySelector('#riskGoReport').addEventListener('click', function(){ showSection('reportar'); });
-    return card;
   }
 
   // =====================================================================
