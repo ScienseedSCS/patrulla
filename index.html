@@ -438,6 +438,17 @@ svg.z1 .rm-name:not(.main){display:none}
 .tip-title{font-weight:700;color:var(--primary);font-size:13px;line-height:1.3;flex:1}
 .tip-body{font-size:12px;color:var(--text);margin-top:6px;line-height:1.5;display:none}
 .tip-item.open .tip-body{display:block}
+.tip-body ul{margin:6px 0 0;padding-left:18px}
+.tip-body li{margin-bottom:4px}
+/* Detectar criaderos · explicación del foco y modo «marcas» */
+.spot-info{margin-top:12px;background:var(--card);border-left:4px solid var(--ok);border-radius:0 12px 12px 0;padding:10px 12px;font-size:13px;line-height:1.5;color:var(--text);box-shadow:var(--shadow)}
+.spot-info:empty{display:none}
+.spot-info b{display:block;color:var(--primary);margin-bottom:2px}
+.spot-info ul{margin:6px 0 0;padding-left:18px}
+.spot-info li{margin-bottom:3px}
+.spot-mark{position:absolute;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:var(--danger);color:#fff;font-family:inherit;font-size:20px;font-weight:800;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);cursor:pointer;z-index:3;line-height:1;padding:0}
+.spot-mark.seen{background:var(--ok)}
+.spot-mark:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
 
 /* Quizzes (menú) */
 .test-card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:10px;cursor:pointer;display:flex;gap:14px;align-items:center;border:2px solid transparent;font-family:inherit;text-align:left;width:100%;transition:border-color .15s}
@@ -1093,14 +1104,14 @@ svg.z1 .rm-name:not(.main){display:none}
   var HOUSE_TOUR_STATIONS = [
     { key:'floreros', icon:'🪴', title:'Floreros y platos de macetas', check:'Agua acumulada en platos, floreros y portamacetas.', doit:'Tirá el agua, poné arena en los platos o cambiala cada 3 días.' },
     { key:'bebederos', icon:'🐾', title:'Bebederos de mascotas', check:'El agua del bebedero del perro o gato.', doit:'Lavalo cepillando las paredes y cambiá el agua a diario.' },
-    { key:'baldes', icon:'🪣', title:'Baldes, palanganas y tachos', check:'Recipientes en patio, lavadero o terraza que junten agua.', doit:'Dalos vuelta, vacialos o guardalos bajo techo.' },
+    { key:'baldes', icon:'🪣', title:'Baldes, palanganas y tachos', check:'Recipientes en patio, lavadero o terraza que junten agua.', doit:'Si los usás, vacialos, lavalos cepillando las paredes y guardalos bajo techo; si no, eliminalos.' },
     { key:'tanques', icon:'🛢️', title:'Tanques y bidones de agua', check:'Tanques, bidones y toda reserva de agua.', doit:'Mantenelos siempre tapados herméticamente.' },
     { key:'canaletas', icon:'🌧️', title:'Canaletas del techo', check:'Canaletas y bajadas del techo.', doit:'Destapá hojas y suciedad para que el agua no se estanque.' },
     { key:'rejillas', icon:'🚰', title:'Rejillas y desagües del patio', check:'Rejillas, piletones y desagües del patio.', doit:'Limpialos y verificá que el agua escurra bien.' },
     { key:'aire', icon:'❄️', title:'Bandeja del aire acondicionado', check:'La bandeja donde gotea el aire acondicionado.', doit:'Vaciala y limpiala; encaminá el goteo a un desagüe.' },
     { key:'cubiertas', icon:'🛞', title:'Cubiertas o neumáticos viejos', check:'Cubiertas guardadas que junten agua de lluvia.', doit:'Perforalas, guardalas bajo techo o llevalas a reciclado.' },
-    { key:'piletas', icon:'🏊', title:'Piletas de lona o inflables', check:'Piletas, lonas y juguetes que acumulen agua.', doit:'Vaciá y dá vuelta lo que no estés usando; cubrí las piletas.' },
-    { key:'cacharros', icon:'🍾', title:'Botellas, latas y cacharros', check:'Botellas, latas y objetos en desuso que junten agua.', doit:'Descacharrá: tiralos o ponelos boca abajo.' }
+    { key:'piletas', icon:'🏊', title:'Piletas de lona o inflables', check:'Piletas, lonas y juguetes que acumulen agua.', doit:'Si no la usás, vaciala, secala y guardala bajo techo. Guardá los juguetes después de jugar.' },
+    { key:'cacharros', icon:'🍾', title:'Botellas, latas y cacharros', check:'Botellas, latas y objetos en desuso que junten agua.', doit:'Descacharrá: tiralos o llevalos a reciclar.' }
   ];
   function tourStationByKey(k){ for(var i=0;i<HOUSE_TOUR_STATIONS.length;i++){ if(HOUSE_TOUR_STATIONS[i].key===k) return HOUSE_TOUR_STATIONS[i]; } return null; }
 
@@ -1577,7 +1588,7 @@ svg.z1 .rm-name:not(.main){display:none}
   //  NOTIFICACIONES PUSH (Fase 1: permiso + suscripción + preferencias)
   // =====================================================================
   var PUSH_CATS = [
-    { key:'rutina',   label:'🔁 Ronda semanal', desc:'El recordatorio para dar vuelta el agua.' },
+    { key:'rutina',   label:'🔁 Ronda semanal', desc:'El recordatorio para revisar y vaciar los recipientes.' },
     { key:'contenido',label:'🧠 Tips, quizzes y desafíos', desc:'Contenido nuevo para aprender.' },
     { key:'comunidad',label:'🏆 Comunidad y logros', desc:'Ranking, subiste de nivel, reporte validado.' },
     { key:'riesgo',   label:'📈 Riesgo en tu ciudad', desc:'Aviso cuando sube el riesgo en tu zona.' },
@@ -1918,7 +1929,7 @@ svg.z1 .rm-name:not(.main){display:none}
   var RISK_LEVELS = ['bajo','medio','alto'];
   var RISK_TEXT = {
     bajo:  'Riesgo bajo. ¡Seguí así! Una recorrida por tu casa una vez por semana mantiene a raya al mosquito.',
-    medio: 'Riesgo medio. Esta semana revisá patios, macetas, canaletas y cualquier recipiente que junte agua: vacialo, tapalo o dalo vuelta.',
+    medio: 'Riesgo medio. Esta semana revisá patios, macetas, canaletas y cualquier recipiente que junte agua: lavalo y guardalo bajo techo, o eliminalo si no lo usás.',
     alto:  'Riesgo alto. Es momento de actuar: eliminá todo lo que acumule agua, limpiá canaletas y desagües y sumá a tus vecinos.'
   };
   var MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -2593,7 +2604,7 @@ svg.z1 .rm-name:not(.main){display:none}
           '<label class="switch"><input type="checkbox" id="geoToggle"><span class="slider"></span></label>'+
         '</div><button class="privacy-link" id="privacyOpen">¿Qué datos se recogen?</button></div>'+
         '<div class="step-desc" style="text-align:left;font-size:13px;margin:12px 0 8px"><b>Contá algo sobre este reporte (opcional):</b></div>'+
-        '<textarea class="txt-area" id="reportNote" placeholder="Ej: Di vuelta 3 baldes del patio, ahora están secos"></textarea>'+
+        '<textarea class="txt-area" id="reportNote" placeholder="Ej: Lavé y guardé bajo techo 3 baldes del patio"></textarea>'+
         '<button class="btn btn-accent" id="fSubmit">Enviar reporte (+'+reportPoints()+' pts)</button></div>';
       $('fB3').onclick=function(){renderStep(2);}; $('fSubmit').onclick=submitReport;
       var gt=$('geoToggle'); gt.checked=attachLocation;
@@ -2928,25 +2939,40 @@ svg.z1 .rm-name:not(.main){display:none}
     try{ return JSON.parse(h)||[]; }catch(e){ return []; }
   }
 
+  var SPOT_INTRO_DEFAULT = 'Mirá la foto y tocá cada lugar donde el agua se puede estancar. Ahí es donde el mosquito pone huevos.';
+  function setSpotIntro(txt){ var sub=$('learn-spot-view').querySelector('.section-sub'); if(sub) sub.textContent = txt || SPOT_INTRO_DEFAULT; }
+
+  // Explicación de un foco (campos opcionales del hotspot: info y lista)
+  function spotInfoHtml(hs){
+    if(!hs || (!hs.info && !hs.lista)) return '';
+    return '<b>'+esc(hs.label||'')+'</b>'+(hs.info?esc(hs.info):'')+
+      (Array.isArray(hs.lista)&&hs.lista.length ? '<ul>'+hs.lista.map(function(x){ return '<li>'+esc(x)+'</li>'; }).join('')+'</ul>' : '');
+  }
+
   function renderSpotList(){
+    setSpotIntro(null);
     var body=$('spotBody'); body.innerHTML='';
     if(!S.spotChallenges.length){ body.appendChild(el('div','empty','Todavía no hay desafíos cargados.')); return; }
     S.spotChallenges.forEach(function(ch){
       var done=!!S.mySpotDone[ch.id];
       var n=parseHotspots(ch.hotspots).length;
+      var unidad = ch.modo==='marcas' ? (n===1?'marca':'marcas') : 'focos';
+      var pts = ch.points>0 ? ' · +'+ch.points+' pts' : '';
       var card=el('button','spot-card'+(done?' done':'')); card.type='button';
       card.innerHTML =
         '<img class="spot-thumb" src="'+esc(ch.image_url)+'" alt="" onerror="this.style.visibility=\'hidden\'">'+
         '<div><div class="spot-card-title">'+esc(ch.title)+'</div>'+
-        '<div class="spot-card-sub">'+n+' focos · +'+ch.points+' pts</div></div>'+
+        '<div class="spot-card-sub">'+n+' '+unidad+pts+'</div></div>'+
         (done?'<span class="spot-done-badge">✓ Hecho</span>':'');
-      card.setAttribute('aria-label', esc(ch.title)+', '+n+' focos, +'+ch.points+' pts'+(done?'. Ya completado.':'. Tocá para jugar.'));
+      card.setAttribute('aria-label', ch.title+', '+n+' '+unidad+(ch.points>0?', +'+ch.points+' pts':'')+(done?'. Ya completado.':'. Tocá para jugar.'));
       card.addEventListener('click', function(){ openSpotGame(ch); });
       body.appendChild(card);
     });
   }
 
   function openSpotGame(ch){
+    setSpotIntro(ch.intro);
+    if(ch.modo==='marcas') return openSpotMarks(ch);
     var SPOT_TAP_TOLERANCE = 0.08; // radio mínimo de toque (más generoso que el guardado en la base)
     var hotspots=parseHotspots(ch.hotspots);
     var found={}; var revealed=false; var awarded=!!S.mySpotDone[ch.id];
@@ -2974,6 +3000,7 @@ svg.z1 .rm-name:not(.main){display:none}
       '<div style="text-align:right"><div class="spot-hud-count">+'+ch.points+'</div><div class="spot-hud-label">puntos</div></div></div>'+
       legendHtml+
       '<div class="spot-stage" id="spotStage"><img id="spotImg" src="'+esc(ch.image_url)+'" alt="'+esc(ch.title)+'" draggable="false"></div>'+
+      '<div class="spot-info" id="spotInfo" aria-live="polite"></div>'+
       '<div id="spotResult"></div>'+
       '<div class="spot-actions"><button class="btn btn-secondary" id="spotReveal">Ver solución</button></div>'+
       '<div class="spot-hint">'+hintHtml+'</div>';
@@ -3051,6 +3078,7 @@ svg.z1 .rm-name:not(.main){display:none}
       if(hitIdx>=0){
         found[hitIdx]=1; var hs=hotspots[hitIdx];
         placeMarker(hs.x, hs.y, markerClass(hs.type,false), markerIcon(hs.type), hs.label);
+        $('spotInfo').innerHTML = spotInfoHtml(hs);
         updateCount(); checkComplete();
       } else {
         placeMarker(fx, fy, 'spot-miss', '✗', null);
@@ -3072,10 +3100,60 @@ svg.z1 .rm-name:not(.main){display:none}
     if(awarded){ $('spotResult').innerHTML='<div class="spot-success">✓ Ya completaste este desafío. Tocá "Ver solución" para repasarlo.</div>'; }
   }
 
+  // Modo «marcas»: los criaderos ya están señalados con un «!» en la foto;
+  // la persona toca cada uno para leer qué hacer. Se completa al verlos todos.
+  function openSpotMarks(ch){
+    var marks=parseHotspots(ch.hotspots), seen={}, awarded=!!S.mySpotDone[ch.id];
+    var body=$('spotBody');
+    body.innerHTML =
+      '<button class="flow-back" id="spotBack">← Otros desafíos</button>'+
+      '<div class="spot-hud"><div><div class="spot-hud-count"><span id="spotFound">0</span> / '+marks.length+'</div><div class="spot-hud-label">marcas vistas</div></div>'+
+      (ch.points>0 ? '<div style="text-align:right"><div class="spot-hud-count">+'+ch.points+'</div><div class="spot-hud-label">puntos</div></div>' : '')+'</div>'+
+      '<div class="spot-stage" id="spotStage"><img id="spotImg" src="'+esc(ch.image_url)+'" alt="'+esc(ch.title)+'" draggable="false"></div>'+
+      '<div class="spot-info" id="spotInfo" aria-live="polite"></div>'+
+      '<div id="spotResult"></div>';
+    $('spotBack').addEventListener('click', function(){ renderSpotList(); });
+    marks.forEach(function(hs, i){
+      var b=document.createElement('button'); b.type='button'; b.className='spot-mark'; b.textContent='!';
+      b.style.left=(hs.x*100)+'%'; b.style.top=(hs.y*100)+'%';
+      b.setAttribute('aria-label', hs.label || ('Marca '+(i+1)));
+      b.addEventListener('click', function(){
+        seen[i]=1; b.classList.add('seen');
+        $('spotInfo').innerHTML = spotInfoHtml(hs) || ('<b>'+esc(hs.label||'')+'</b>');
+        $('spotFound').textContent = Object.keys(seen).length;
+        if(Object.keys(seen).length===marks.length) finish();
+      });
+      $('spotStage').appendChild(b);
+    });
+    function finish(){
+      $('spotResult').innerHTML='<div class="spot-success">🎉 ¡Ya sabés qué hacer con cada criadero!</div>';
+      if(awarded) return; awarded=true; S.mySpotDone[ch.id]=1;
+      db.from('spot_answers').insert({ user_id:S.user.id, challenge_id:ch.id, found:marks.length }).then(function(ins){
+        if(ins.error){ if(ins.error.code==='23505') return; throw ins.error; }
+        if(ch.points>0) return awardPoints(ch.points).then(function(){ toast('+'+ch.points+' pts · desafío completado 🎉'); });
+      }).catch(function(e){ console.error(e); });
+    }
+    if(awarded){ $('spotResult').innerHTML='<div class="spot-success">✓ Ya completaste este desafío. Podés volver a tocar las marcas para repasar.</div>'; }
+  }
+
   // =====================================================================
   //  RECURSOS (antes "Tips") · solo lectura, organizada por categoría,
   //  sin puntos ni seguimiento de "leído".
   // =====================================================================
+  // El contenido de un tip puede traer ejemplos: cada línea que empieza
+  // con "- " se muestra como un punto de una lista.
+  function tipContentHtml(txt){
+    var out='', list=[];
+    String(txt||'').split(/\n/).forEach(function(line){
+      var t=line.trim(); if(!t) return;
+      if(/^- /.test(t)){ list.push('<li>'+esc(t.slice(2))+'</li>'); return; }
+      if(list.length){ out+='<ul>'+list.join('')+'</ul>'; list=[]; }
+      out+=(out?'<br>':'')+esc(t);
+    });
+    if(list.length) out+='<ul>'+list.join('')+'</ul>';
+    return out;
+  }
+
   function renderResources(){
     var list=$('resourcesList'); list.innerHTML='';
     if(!S.tips.length){ list.appendChild(el('div','empty','Todavía no hay recursos cargados.')); return; }
@@ -3083,7 +3161,7 @@ svg.z1 .rm-name:not(.main){display:none}
     S.tips.forEach(function(tip){
       if(tip.category!==lastCat){ lastCat=tip.category; list.appendChild(el('div','tips-category', esc(tip.category))); }
       var item=el('button','tip-item'); item.type='button';
-      item.innerHTML='<div class="tip-head"><div class="tip-title">'+esc(tip.title)+'</div></div><div class="tip-body">'+esc(tip.content)+'</div>';
+      item.innerHTML='<div class="tip-head"><div class="tip-title">'+esc(tip.title)+'</div></div><div class="tip-body">'+tipContentHtml(tip.content)+'</div>';
       item.setAttribute('aria-expanded','false');
       item.addEventListener('click', function(){
         item.classList.toggle('open');
