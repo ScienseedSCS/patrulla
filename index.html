@@ -172,14 +172,21 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .rh-metric b{font-size:26px;font-family:'DM Serif Display',serif;color:var(--primary);font-weight:400;margin-right:4px}
 .rh-msg{margin-top:10px;font-size:13.5px;line-height:1.5;color:var(--text);background:#FBF7EF;border-radius:12px;padding:10px 12px}
 .rh-stale{margin-top:8px;font-size:12px;color:#8A5A12;background:#FFF4DE;border-radius:10px;padding:8px 10px}
-.rh-trend{display:flex;align-items:flex-end;gap:6px;height:74px;margin-top:14px;padding-top:4px}
-.rh-tcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
-.rh-tbar{width:100%;max-width:28px;border-radius:6px 6px 2px 2px;min-height:3px;background:#CDBFD0}
-.rh-tbar.bajo{background:var(--ok)} .rh-tbar.medio{background:var(--warn)} .rh-tbar.alto{background:var(--danger)}
-.rh-tcol.now .rh-tbar{outline:2px solid var(--primary);outline-offset:1px}
-.rh-tlbl{font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap}
-.rh-tcol.now .rh-tlbl{color:var(--primary);font-weight:800}
-.rh-trend-cap{font-size:11px;color:var(--muted);margin-top:6px}
+.rs-title{font-size:12px;font-weight:800;color:var(--primary);margin-top:16px;text-transform:uppercase;letter-spacing:.4px}
+.rs-chart{position:relative;display:flex;align-items:flex-end;gap:6px;margin-top:8px;padding-top:20px}
+.rs-col{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0}
+.rs-plot{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.rs-val{position:relative;z-index:2;font-size:10.5px;font-weight:800;color:var(--primary);margin-bottom:2px;background:var(--card);padding:0 3px;border-radius:4px;line-height:1.3}
+.rs-bar{position:relative;z-index:1;width:100%;max-width:30px;border-radius:6px 6px 2px 2px;background:#CDBFD0;flex:none}
+.rs-bar.bajo{background:var(--ok)} .rs-bar.medio{background:var(--warn)} .rs-bar.alto{background:var(--danger)}
+.rs-lbl{font-size:10.5px;color:var(--muted);height:22px;line-height:22px}
+.rs-avg{position:absolute;left:0;right:0;z-index:0;border-top:2px dashed var(--primary);opacity:.8;pointer-events:none}
+.rs-cap{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);margin-top:6px}
+.rs-cap-line{display:inline-block;width:22px;border-top:2px dashed var(--primary)}
+.rs-avg span{position:absolute;right:0;top:-20px;z-index:3;font-size:10.5px;font-weight:800;color:var(--primary);background:var(--card);padding:0 4px;border-radius:4px}
+.navbtn{position:relative}
+.rm-new{display:inline-block;vertical-align:middle;font-family:'Raleway',sans-serif;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#fff;background:var(--danger);border-radius:999px;padding:2px 8px;margin-left:6px}
+.nav-dot{position:absolute;top:4px;left:calc(50% + 8px);width:11px;height:11px;border-radius:50%;background:var(--danger);border:2px solid var(--primary)}
 .test-ribbon{background:repeating-linear-gradient(45deg,#FFF4DE,#FFF4DE 10px,#FCE7BF 10px,#FCE7BF 20px);color:#7A4E0B;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:6px 10px;border-radius:8px;margin-bottom:10px;text-align:center}
 .rm-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
 .rm-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--primary)}
@@ -1817,6 +1824,11 @@ svg.z1 .rm-name:not(.main){display:none}
       $('boot').classList.add('hide');
       $('appScreen').classList.remove('hide');
       track('app_open', { auth_event: authEvent||'session_restore' });
+      // Al abrir la app desde una notificación con ?sec=… (p. ej. riesgo), ir a esa pestaña
+      try{
+        var qsSec=new URLSearchParams(window.location.search).get('sec');
+        if(qsSec && $('sec-'+qsSec)){ showSection(qsSec); history.replaceState(null,'',window.location.pathname); }
+      }catch(e){}
       trackScreen(S.lastSection||'reportar');
       if(S.profile && !S.profile.onboarded) startAppTour();
       else { maybeSoftAskPush(); }
@@ -1970,6 +1982,31 @@ svg.z1 .rm-name:not(.main){display:none}
     return nivel ? '<span class="risk-badge '+nivel+'">'+esc(cap(nivel))+'</span>' : '';
   }
 
+  // Aviso de datos nuevos: punto rojo en la pestaña Riesgo hasta que la
+  // persona la abre después de que se publicó una semana nueva (o se
+  // corrigió la actual). Se recuerda en este dispositivo.
+  function riskStamp(){
+    var code=cityCode(S.profile && S.profile.city), w=riskWeeksFor(code)[0];
+    return w ? (w.key+'|'+(w.city.actualizado_at||w.city.generado_at||'')) : null;
+  }
+  function riskSeenKey(){ return 'pa_risk_seen_'+(S.user && S.user.id); }
+  function riskIsNew(){
+    var st=riskStamp(); if(!st) return false;
+    try{ return localStorage.getItem(riskSeenKey())!==st; }catch(e){ return false; }
+  }
+  function markRiskSeen(){
+    var st=riskStamp(); if(!st) return;
+    try{ localStorage.setItem(riskSeenKey(), st); }catch(e){}
+    updateRiskDot();
+  }
+  function updateRiskDot(){
+    var b=document.querySelector('.navbtn[data-sec="incidencia"]'); if(!b) return;
+    var dot=b.querySelector('.nav-dot'), on=riskIsNew() && S.lastSection!=='incidencia';
+    if(on && !dot){ dot=document.createElement('span'); dot.className='nav-dot'; dot.setAttribute('aria-hidden','true'); b.appendChild(dot); }
+    if(!on && dot) dot.remove();
+    b.setAttribute('aria-label', on ? 'Riesgo: hay datos nuevos' : 'Riesgo');
+  }
+
   function renderIncidencia(){
     var wrap=$('incidenciaList'); wrap.innerHTML='';
     var names=(CITY_LIST && CITY_LIST.length) ? CITY_LIST.slice() : [];
@@ -1984,6 +2021,7 @@ svg.z1 .rm-name:not(.main){display:none}
       wrap.appendChild(el('h3','risk-others', mine ? 'Otros municipios' : 'Municipios'));
       others.forEach(function(n){ wrap.appendChild(riskCityCard(n)); });
     }
+    if(S.lastSection==='incidencia') markRiskSeen(); else updateRiskDot();
   }
 
   function riskCityCard(name){
@@ -2006,19 +2044,29 @@ svg.z1 .rm-name:not(.main){display:none}
 
   function renderRiskHero(wrap, name){
     var code=cityCode(name), weeks=riskWeeksFor(code), w=weeks[0];
-    RM.sectors=[]; RM.weeks=[]; RM.sel=null;
-    var hero=el('article','card risk-hero'+(w && w.city.nivel ? ' '+w.city.nivel : ''));
+    RM.sectors=[]; RM.weeks=[]; RM.idx=0; RM.sel=null;
     if(!w){
-      hero.innerHTML =
+      var empty=el('article','card risk-hero');
+      empty.innerHTML =
         '<div class="rh-top"><div><div class="rh-city">'+esc(name)+'</div>'+
         '<div class="rh-week">Tu municipio</div></div></div>'+
         '<div class="rh-msg">Todavía no hay datos de ovitrampas para tu municipio. Cuando Mundo Sano publique el conteo semanal, vas a ver acá el nivel de riesgo de tu ciudad y de cada sector.</div>';
-      wrap.appendChild(hero);
+      wrap.appendChild(empty);
       return;
     }
+    // 1) Mapa de la semana actual (si la localidad tiene sectores cargados)
+    var sectors=(S.ovi.sectores||[]).filter(function(s){ return s.localidad===code; });
+    if(sectors.length){
+      RM.code=code; RM.weeks=weeks; RM.idx=0; RM.sectors=sectors;
+      wrap.appendChild(riskMapCard(w, riskIsNew()));
+      drawRiskMap();
+      showSectorInfo(null);
+    }
+    // 2) Resumen del municipio + riesgo por sector de esa semana
     var c=w.city, nivel=c.nivel;
+    var hero=el('article','card risk-hero'+(nivel ? ' '+nivel : ''));
     var staleDays=Math.round((new Date() - parseISO(w.hasta))/86400000);
-    var html = (w.prueba ? '<div class="test-ribbon">Datos de prueba · solo los ven administradores</div>' : '')+
+    var html = (w.prueba && !sectors.length ? '<div class="test-ribbon">Datos de prueba · solo los ven administradores</div>' : '')+
       '<div class="rh-top"><div><div class="rh-city">'+esc(name)+'</div>'+
         '<div class="rh-week">Semana '+esc(weekNum(w.semana))+' · '+esc(weekRange(w.desde,w.hasta))+'</div></div>'+
         (nivel ? '<span class="risk-badge '+nivel+'">Riesgo '+esc(nivel)+'</span>' : '')+
@@ -2031,33 +2079,35 @@ svg.z1 .rm-name:not(.main){display:none}
     }
     if(nivel) html += '<div class="rh-msg">'+esc(RISK_TEXT[nivel])+'</div>';
     if(staleDays>21) html += '<div class="rh-stale">⏳ Este es el último dato publicado. Puede que la vigilancia esté en pausa.</div>';
-    html += riskTrendHtml(weeks);
+    html += riskSectorChartHtml(w, sectors);
     hero.innerHTML = html;
     wrap.appendChild(hero);
-
-    // Mapa por sector (si la localidad tiene sectores cargados)
-    var sectors=(S.ovi.sectores||[]).filter(function(s){ return s.localidad===code; });
-    if(sectors.length){
-      RM.code=code; RM.weeks=weeks; RM.idx=0; RM.sectors=sectors;
-      wrap.appendChild(riskMapCard());
-      updateRiskWeek();
-    }
   }
 
-  function riskTrendHtml(weeks){
-    var list=weeks.slice(0,8).reverse();
-    if(list.length<2) return '';
-    var max=25*2; list.forEach(function(w){ if(w.city.edi!=null && +w.city.edi>max) max=+w.city.edi; });
-    var cols=list.map(function(w,i){
-      var v=w.city.edi, h=(v==null?0:Math.max(4, Math.round((+v/max)*100)));
-      var now=(i===list.length-1);
-      return '<div class="rh-tcol'+(now?' now':'')+'">'+
-        '<div class="rh-tbar '+(w.city.nivel||'')+'" style="height:'+h+'%"></div>'+
-        '<div class="rh-tlbl">S'+esc(weekNum(w.semana))+'</div></div>';
+  // Barras: EDI de cada sector en la semana, con una línea para la media
+  // del municipio (el EDI de toda la localidad).
+  function riskSectorChartHtml(w, sectors){
+    var names={}; (sectors||[]).forEach(function(s){ names[s.sector]=s; });
+    var list=Object.keys(w.sectors).map(function(k){ return w.sectors[k]; }).sort(sectorSort);
+    if(!list.length) return '';
+    var avg=w.city.edi;
+    var max=0; list.forEach(function(r){ if(r.edi!=null && +r.edi>max) max=+r.edi; }); if(avg!=null && +avg>max) max=+avg;
+    max=Math.max(20, Math.ceil(max*1.15));
+    var PLOT=110, LBL=22;   // alto de las barras y de la fila de rótulos, en px
+    var cols=list.map(function(r){
+      var v=r.edi, h=(v==null?0:Math.max(3, Math.round((+v/max)*PLOT)));
+      return '<div class="rs-col">'+
+        '<div class="rs-plot" style="height:'+PLOT+'px">'+
+          '<div class="rs-val">'+(v==null?'–':nf(v,0))+'</div>'+
+          '<div class="rs-bar '+(r.nivel||'')+'" style="height:'+h+'px"></div>'+
+        '</div>'+
+        '<div class="rs-lbl">S'+esc(r.sector)+'</div></div>';
     }).join('');
-    var desc=list.map(function(w){ return 'semana '+weekNum(w.semana)+': '+(w.city.edi==null?'sin dato':nf(w.city.edi)); }).join(', ');
-    return '<div class="rh-trend" role="img" aria-label="Evolución del índice EDI. '+esc(desc)+'">'+cols+'</div>'+
-      '<div class="rh-trend-cap">Evolución de las últimas semanas</div>';
+    var line = avg!=null ? '<div class="rs-avg" style="bottom:'+(LBL+Math.round((+avg/max)*PLOT))+'px"></div>' : '';
+    var desc=list.map(function(r){ var s=names[r.sector]; return (s&&s.nombre||('Sector '+r.sector))+': '+(r.edi==null?'sin dato':'EDI '+nf(r.edi)+', riesgo '+r.nivel); }).join('; ');
+    return '<div class="rs-title">Riesgo por sector esta semana</div>'+
+      '<div class="rs-chart" role="img" aria-label="EDI por sector. '+esc(desc)+(avg!=null?'. Media del municipio: '+nf(avg):'')+'">'+cols+line+'</div>'+
+      (avg!=null ? '<div class="rs-cap"><i class="rs-cap-line"></i>Media del municipio: EDI '+nf(avg)+'</div>' : '');
   }
 
   function sectorSort(a,b){
@@ -2066,15 +2116,12 @@ svg.z1 .rm-name:not(.main){display:none}
     return String(a.sector).localeCompare(String(b.sector));
   }
 
-  function riskMapCard(){
+  function riskMapCard(w, isNew){
     var card=el('article','card risk-map-card');
     card.innerHTML =
-      '<div class="rm-head"><div class="rm-title">Riesgo por sector</div>'+
-        '<div class="rm-nav">'+
-          '<button type="button" id="rmPrev" aria-label="Semana anterior">‹</button>'+
-          '<span id="rmWeek" aria-live="polite"></span>'+
-          '<button type="button" id="rmNext" aria-label="Semana siguiente">›</button>'+
-        '</div></div>'+
+      (w.prueba ? '<div class="test-ribbon">Datos de prueba · solo los ven administradores</div>' : '')+
+      '<div class="rm-head"><div><div class="rm-title">Riesgo por sector'+(isNew?' <span class="rm-new">Nuevo</span>':'')+'</div>'+
+        '<div class="rh-week">Semana '+esc(weekNum(w.semana))+' · '+esc(weekRange(w.desde,w.hasta))+'</div></div></div>'+
       '<div class="risk-map" id="riskMap"></div>'+
       '<div class="rm-info" id="rmInfo" aria-live="polite"><span class="rm-hint">Tocá un sector del mapa para ver su riesgo.</span></div>'+
       '<div class="rm-legend" aria-hidden="true">'+
@@ -2084,19 +2131,7 @@ svg.z1 .rm-name:not(.main){display:none}
         '<span><i class="rm-dot"></i>Sin dato</span>'+
       '</div>'+
       '<div class="rm-src">Datos de la red de ovitrampas de Fundación Mundo Sano. El EDI es el promedio de huevos en las trampas que tuvieron huevos.</div>';
-    card.querySelector('#rmPrev').addEventListener('click', function(){ if(RM.idx<RM.weeks.length-1){ RM.idx++; updateRiskWeek(); } });
-    card.querySelector('#rmNext').addEventListener('click', function(){ if(RM.idx>0){ RM.idx--; updateRiskWeek(); } });
     return card;
-  }
-
-  function updateRiskWeek(){
-    var w=RM.weeks[RM.idx]; if(!w) return;
-    var lbl=$('rmWeek'); if(lbl) lbl.textContent='Semana '+weekNum(w.semana);
-    var prev=$('rmPrev'), next=$('rmNext');
-    if(prev) prev.disabled = (RM.idx>=RM.weeks.length-1);
-    if(next) next.disabled = (RM.idx<=0);
-    drawRiskMap();
-    showSectorInfo(RM.sel);
   }
 
   function sectorRings(g){
@@ -3705,7 +3740,7 @@ svg.z1 .rm-name:not(.main){display:none}
   function showSection(sec){
     S.lastSection = sec;
     trackScreen(sec);
-    if(sec==='incidencia') track('map_view');
+    if(sec==='incidencia'){ track('map_view'); markRiskSeen(); }
     document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
     var t=$('sec-'+sec); if(t) t.classList.add('active');
     document.querySelectorAll('.navbtn').forEach(function(b){
