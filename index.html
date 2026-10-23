@@ -230,7 +230,6 @@ svg.z1 .rm-name:not(.main){display:none}
 .rm-info{margin-top:10px;background:#FBF7EF;border-radius:12px;padding:12px;min-height:58px}
 .rm-info-name{font-family:'DM Serif Display',serif;font-size:17px;color:var(--primary);line-height:1.2}
 .rm-info-row{display:flex;align-items:center;gap:10px;margin-top:6px}
-.rm-info-act{font-size:12.5px;color:var(--text);margin-top:8px;line-height:1.45}
 .rm-info-edi{font-size:13px;font-weight:800;color:var(--primary)}
 .rm-hint{font-size:13px;color:var(--muted)}
 .rm-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11.5px;color:var(--muted);margin-top:10px}
@@ -2148,14 +2147,6 @@ svg.z1 .rm-name:not(.main){display:none}
       wrap.appendChild(riskMapCard(w, riskIsNew()));
       drawRiskMap();
       showSectorInfo(RM.sel);
-      // Acciones de vecinos por sector (últimos 7 días): solo números
-      RM.act=null;
-      var reqCode=code;
-      db.rpc('sector_actividad', { p_localidad:code, p_dias:7 }).then(function(res){
-        if(res.error || RM.code!==reqCode) return;
-        RM.act={}; (res.data||[]).forEach(function(x){ RM.act[x.sector]=+x.acciones||0; });
-        showSectorInfo(RM.sel);
-      }, function(){});
     }
     // 2) Resumen del municipio + riesgo por sector de esa semana
     var c=w.city, nivel=c.nivel;
@@ -2451,13 +2442,7 @@ svg.z1 .rm-name:not(.main){display:none}
       (mine ? '<span class="rm-mine-tag">📍 Tu sector</span>' : '')+
       '<div class="rm-info-name">'+esc(s.barrios || s.nombre || ('Sector '+s.sector))+'</div>'+
       '<div class="rm-info-row">'+(nivel ? '<span class="risk-badge '+nivel+'">Riesgo '+esc(nivel)+'</span>' : '<span class="rm-hint">Sin dato esta semana</span>')+
-        (r && r.edi!=null ? '<span class="rm-info-edi">EDI '+nf(r.edi)+'</span>' : '')+'</div>'+
-      (RM.act ? '<div class="rm-info-act">'+actividadTxt(RM.act[s.sector]||0, mine)+'</div>' : '');
-  }
-
-  function actividadTxt(n, mine){
-    if(n===0) return mine ? '🧹 Todavía no hay acciones de vecinos esta semana. ¡Sumá la primera!' : '🧹 Sin acciones de vecinos en los últimos 7 días.';
-    return '🧹 '+n+(n===1?' acción reportada':' acciones reportadas')+' por vecinos en los últimos 7 días.';
+        (r && r.edi!=null ? '<span class="rm-info-edi">EDI '+nf(r.edi)+'</span>' : '')+'</div>';
   }
 
 
@@ -2944,7 +2929,7 @@ svg.z1 .rm-name:not(.main){display:none}
     body.innerHTML =
       '<span class="role-badge">🛡️ Rol Revisor</span>'+
       '<div class="review-info"><div class="review-info-title">🗳️ Cómo funciona</div>'+
-      '<div class="review-info-text">Revisás reportes de <b>'+(S.profile.city||'tu municipio')+'</b>. Mirá la foto y la nota, y votá si es correcto o rechazalo con un motivo. Con 3 votos correctos se valida; con 3 rechazos se descarta. Ganás <b>+3 pts</b> por revisión.</div></div>'+
+      '<div class="review-info-text">Revisás reportes de <b>'+(S.profile.city||'tu municipio')+'</b>. Mirá la foto y la nota, y votá si es correcto o rechazalo con un motivo. Con 2 votos iguales se decide: 2 aprobaciones lo validan y 2 rechazos lo descartan. Si hay empate, decide el tercer voto. Ganás <b>+3 pts</b> por revisión.</div></div>'+
       '<div id="reviewList"><div class="loading">Cargando…</div></div>';
 
     if(!S.profile.city){
@@ -2971,8 +2956,8 @@ svg.z1 .rm-name:not(.main){display:none}
             var a=actionById(r.action_type)||{};
             var thumb = r.photo_url ? '<img src="'+esc(r.photo_url)+'" alt="">' : (a.icon||'📷');
             var baBadge = r.photo_before_url ? '<span class="ba-badge">A/D</span>' : '';
-            var votes = r.review_count||0; var almost = votes>=2;
-            var votesTxt = almost ? '🗳️ '+votes+'/3 · ¡falta 1!' : '🗳️ '+votes+'/3 votos';
+            var votes = r.review_count||0; var almost = votes>=1;
+            var votesTxt = votes>=2 ? '🗳️ '+votes+' votos · empate, ¡tu voto decide!' : (votes===1 ? '🗳️ 1/2 · ¡falta 1!' : '🗳️ 0/2 votos');
             var item=el('div','review-item'+(almost?' almost':''));
             item.innerHTML =
               '<div class="review-thumb" style="position:relative">'+baBadge+thumb+'</div>'+
