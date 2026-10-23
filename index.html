@@ -185,6 +185,17 @@ h1,h2,h3,h4{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:
 .rs-cap-line{display:inline-block;width:22px;border-top:2px dashed var(--primary)}
 .rs-avg span{position:absolute;right:0;top:-20px;z-index:3;font-size:10.5px;font-weight:800;color:var(--primary);background:var(--card);padding:0 4px;border-radius:4px}
 .navbtn{position:relative}
+.rm-sec.mine{stroke-width:3.5}
+.rm-mine-tag{display:inline-block;font-size:11px;font-weight:800;color:var(--primary);background:#F4D18B;border-radius:999px;padding:2px 8px;margin-bottom:4px}
+.rs-col.mine .rs-lbl{color:var(--primary);font-weight:800}
+.rs-col.mine .rs-bar{outline:2px solid var(--primary);outline-offset:1px}
+.rm-fill.pick{fill:var(--accent);fill-opacity:.75}
+.rm-fill.pickable{fill:#CDBFD0;fill-opacity:.35}
+.sector-pick{margin-top:8px}
+.sector-pick .risk-map{border:1px solid #E6DCE8}
+.sector-pick-msg{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.45}
+.sector-pick-msg b{color:var(--primary)}
+.sector-skip{background:none;border:none;color:var(--muted);font-family:inherit;font-size:12px;text-decoration:underline;cursor:pointer;padding:6px 0 0}
 .rm-new{display:inline-block;vertical-align:middle;font-family:'Raleway',sans-serif;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#fff;background:var(--danger);border-radius:999px;padding:2px 8px;margin-left:6px}
 .nav-dot{position:absolute;top:4px;left:calc(50% + 8px);width:11px;height:11px;border-radius:50%;background:var(--danger);border:2px solid var(--primary)}
 .test-ribbon{background:repeating-linear-gradient(45deg,#FFF4DE,#FFF4DE 10px,#FCE7BF 10px,#FCE7BF 20px);color:#7A4E0B;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:6px 10px;border-radius:8px;margin-bottom:10px;text-align:center}
@@ -668,6 +679,7 @@ svg.z1 .rm-name:not(.main){display:none}
         <select id="inCity"><option value="">Elegí tu ciudad…</option></select>
         <button type="button" class="privacy-link" id="reqCityBtn" style="padding-top:6px">¿No está tu municipio? Solicitá agregarlo</button>
       </div>
+      <div class="field hide" id="fieldSector"></div>
       <div class="field" id="fieldEmail">
         <label for="inEmail">Email</label>
         <input type="email" id="inEmail" autocomplete="email" placeholder="tu@email.com">
@@ -831,6 +843,7 @@ svg.z1 .rm-name:not(.main){display:none}
             <div class="field"><label for="pfName">Nombre de usuario</label><input type="text" id="pfName" maxlength="40"></div>
             <div class="field"><label for="pfCity">Ciudad</label><select id="pfCity"></select>
               <button type="button" class="privacy-link" id="pfReqCity" style="padding-top:6px">¿No está tu municipio? Solicitá agregarlo</button></div>
+            <div class="field hide" id="pfSectorField"></div>
             <div class="setting-msg" id="msgPerfil"></div>
             <button class="btn btn-accent" id="savePerfil">Guardar</button>
           </div>
@@ -1268,6 +1281,8 @@ svg.z1 .rm-name:not(.main){display:none}
     var isReg = authMode==='register', isRec = authMode==='recover';
     $('fieldName').classList.toggle('hide', !isReg);
     $('fieldCity').classList.toggle('hide', !isReg);
+    if(!isReg) $('fieldSector').classList.add('hide');
+    else if(typeof REG_SECTOR!=='undefined' && REG_SECTOR && REG_SECTOR.available) $('fieldSector').classList.remove('hide');
     $('fieldPass').classList.toggle('hide', isRec);      // recover: sólo email
     $('forgotBtn').classList.toggle('hide', isReg || isRec);
     $('authSubmit').textContent = isReg ? 'Crear cuenta' : isRec ? 'Enviar enlace' : 'Entrar';
@@ -1303,10 +1318,69 @@ svg.z1 .rm-name:not(.main){display:none}
       sel.appendChild(o);
     });
   }
+  // ---------------------------------------------------------------------
+  //  Selector de sector (registro y perfil). Solo aparece en municipios
+  //  que tienen el mapa de sectores cargado (hoy, Gobernador Virasoro).
+  // ---------------------------------------------------------------------
+  var SECTOR_CACHE = {};                       // código → { sectores, calles }
+  var REG_SECTOR = { value:null, available:false, skipped:false, token:0 };
+  var PF_SECTOR  = { value:null, available:false, skipped:false, token:0 };
+
+  function loadSectorData(code){
+    if(!code) return Promise.resolve(null);
+    if(SECTOR_CACHE[code]) return Promise.resolve(SECTOR_CACHE[code]);
+    return Promise.all([
+      db.from('ovi_sectores').select('*').eq('localidad', code),
+      db.from('ovi_calles').select('calles').eq('localidad', code)
+    ]).then(function(r){
+      var d={ sectores:(r[0] && !r[0].error && r[0].data) || [],
+              calles:(r[1] && !r[1].error && r[1].data && r[1].data[0] && r[1].data[0].calles) || [] };
+      SECTOR_CACHE[code]=d; return d;
+    }, function(){ return { sectores:[], calles:[] }; });
+  }
+
+  function sectorName(s){ return 'Sector '+s.sector+(s.barrios ? ' · '+s.barrios : ''); }
+
+  function setupSectorPicker(field, cityName, current, state){
+    var token=++state.token;
+    state.value=null; state.available=false; state.skipped=false;
+    field.innerHTML=''; field.classList.add('hide');
+    var code=cityCode(cityName);
+    if(!code) return Promise.resolve();
+    return loadSectorData(code).then(function(d){
+      if(token!==state.token || !d || !d.sectores.length) return;
+      state.available=true;
+      var known=d.sectores.some(function(x){ return x.sector===current; });
+      state.value = known ? current : null;
+      field.innerHTML =
+        '<label>Tu sector</label>'+
+        '<div class="sector-pick"><div class="risk-map"></div>'+
+        '<div class="sector-pick-msg" aria-live="polite"></div>'+
+        '<button type="button" class="sector-skip">No sé cuál es mi sector</button></div>';
+      var msg=field.querySelector('.sector-pick-msg'), skip=field.querySelector('.sector-skip');
+      var M={ box:field.querySelector('.risk-map'), code:code+'|pick', sectors:d.sectores, calles:d.calles,
+              sel:state.value, redrawOnPick:true, aria:'Mapa para elegir tu sector' };
+      M.fill=function(s){ return { cls:(M.sel===s.sector?'pick':'pickable'), aria:sectorName(s)+(M.sel===s.sector?', elegido':'') }; };
+      function paint(){
+        var s=null; d.sectores.forEach(function(x){ if(x.sector===state.value) s=x; });
+        if(s) msg.innerHTML='Elegiste <b>'+esc(sectorName(s))+'</b>. Si no es el tuyo, tocá otro.';
+        else if(state.skipped) msg.textContent='Sin problema: podés elegirlo después desde tu perfil.';
+        else msg.textContent='Tocá en el mapa el sector donde vivís. Podés acercar con + para ubicar tu calle.';
+      }
+      M.onPick=function(sec){ state.value=sec; state.skipped=false; paint(); };
+      skip.addEventListener('click', function(){ state.value=null; state.skipped=true; M.sel=null; drawSectorMap(M); paint(); });
+      field.classList.toggle('hide', field.id==='fieldSector' && authMode!=='register');
+      drawSectorMap(M); paint();
+    });
+  }
+
   function loadCitiesIntoSelect(){
-    return db.from('cities').select('name').eq('active', true).order('name').then(function(res){
+    return db.from('cities').select('*').eq('active', true).order('name').then(function(res){
       if(res.error || !res.data || !res.data.length){ CITY_LIST = CITIES_FALLBACK.slice(); }
-      else { CITY_LIST = res.data.map(function(c){ return c.name; }); }
+      else {
+        CITY_LIST = res.data.map(function(c){ return c.name; });
+        res.data.forEach(function(c){ if(c.codigo) CITY_CODES[c.name]=c.codigo; });
+      }
       fillCitySelect($('inCity'));
     }, function(){ CITY_LIST = CITIES_FALLBACK.slice(); fillCitySelect($('inCity')); });
   }
@@ -1361,17 +1435,20 @@ svg.z1 .rm-name:not(.main){display:none}
       var name=$('inName').value.trim(), city=$('inCity').value;
       if(!name){ btn.disabled=false; btn.textContent=orig; return authMsg('err','Decinos cómo querés que te vean.'); }
       if(!city){ btn.disabled=false; btn.textContent=orig; return authMsg('err','Elegí tu ciudad.'); }
+      if(REG_SECTOR.available && !REG_SECTOR.value && !REG_SECTOR.skipped){ btn.disabled=false; btn.textContent=orig; return authMsg('err','Tocá en el mapa tu sector, o elegí «No sé cuál es mi sector».'); }
+      var sector = REG_SECTOR.available ? REG_SECTOR.value : null;
       db.auth.signUp({ email:email, password:pass }).then(function(res){
         if(res.error){ authMsg('err', traducir(res.error.message)); btn.disabled=false; btn.textContent=orig; return; }
         if(res.data.session && res.data.user){
           // crear perfil y entrar
-          return db.from('profiles').insert({ id:res.data.user.id, username:name, city:city, points:0, level:1, is_reviewer:false })
+          return db.from('profiles').insert({ id:res.data.user.id, username:name, city:city, sector:sector, points:0, level:1, is_reviewer:false })
             .then(function(ins){
               if(ins.error && ins.error.code!=='23505') throw ins.error;
               return onAuthenticated(res.data.user, 'sign_up');
             });
         } else {
-          // confirmación de email activada
+          // confirmación de email activada: guardar lo elegido para crear el perfil al primer ingreso
+          try{ localStorage.setItem('pa_pending_profile', JSON.stringify({ email:email.toLowerCase(), username:name, city:city, sector:sector })); }catch(e){}
           authMsg('ok','¡Casi listo! Te enviamos un email para confirmar la cuenta. Confirmalo y volvé a iniciar sesión.');
           authMode='login'; renderAuthMode(); btn.disabled=false; btn.textContent='Entrar';
         }
@@ -1755,9 +1832,10 @@ svg.z1 .rm-name:not(.main){display:none}
     $('profAvatar').textContent=(name.trim()[0]||'·');
     $('profName').textContent=name;
     var lvl=currentLevel(p.points||0);
-    $('profMeta').innerHTML = (p.city?('📍 '+esc(p.city)+' · '):'')+lvl.emoji+' '+esc(lvl.name)+' · '+(p.points||0)+' pts';
+    $('profMeta').innerHTML = (p.city?('📍 '+esc(p.city)+(p.sector?' · Sector '+esc(p.sector):'')+' · '):'')+lvl.emoji+' '+esc(lvl.name)+' · '+(p.points||0)+' pts';
     $('pfName').value=name;
     fillCitySelect($('pfCity'), p.city);
+    setupSectorPicker($('pfSectorField'), p.city, p.sector, PF_SECTOR);
     var ce=$('curEmail'); if(ce) ce.innerHTML='Tu email actual: <b>'+esc(maskEmail(S.user&&S.user.email))+'</b>';
     // cerrar paneles y limpiar mensajes
     document.querySelectorAll('#sec-profile .setting-panel').forEach(function(pl){ pl.classList.remove('open'); });
@@ -1780,9 +1858,11 @@ svg.z1 .rm-name:not(.main){display:none}
     var name=$('pfName').value.trim(), city=$('pfCity').value;
     if(!name) return setMsg('msgPerfil','err','Escribí un nombre.');
     var btn=$('savePerfil'); btn.disabled=true; btn.textContent='Guardando…';
-    db.from('profiles').update({ username:name, city:city||null }).eq('id', S.user.id).then(function(res){
+    var sector = PF_SECTOR.available ? PF_SECTOR.value : null;
+    db.from('profiles').update({ username:name, city:city||null, sector:sector }).eq('id', S.user.id).then(function(res){
       if(res.error) throw res.error;
-      S.profile.username=name; S.profile.city=city||null;
+      S.profile.username=name; S.profile.city=city||null; S.profile.sector=sector;
+      renderIncidencia();
       updateUserChip(); $('brandUser').textContent = city ? ('📍 '+city) : 'Prevención en tu barrio';
       renderProfile(); renderLeaderboard();
       setMsg('msgPerfil','ok','¡Perfil actualizado!'); btn.disabled=false; btn.textContent='Guardar';
@@ -1862,7 +1942,11 @@ svg.z1 .rm-name:not(.main){display:none}
 
       // Si no existe el perfil (caso raro), crearlo mínimamente.
       if(prof.error || !prof.data){
-        return db.from('profiles').insert({ id:uid, username:(S.user.email||'Vecino/a').split('@')[0], points:0, level:1, is_reviewer:false })
+        var pend=null; try{ pend=JSON.parse(localStorage.getItem('pa_pending_profile')||'null'); }catch(e){}
+        if(pend && pend.email!==String(S.user.email||'').toLowerCase()) pend=null;
+        return db.from('profiles').insert({ id:uid, username:(pend&&pend.username)||(S.user.email||'Vecino/a').split('@')[0],
+                                            city:(pend&&pend.city)||null, sector:(pend&&pend.sector)||null, points:0, level:1, is_reviewer:false })
+          .then(function(r){ try{ localStorage.removeItem('pa_pending_profile'); }catch(e){} return r; })
           .then(function(){ return loadEverything(); });
       }
 
@@ -1947,7 +2031,7 @@ svg.z1 .rm-name:not(.main){display:none}
     alto:  'Riesgo alto. Es momento de actuar: eliminá todo lo que acumule agua, limpiá canaletas y desagües y sumá a tus vecinos.'
   };
   var MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  var RM = { weeks:[], idx:0, code:null, sectors:[], sel:null, view:null, viewKey:null, H:0 };
+  var RM = { weeks:[], idx:0, code:null, sectors:[], sel:null, view:null, viewKey:null, H:0, box:null };
 
   function nf(n, d){ return Number(n).toLocaleString('es-AR', { maximumFractionDigits:(d==null?1:d) }); }
   function parseISO(s){ var p=String(s).split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
@@ -2058,9 +2142,11 @@ svg.z1 .rm-name:not(.main){display:none}
     var sectors=(S.ovi.sectores||[]).filter(function(s){ return s.localidad===code; });
     if(sectors.length){
       RM.code=code; RM.weeks=weeks; RM.idx=0; RM.sectors=sectors;
+      var mySec=S.profile && S.profile.sector;
+      RM.sel = (mySec && sectors.some(function(x){ return x.sector===mySec; })) ? mySec : null;
       wrap.appendChild(riskMapCard(w, riskIsNew()));
       drawRiskMap();
-      showSectorInfo(null);
+      showSectorInfo(RM.sel);
     }
     // 2) Resumen del municipio + riesgo por sector de esa semana
     var c=w.city, nivel=c.nivel;
@@ -2096,12 +2182,13 @@ svg.z1 .rm-name:not(.main){display:none}
     var PLOT=110, LBL=22;   // alto de las barras y de la fila de rótulos, en px
     var cols=list.map(function(r){
       var v=r.edi, h=(v==null?0:Math.max(3, Math.round((+v/max)*PLOT)));
-      return '<div class="rs-col">'+
+      var mine=(S.profile && S.profile.sector===r.sector);
+      return '<div class="rs-col'+(mine?' mine':'')+'">'+
         '<div class="rs-plot" style="height:'+PLOT+'px">'+
           '<div class="rs-val">'+(v==null?'–':nf(v,0))+'</div>'+
           '<div class="rs-bar '+(r.nivel||'')+'" style="height:'+h+'px"></div>'+
         '</div>'+
-        '<div class="rs-lbl">S'+esc(r.sector)+'</div></div>';
+        '<div class="rs-lbl">'+(mine?'📍':'')+'S'+esc(r.sector)+'</div></div>';
     }).join('');
     var line = avg!=null ? '<div class="rs-avg" style="bottom:'+(LBL+Math.round((+avg/max)*PLOT))+'px"></div>' : '';
     var desc=list.map(function(r){ var s=names[r.sector]; return (s&&s.nombre||('Sector '+r.sector))+': '+(r.edi==null?'sin dato':'EDI '+nf(r.edi)+', riesgo '+r.nivel); }).join('; ');
@@ -2150,18 +2237,22 @@ svg.z1 .rm-name:not(.main){display:none}
     return [cx/(3*a), cy/(3*a)];
   }
 
-  // Mapa dibujado a mano en SVG: sectores (ovi_sectores) + calles
-  // (ovi_calles, descargadas una vez de OpenStreetMap). No depende de
-  // ningún servicio externo. Zoom con botones, pellizco, rueda y arrastre.
+  // =====================================================================
+  //  MAPA DE SECTORES (SVG propio, sin servicios externos)
+  //  Lo usan dos pantallas con el mismo motor:
+  //   · RM: el mapa de riesgo (colores por nivel, toque = ver riesgo)
+  //   · selector de sector en el registro y en el perfil (toque = elegir)
+  //  Cada mapa es un objeto M = { box, code, sectors, calles, fill(s),
+  //  sel, onPick(sector), view, H, mine }.
+  // =====================================================================
   var RM_W = 1000, RM_ZMAX = 5;
   var RISK_ROAD_W = { motorway:3.2, trunk:3.2, primary:2.6, secondary:2.2, tertiary:2, unclassified:1.1, residential:1, living_street:1, rail:2 };
 
-  function drawRiskMap(){
-    var box=$('riskMap'); if(!box || !RM.sectors.length) return;
-    var w=RM.weeks[RM.idx] || { sectors:{} };
+  function drawSectorMap(M){
+    var box=M.box; if(!box || !M.sectors || !M.sectors.length) return;
     // Zona visible = sectores + un margen alrededor para ver los alrededores
     var minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity;
-    RM.sectors.forEach(function(s){ sectorRings(s.geom).forEach(function(r){ r.forEach(function(p){
+    M.sectors.forEach(function(s){ sectorRings(s.geom).forEach(function(r){ r.forEach(function(p){
       if(p[0]<minX) minX=p[0]; if(p[0]>maxX) maxX=p[0]; if(p[1]<minY) minY=p[1]; if(p[1]>maxY) maxY=p[1];
     }); }); });
     if(minX===Infinity) return;
@@ -2171,22 +2262,19 @@ svg.z1 .rm-name:not(.main){display:none}
     var sc=RM_W/((maxX-minX)*k), H=Math.round((maxY-minY)*sc);
     function px(p){ return [(p[0]-minX)*k*sc, (maxY-p[1])*sc]; }
     function pathOf(line){ return 'M'+line.map(function(p){ var q=px(p); return q[0].toFixed(1)+','+q[1].toFixed(1); }).join('L'); }
-    RM.H=H;
+    M.H=H;
 
     var fills='', outlines='', labels='', roads='', names='';
-    RM.sectors.slice().sort(sectorSort).forEach(function(s){
-      var r=w.sectors[s.sector], nivel=(r && r.nivel) || 'nodata';
-      var d=sectorRings(s.geom).map(function(ring){ return pathOf(ring)+'Z'; }).join('');
-      var name=s.barrios || s.nombre || ('Sector '+s.sector);
-      var aria=name+': '+(r && r.nivel ? 'riesgo '+r.nivel+(r.edi!=null?', EDI '+nf(r.edi):'') : 'sin dato esta semana');
-      fills+='<path class="rm-fill '+nivel+'" d="'+d+'" fill-rule="evenodd"/>';
-      outlines+='<path class="rm-sec'+(RM.sel===s.sector?' sel':'')+'" data-sec="'+esc(s.sector)+'" d="'+d+'" fill-rule="evenodd" tabindex="0" role="button" aria-label="'+esc(aria)+'"/>';
+    M.sectors.slice().sort(sectorSort).forEach(function(s){
+      var f=M.fill(s), d=sectorRings(s.geom).map(function(ring){ return pathOf(ring)+'Z'; }).join('');
+      fills+='<path class="rm-fill '+f.cls+'" d="'+d+'" fill-rule="evenodd"/>';
+      outlines+='<path class="rm-sec'+(M.sel===s.sector?' sel':'')+(M.mine===s.sector?' mine':'')+'" data-sec="'+esc(s.sector)+'" d="'+d+'" fill-rule="evenodd" tabindex="0" role="button" aria-label="'+esc(f.aria)+'"/>';
       var outer=sectorRings(s.geom)[0]; if(!outer) return;
       var c=px(ringCentroid(outer));
       labels+='<g class="rm-lbl" data-x="'+c[0].toFixed(1)+'" data-y="'+c[1].toFixed(1)+'"><circle r="34"/><text dy="12">'+esc(s.sector)+'</text></g>';
     });
 
-    var calles=(S.ovi.calles||{})[RM.code] || [];
+    var calles=M.calles || [];
     var byName={};
     calles.forEach(function(l){
       if(!l || !l.c || l.c.length<2) return;
@@ -2206,7 +2294,6 @@ svg.z1 .rm-name:not(.main){display:none}
         var a=pts[i-1], b=pts[i], seg=Math.hypot(b[0]-a[0], b[1]-a[1]);
         if(acc+seg>=half){
           var f=seg?(half-acc)/seg:0, x=a[0]+(b[0]-a[0])*f, y=a[1]+(b[1]-a[1])*f;
-          if(x<0 || x>RM_W || y<0 || y>H) break;
           var ang=Math.atan2(b[1]-a[1], b[0]-a[0])*180/Math.PI; if(ang>90) ang-=180; if(ang<-90) ang+=180;
           var label=n.replace(/^Avenida /,'Av. ').replace(/^Ruta Nacional (\d+).*$/,'Ruta Nac. $1').replace(/^Ruta Provincial /,'Ruta Prov. ');
           names+='<g class="rm-name'+(it.t==='trunk'||it.t==='motorway'?' main':'')+'" data-x="'+x.toFixed(1)+'" data-y="'+y.toFixed(1)+'" data-a="'+ang.toFixed(1)+'"><text>'+esc(label)+'</text></g>';
@@ -2217,7 +2304,7 @@ svg.z1 .rm-name:not(.main){display:none}
     });
 
     box.innerHTML =
-      '<svg viewBox="0 0 '+RM_W+' '+H+'" role="group" aria-label="Mapa de sectores de vigilancia">'+
+      '<svg viewBox="0 0 '+RM_W+' '+H+'" role="group" aria-label="'+esc(M.aria||'Mapa de sectores')+'">'+
         '<rect class="rm-bg" x="-5000" y="-5000" width="'+(RM_W+10000)+'" height="'+(H+10000)+'"/>'+
         fills+'<g class="rm-roads">'+roads+'</g>'+outlines+'<g class="rm-names">'+names+'</g>'+labels+
       '</svg>'+
@@ -2228,24 +2315,19 @@ svg.z1 .rm-name:not(.main){display:none}
       '</div>'+
       (calles.length ? '<div class="rm-credit">© colaboradores de OpenStreetMap</div>' : '');
 
-    if(!RM.view || RM.viewKey!==RM.code+'|'+H){ RM.view={ z:1, cx:RM_W/2, cy:H/2 }; RM.viewKey=RM.code+'|'+H; }
-    applyRiskView();
-    wireRiskMap(box);
+    if(!M.view || M.viewKey!==M.code+'|'+H){ M.view={ z:1, cx:RM_W/2, cy:H/2 }; M.viewKey=M.code+'|'+H; }
+    applyMapView(M);
+    wireSectorMap(M);
   }
 
-  function clampRiskView(){
-    var v=RM.view, H=RM.H||RM_W;
+  function applyMapView(M){
+    var svg=M.box && M.box.querySelector('svg'); if(!svg) return;
+    var v=M.view, H=M.H||RM_W;
     v.z=Math.max(1, Math.min(RM_ZMAX, v.z));
     var hw=RM_W/v.z/2, hh=H/v.z/2;
     v.cx=Math.max(hw, Math.min(RM_W-hw, v.cx));
     v.cy=Math.max(hh, Math.min(H-hh, v.cy));
-  }
-
-  function applyRiskView(){
-    var box=$('riskMap'); if(!box) return;
-    var svg=box.querySelector('svg'); if(!svg) return;
-    clampRiskView();
-    var v=RM.view, H=RM.H, w=RM_W/v.z, h=H/v.z;
+    var w=RM_W/v.z, h=H/v.z;
     svg.setAttribute('viewBox', (v.cx-w/2).toFixed(2)+' '+(v.cy-h/2).toFixed(2)+' '+w.toFixed(2)+' '+h.toFixed(2));
     var inv=1/v.z;
     svg.querySelectorAll('.rm-lbl').forEach(function(g){
@@ -2256,36 +2338,36 @@ svg.z1 .rm-name:not(.main){display:none}
     });
     svg.classList.toggle('z1', v.z<1.6);
     svg.style.touchAction = v.z>1.01 ? 'none' : 'pan-y';
-    var bi=box.querySelector('[data-z="in"]'), bo=box.querySelector('[data-z="out"]');
+    var bi=M.box.querySelector('[data-z="in"]'), bo=M.box.querySelector('[data-z="out"]');
     if(bi) bi.disabled = v.z>=RM_ZMAX-0.01;
     if(bo) bo.disabled = v.z<=1.01;
   }
 
   // Zoom manteniendo fijo el punto (sx, sy) en coordenadas del SVG
-  function zoomRiskAt(factor, sx, sy){
-    var v=RM.view, nz=Math.max(1, Math.min(RM_ZMAX, v.z*factor)), f=v.z/nz;
+  function zoomMapAt(M, factor, sx, sy){
+    var v=M.view, nz=Math.max(1, Math.min(RM_ZMAX, v.z*factor)), f=v.z/nz;
     v.cx = sx + (v.cx-sx)*f; v.cy = sy + (v.cy-sy)*f; v.z = nz;
-    applyRiskView();
+    applyMapView(M);
   }
 
-  function svgPoint(svg, clientX, clientY){
-    var r=svg.getBoundingClientRect(), v=RM.view, w=RM_W/v.z, h=RM.H/v.z;
+  function svgPointOf(M, svg, clientX, clientY){
+    var r=svg.getBoundingClientRect(), v=M.view, w=RM_W/v.z, h=M.H/v.z;
     return [ (v.cx-w/2) + (clientX-r.left)/r.width*w, (v.cy-h/2) + (clientY-r.top)/r.height*h ];
   }
 
-  function wireRiskMap(box){
-    var svg=box.querySelector('svg');
-    box.querySelectorAll('[data-z]').forEach(function(b){
+  function wireSectorMap(M){
+    var svg=M.box.querySelector('svg');
+    M.box.querySelectorAll('[data-z]').forEach(function(b){
       b.addEventListener('click', function(){
-        var z=b.getAttribute('data-z'), v=RM.view;
-        if(z==='reset'){ v.z=1; v.cx=RM_W/2; v.cy=RM.H/2; applyRiskView(); }
-        else zoomRiskAt(z==='in'?1.6:1/1.6, v.cx, v.cy);
+        var z=b.getAttribute('data-z'), v=M.view;
+        if(z==='reset'){ v.z=1; v.cx=RM_W/2; v.cy=M.H/2; applyMapView(M); }
+        else zoomMapAt(M, z==='in'?1.6:1/1.6, v.cx, v.cy);
       });
     });
     svg.addEventListener('wheel', function(e){
       e.preventDefault();
-      var p=svgPoint(svg, e.clientX, e.clientY);
-      zoomRiskAt(e.deltaY<0?1.25:0.8, p[0], p[1]);
+      var p=svgPointOf(M, svg, e.clientX, e.clientY);
+      zoomMapAt(M, e.deltaY<0?1.25:0.8, p[0], p[1]);
     }, { passive:false });
 
     // Arrastre (con zoom) y pellizco
@@ -2296,7 +2378,7 @@ svg.z1 .rm-name:not(.main){display:none}
       var ids=Object.keys(ptrs);
       if(ids.length===2){
         var a=ptrs[ids[0]], b=ptrs[ids[1]];
-        pinch={ d:Math.hypot(a.x-b.x, a.y-b.y), z:RM.view.z };
+        pinch={ d:Math.hypot(a.x-b.x, a.y-b.y), z:M.view.z };
       }
     });
     svg.addEventListener('pointermove', function(e){
@@ -2305,17 +2387,17 @@ svg.z1 .rm-name:not(.main){display:none}
       var ids=Object.keys(ptrs);
       if(ids.length===2 && pinch){
         var a=ptrs[ids[0]], b=ptrs[ids[1]], d=Math.hypot(a.x-b.x, a.y-b.y);
-        var mid=svgPoint(svg, (a.x+b.x)/2, (a.y+b.y)/2);
-        zoomRiskAt((pinch.z*d/pinch.d)/RM.view.z, mid[0], mid[1]);
+        var mid=svgPointOf(M, svg, (a.x+b.x)/2, (a.y+b.y)/2);
+        zoomMapAt(M, (pinch.z*d/pinch.d)/M.view.z, mid[0], mid[1]);
         moved=99; e.preventDefault(); return;
       }
-      if(ids.length===1 && RM.view.z>1.01 && last){
+      if(ids.length===1 && M.view.z>1.01 && last){
         var r=svg.getBoundingClientRect(), dx=e.clientX-last.x, dy=e.clientY-last.y;
         moved+=Math.abs(dx)+Math.abs(dy);
-        RM.view.cx -= dx/r.width*(RM_W/RM.view.z);
-        RM.view.cy -= dy/r.height*(RM.H/RM.view.z);
+        M.view.cx -= dx/r.width*(RM_W/M.view.z);
+        M.view.cy -= dy/r.height*(M.H/M.view.z);
         last={ x:e.clientX, y:e.clientY };
-        applyRiskView();
+        applyMapView(M);
       }
     });
     var up=function(e){ delete ptrs[e.pointerId]; if(Object.keys(ptrs).length<2) pinch=null; last=null; };
@@ -2323,14 +2405,31 @@ svg.z1 .rm-name:not(.main){display:none}
 
     svg.querySelectorAll('.rm-sec').forEach(function(p){
       var pick=function(byKey){
-        RM.sel=p.getAttribute('data-sec');
+        M.sel=p.getAttribute('data-sec');
         svg.querySelectorAll('.rm-sec').forEach(function(q){ q.classList.toggle('sel', q===p); });
-        showSectorInfo(RM.sel);
-        if(byKey) p.focus({ preventScroll:true });
+        if(M.redrawOnPick){ drawSectorMap(M); if(byKey){ var q=M.box.querySelector('.rm-sec.sel'); if(q) q.focus({ preventScroll:true }); } }
+        else if(byKey) p.focus({ preventScroll:true });
+        if(M.onPick) M.onPick(M.sel);
       };
       p.addEventListener('click', function(){ if(moved>8) return; pick(false); });
       p.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); pick(true); } });
     });
+  }
+
+  // Mapa de riesgo: colores por nivel de la semana actual
+  function drawRiskMap(){
+    var w=RM.weeks[RM.idx] || { sectors:{} };
+    RM.box=$('riskMap');
+    RM.calles=(S.ovi.calles||{})[RM.code] || [];
+    RM.mine=(S.profile && S.profile.sector) || null;
+    RM.aria='Mapa de sectores de vigilancia coloreados por nivel de riesgo';
+    RM.fill=function(s){
+      var r=w.sectors[s.sector], nivel=(r && r.nivel) || 'nodata';
+      var name=s.barrios || s.nombre || ('Sector '+s.sector);
+      return { cls:nivel, aria:(RM.mine===s.sector?'Tu sector, ':'')+name+': '+(r && r.nivel ? 'riesgo '+r.nivel+(r.edi!=null?', EDI '+nf(r.edi):'') : 'sin dato esta semana') };
+    };
+    RM.onPick=function(sec){ showSectorInfo(sec); };
+    drawSectorMap(RM);
   }
 
   function showSectorInfo(code){
@@ -2338,7 +2437,9 @@ svg.z1 .rm-name:not(.main){display:none}
     var s=null; RM.sectors.forEach(function(x){ if(x.sector===code) s=x; });
     if(!s){ box.innerHTML='<span class="rm-hint">Tocá un sector del mapa para ver su riesgo.</span>'; return; }
     var w=RM.weeks[RM.idx] || { sectors:{} }, r=w.sectors[s.sector], nivel=r && r.nivel;
+    var mine=(S.profile && S.profile.sector===s.sector);
     box.innerHTML =
+      (mine ? '<span class="rm-mine-tag">📍 Tu sector</span>' : '')+
       '<div class="rm-info-name">'+esc(s.barrios || s.nombre || ('Sector '+s.sector))+'</div>'+
       '<div class="rm-info-row">'+(nivel ? '<span class="risk-badge '+nivel+'">Riesgo '+esc(nivel)+'</span>' : '<span class="rm-hint">Sin dato esta semana</span>')+
         (r && r.edi!=null ? '<span class="rm-info-edi">EDI '+nf(r.edi)+'</span>' : '')+'</div>';
@@ -3774,6 +3875,8 @@ svg.z1 .rm-name:not(.main){display:none}
     $('profLogout').addEventListener('click', handleLogout);
     document.querySelectorAll('#sec-profile .setting-row[data-acc]').forEach(function(r){ r.addEventListener('click', function(){ toggleAcc(r.dataset.acc); }); });
     $('savePerfil').addEventListener('click', saveProfileInfo);
+    $('pfCity').addEventListener('change', function(){ setupSectorPicker($('pfSectorField'), $('pfCity').value, null, PF_SECTOR); });
+    $('inCity').addEventListener('change', function(){ setupSectorPicker($('fieldSector'), $('inCity').value, null, REG_SECTOR); });
     $('saveEmail').addEventListener('click', saveEmail);
     $('savePass').addEventListener('click', savePass);
     $('rowPriv').addEventListener('click', function(){ openPrivacy(false); });
