@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moderación de reportes · Patrulla Antimosquito</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Raleway:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#170F1B; --panel:#231A29; --panel-2:#2C2131; --border:rgba(244,209,139,.14);
+  --teal:#3FBBA0; --lime:#8ED65A; --gold:#F4D18B; --coral:#E2695F; --violet:#B79BE0;
+  --cream:#F2E9DA; --muted:#A896AE; --muted-2:#7C6C87;
+  --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(1100px 500px at 15% -10%, rgba(63,187,160,.10), transparent),
+    radial-gradient(900px 500px at 100% 0%, rgba(244,209,139,.08), transparent),
+    var(--bg);
+  color:var(--cream); font-family:'Raleway',sans-serif; min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'JetBrains Mono',monospace}
+h1,h2,h3{font-family:'DM Serif Display',serif;font-weight:400;margin:0}
+::selection{background:var(--teal);color:#0E1613}
+a{color:var(--teal)}
+input[type=date]{color-scheme:dark}
+
+.wrap{max-width:1320px;margin:0 auto;padding:22px 26px 60px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--teal),#1E8069);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:var(--shadow)}
+.brand-tx h1{font-size:22px;color:#fff;line-height:1.1}
+.brand-tx span{font-size:12px;color:var(--muted);letter-spacing:.4px}
+
+.controls-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.top-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.range-pills{display:flex;background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:3px}
+.range-pill{background:none;border:none;color:var(--muted);font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:8px;cursor:pointer;transition:background .15s,color .15s}
+.range-pill.active{background:var(--teal);color:#0E1613}
+.daterange{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:5px 8px}
+.daterange input{background:none;border:none;color:var(--cream);font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px}
+.daterange span{color:var(--muted-2);font-size:12px}
+.icon-btn{background:var(--panel);border:1px solid var(--border);color:var(--cream);width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.icon-btn:hover{background:var(--panel-2)}
+.icon-btn.spin svg{animation:spin .7s linear}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.range-label{font-size:11.5px;color:var(--muted-2);margin-top:6px}
+.updated{font-size:11.5px;color:var(--muted-2)}
+
+.warn-banner{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,rgba(226,105,95,.16),rgba(244,209,139,.10));border:1px solid rgba(226,105,95,.35);color:#F6D9D5;font-size:12.5px;font-weight:600;padding:10px 14px;border-radius:12px;margin-bottom:20px;line-height:1.5}
+.warn-banner b{color:#fff}
+
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi:before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--kc,var(--teal))}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.kpi-num{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;color:#fff;margin-top:6px;line-height:1}
+.kpi-sub{font-size:11px;color:var(--muted-2);margin-top:5px}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid.g3{grid-template-columns:repeat(3,1fr)}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.panel.wide{grid-column:1 / -1}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.panel-title{font-size:16px;color:#fff}
+.panel-sub{font-size:11.5px;color:var(--muted);margin-top:2px;font-family:'Raleway',sans-serif}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+
+.panel-loading,.panel-empty,.panel-error{padding:30px 6px;text-align:center;color:var(--muted);font-size:13px}
+.panel-error button{margin-top:10px}
+.retry-btn{background:var(--teal);color:#0E1613;border:none;font-family:inherit;font-size:12.5px;font-weight:800;padding:8px 16px;border-radius:9px;cursor:pointer}
+.spinner{width:22px;height:22px;border-radius:50%;border:3px solid rgba(244,233,218,.15);border-top-color:var(--teal);margin:0 auto 8px;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.linechart{width:100%;height:auto;display:block}
+.lc-grid{stroke:rgba(244,233,218,.08);stroke-width:1}
+.lc-axis{fill:var(--muted-2);font-size:9.5px;font-family:'JetBrains Mono',monospace}
+.lc-dot{cursor:pointer}
+
+.barmini-row{display:flex;align-items:flex-end;gap:4px;height:120px;padding-top:6px}
+.barmini-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.barmini-bar{width:100%;max-width:22px;background:linear-gradient(180deg,var(--gold),#C9A25E);border-radius:5px 5px 2px 2px;min-height:2px}
+.barmini-val{font-size:9.5px;color:var(--muted);margin-bottom:3px;font-family:'JetBrains Mono',monospace}
+.barmini-lbl{font-size:9px;color:var(--muted-2);margin-top:5px;white-space:nowrap}
+
+.hbar-row{margin-bottom:12px}
+.hbar-row:last-child{margin-bottom:0}
+.hbar-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px}
+.hbar-name{font-weight:700;color:var(--cream)}
+.hbar-val{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.hbar-track{background:rgba(244,233,218,.08);border-radius:999px;height:9px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--teal),#2A8E77)}
+.hbar-dual{display:flex;flex-direction:column;gap:4px}
+.hbar-mini-track{background:rgba(244,233,218,.08);border-radius:999px;height:7px;overflow:hidden}
+.hbar-mini-fill{height:100%;border-radius:999px}
+.conv-badge{font-size:10px;font-weight:800;color:var(--lime);background:rgba(142,214,90,.14);padding:2px 7px;border-radius:999px;margin-left:6px}
+
+.funnel-stage{margin-bottom:14px}
+.funnel-top{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;margin-bottom:6px}
+.funnel-name{font-weight:700;color:var(--cream)}
+.funnel-num{font-family:'JetBrains Mono',monospace;color:#fff;font-size:14px;font-weight:700}
+.funnel-pct{color:var(--muted-2);font-size:11px;margin-left:6px}
+.funnel-track{background:rgba(244,233,218,.07);border-radius:10px;height:26px;overflow:hidden}
+.funnel-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--teal),#2A8E77);transition:width .5s ease}
+.funnel-extra{display:flex;gap:10px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)}
+.mini-stat{flex:1;background:var(--panel-2);border-radius:11px;padding:10px 12px;text-align:center}
+.mini-stat b{display:block;font-family:'JetBrains Mono',monospace;font-size:19px;color:#fff}
+.mini-stat span{font-size:10.5px;color:var(--muted)}
+
+.cmp-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cmp-row:last-child{margin-bottom:0}
+.cmp-label{width:104px;font-size:12px;font-weight:700;color:var(--cream);flex-shrink:0}
+.cmp-track{flex:1;background:rgba(244,233,218,.07);border-radius:999px;height:16px;overflow:hidden}
+.cmp-fill{height:100%;border-radius:999px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px}
+.cmp-fill span{font-size:10px;font-weight:800;color:#0E1613;font-family:'JetBrains Mono',monospace}
+
+.table-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.table-filter{flex:1;background:var(--panel-2);border:1px solid var(--border);color:var(--cream);font-family:inherit;font-size:12.5px;padding:9px 12px;border-radius:9px}
+.table-filter::placeholder{color:var(--muted-2)}
+.csv-btn{background:var(--panel-2);border:1px solid var(--border);color:var(--cream);font-family:inherit;font-size:12px;font-weight:700;padding:9px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.csv-btn:hover{background:#382A40}
+.data-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.data-table th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--border)}
+.data-table td{padding:9px 10px;border-bottom:1px solid rgba(244,233,218,.05);color:var(--cream)}
+.data-table tbody tr:hover{background:rgba(244,233,218,.03)}
+.data-table td.num{font-family:'JetBrains Mono',monospace;color:var(--muted)}
+.table-empty{text-align:center;color:var(--muted-2);padding:20px !important}
+.table-scroll{max-height:420px;overflow-y:auto;border-radius:10px}
+
+footer{margin-top:26px;text-align:center;font-size:11px;color:var(--muted-2);line-height:1.6}
+
+/* Login de administradores */
+.hide{display:none !important}
+body.locked .wrap{display:none}
+.gate{max-width:420px;margin:12vh auto 0;padding:0 18px}
+.gate .panel{padding:26px 24px}
+.gate h2{font-size:24px;color:#fff;margin:14px 0 4px}
+.gate p{font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 16px}
+.gate label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;margin:12px 0 6px}
+.gate input{width:100%;background:var(--panel-2);border:1px solid var(--border);color:var(--cream);font-family:inherit;font-size:14px;padding:11px 12px;border-radius:10px}
+.gate input:focus{outline:2px solid var(--teal);outline-offset:1px}
+.gate .retry-btn{width:100%;padding:12px;font-size:14px;margin-top:18px}
+.gate-msg{min-height:18px;font-size:12.5px;color:var(--coral);margin-top:12px;line-height:1.45}
+.ghost-btn{background:none;border:1px solid var(--border);color:var(--cream);font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:9px;cursor:pointer}
+.ghost-btn:hover{background:var(--panel-2)}
+.session-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:18px;font-size:12.5px;color:var(--muted)}
+.session-bar b{color:var(--cream)}
+
+/* Ovitrampas */
+.ovi-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+@media(max-width:980px){ .ovi-grid{grid-template-columns:1fr} }
+.ovi-drop{display:block;border:2px dashed rgba(63,187,160,.45);border-radius:14px;padding:22px 16px;text-align:center;cursor:pointer;background:rgba(63,187,160,.05);transition:background .15s}
+.ovi-drop:hover,.ovi-drop.over{background:rgba(63,187,160,.12)}
+.ovi-drop b{display:block;color:#fff;font-size:14px;margin-bottom:4px}
+.ovi-drop span{font-size:12px;color:var(--muted)}
+.ovi-drop input{display:none}
+.ovi-check{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--cream);margin:12px 0 4px;line-height:1.4}
+.ovi-check input{margin-top:2px;accent-color:var(--gold)}
+.ovi-file{background:var(--panel-2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-top:12px}
+.ovi-file-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ovi-file-name{font-family:'JetBrains Mono',monospace;font-size:12px;color:#fff;word-break:break-all}
+.ovi-file-meta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
+.ovi-st{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:999px}
+.ovi-st.ok{background:rgba(142,214,90,.16);color:var(--lime)}
+.ovi-st.err{background:rgba(226,105,95,.18);color:var(--coral)}
+.ovi-st.done{background:rgba(63,187,160,.18);color:var(--teal)}
+.ovi-msgs{margin:8px 0 0;padding-left:18px;font-size:12px;line-height:1.5}
+.ovi-msgs li.e{color:var(--coral)}
+.ovi-msgs li.w{color:var(--gold)}
+.ovi-msgs li.i{color:var(--muted)}
+.lvl{font-size:10.5px;font-weight:800;text-transform:uppercase;padding:2px 7px;border-radius:999px;color:#0E1613}
+.lvl.bajo{background:#5FBF6E} .lvl.medio{background:#F0B04A} .lvl.alto{background:#E2695F;color:#fff}
+.tag-prueba{font-size:10px;font-weight:800;color:var(--gold);border:1px solid rgba(244,209,139,.5);border-radius:999px;padding:1px 7px;margin-left:6px}
+.ovi-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.ovi-result{font-size:12.5px;margin-top:10px;line-height:1.5}
+.ovi-result.ok{color:var(--lime)} .ovi-result.err{color:var(--coral)}
+.ovi-h{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;margin:0 0 10px}
+.ovi-help{font-size:11.5px;color:var(--muted-2);line-height:1.55;margin-top:12px}
+.act-cell{text-align:center;white-space:nowrap}
+.act-cell b{display:block;font-size:15px;color:#fff}
+.act-cell .lvl{font-size:9.5px;padding:1px 6px}
+.act-cell small{display:block;color:var(--muted-2);font-size:10.5px;margin-top:2px}
+.ovi-help code{font-family:'JetBrains Mono',monospace;color:var(--muted)}
+
+@media(max-width:980px){
+  .grid, .grid.g3{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .wrap{padding:16px}
+  .kpi-num{font-size:24px}
+  .daterange{flex-wrap:wrap}
+}
+
+/* ---------- Moderación ---------- */
+.mod-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 14px}
+.mod-top h1{font-family:'DM Serif Display',serif;font-weight:400;font-size:28px;color:#fff;margin:0}
+.mod-top a{color:var(--teal);font-size:13px;font-weight:700}
+.mod-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.mod-tabs button{background:var(--panel);border:1px solid var(--border);color:var(--cream);font-family:inherit;font-size:13px;font-weight:700;padding:9px 14px;border-radius:999px;cursor:pointer}
+.mod-tabs button[aria-pressed="true"]{background:var(--teal);color:#0E1613;border-color:var(--teal)}
+.mod-tabs .n{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:rgba(255,255,255,.12);font-size:11.5px}
+.mod-card{display:grid;grid-template-columns:240px 1fr;gap:18px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px}
+@media(max-width:760px){ .mod-card{grid-template-columns:1fr} }
+.mod-photos{display:flex;flex-direction:column;gap:8px}
+.mod-photos img{width:100%;border-radius:10px;display:block;background:var(--panel-2)}
+.mod-photos figcaption{font-size:11px;color:var(--muted);margin-top:2px}
+.mod-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mod-id{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+.mod-pill{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:3px 9px;border-radius:999px}
+.mod-pill.denuncia{background:rgba(226,105,95,.2);color:var(--coral)}
+.mod-pill.apelacion{background:rgba(244,209,139,.18);color:var(--gold)}
+.mod-pill.atascado{background:rgba(255,255,255,.08);color:var(--muted)}
+.mod-pill.st{background:rgba(63,187,160,.15);color:var(--teal)}
+.mod-title{font-size:16px;font-weight:800;color:#fff;margin:8px 0 2px}
+.mod-meta{font-size:12.5px;color:var(--muted);line-height:1.6}
+.mod-note{font-size:13.5px;color:var(--cream);background:var(--panel-2);border-radius:10px;padding:8px 10px;margin:8px 0;font-style:italic}
+.mod-flags{margin:10px 0;display:flex;flex-direction:column;gap:6px}
+.mod-flag{font-size:12.5px;line-height:1.5;border-left:3px solid var(--gold);padding:4px 10px;background:rgba(255,255,255,.03);border-radius:0 8px 8px 0}
+.mod-flag.denuncia{border-left-color:var(--coral)}
+.mod-author{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.6}
+.mod-author b{color:var(--cream)}
+.mod-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.mod-actions button{font-family:inherit;font-size:12.5px;font-weight:800;border-radius:9px;padding:9px 12px;cursor:pointer;border:1px solid var(--border);background:var(--panel-2);color:var(--cream)}
+.mod-actions .ok{background:rgba(142,214,90,.15);border-color:rgba(142,214,90,.4);color:var(--lime)}
+.mod-actions .bad{background:rgba(226,105,95,.15);border-color:rgba(226,105,95,.4);color:var(--coral)}
+.mod-actions button:disabled{opacity:.5;cursor:default}
+.mod-msg{width:100%;margin-top:10px;background:var(--panel-2);border:1px solid var(--border);color:var(--cream);font-family:inherit;font-size:13px;padding:9px 10px;border-radius:10px;min-height:54px}
+.mod-res{font-size:12.5px;margin-top:8px}
+.mod-res.ok{color:var(--lime)} .mod-res.err{color:var(--coral)}
+.mod-empty{background:var(--panel);border:1px dashed var(--border);border-radius:16px;padding:40px 20px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body class="locked">
+
+<div class="gate" id="gate">
+  <div class="panel">
+    <div class="brand"><div class="brand-logo">🦟</div><div class="brand-tx"><h1>Centro de Monitoreo</h1><span>PATRULLA ANTIMOSQUITO · FUNDACIÓN MUNDO SANO</span></div></div>
+    <h2>Moderación de reportes</h2>
+    <p>Entrá con tu cuenta de la app. Solo pueden pasar las cuentas habilitadas como administradoras.</p>
+    <form id="gateForm" novalidate>
+      <label for="gateEmail">Email</label>
+      <input type="email" id="gateEmail" autocomplete="username" required>
+      <label for="gatePass">Contraseña</label>
+      <input type="password" id="gatePass" autocomplete="current-password" required>
+      <button type="submit" class="retry-btn" id="gateBtn">Entrar</button>
+    </form>
+    <div class="gate-msg" id="gateMsg" role="alert"></div>
+    <button type="button" class="ghost-btn hide" id="gateLogout" style="margin-top:12px">Cerrar sesión y entrar con otra cuenta</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="session-bar">
+    <span id="sessionWho">—</span>
+    <span><a href="admin.html" style="color:var(--teal);font-weight:700;margin-right:12px">← Centro de monitoreo</a>
+    <button type="button" class="ghost-btn" id="logoutBtn">Cerrar sesión</button></span>
+  </div>
+
+  <div class="mod-top">
+    <h1>🛡️ Moderación de reportes</h1>
+    <button class="ghost-btn" id="modRefresh">↻ Actualizar</button>
+  </div>
+  <div class="mod-tabs" role="group" aria-label="Filtrar">
+    <button data-f="todo" aria-pressed="true">Todo<span class="n" id="nTodo">0</span></button>
+    <button data-f="denuncia" aria-pressed="false">🚩 Denuncias<span class="n" id="nDen">0</span></button>
+    <button data-f="apelacion" aria-pressed="false">🛟 Segundas opiniones<span class="n" id="nApe">0</span></button>
+    <button data-f="atascado" aria-pressed="false">⏳ Atascados +7 días<span class="n" id="nAta">0</span></button>
+  </div>
+  <div id="modList"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+(function(){
+  'use strict';
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function fmtDate(iso){ try{ return new Date(iso).toLocaleString('es-AR',{ day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }); }catch(e){ return iso; } }
+  if (typeof SUPABASE_URL === 'undefined'){ document.body.innerHTML='<p style="padding:40px;color:#fff">Falta config.js junto a esta página.</p>'; return; }
+  var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  var ME = null, ITEMS = [], FILTER = 'todo';
+
+  var MOTIVOS = { ofensivo:'Ofensivo o inapropiado', privacidad:'Muestra personas o datos privados', falso:'Engaño o foto repetida', spam:'Spam o sin relación', otro:'Otro' };
+  var REJECT = { falso:'Falso', incorrecto:'Incorrecto', borrosa:'Borrosa', no_corresponde:'No corresponde', dudoso:'Dudoso' };
+  var ESTADOS = { pendiente:'⏳ En revisión de vecinos', revision_admin:'🛡️ Retirado de la cola (denuncia)', validado:'✅ Validado', descartado:'❌ Descartado' };
+
+  // ---------- Login (igual que admin.html) ----------
+  function showGate(msg, canLogout){
+    document.body.classList.add('locked'); $('gate').classList.remove('hide');
+    $('gateMsg').textContent = msg || '';
+    $('gateLogout').classList.toggle('hide', !canLogout);
+    $('gateForm').classList.toggle('hide', !!canLogout);
+  }
+  function checkAdmin(session){
+    if(!session){ showGate('', false); return; }
+    var email=(session.user && session.user.email) || '';
+    db.from('profiles').select('id,username,is_admin').eq('id', session.user.id).single().then(function(r){
+      if(r.error || !r.data){ showGate('No encontramos el perfil de '+email+'.', true); return; }
+      if(!r.data.is_admin){ showGate('La cuenta '+email+' no tiene permisos de administrador.', true); return; }
+      ME=r.data;
+      document.body.classList.remove('locked'); $('gate').classList.add('hide');
+      $('sessionWho').innerHTML='Sesión de administrador: <b>'+esc(r.data.username||email)+'</b>';
+      load();
+    }, function(){ showGate('No pudimos verificar la cuenta. Revisá la conexión.', true); });
+  }
+  function doLogout(){ db.auth.signOut().then(function(){ location.reload(); }); }
+  $('gateForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var email=$('gateEmail').value.trim(), pass=$('gatePass').value;
+    if(!email || !pass){ $('gateMsg').textContent='Completá el email y la contraseña.'; return; }
+    var btn=$('gateBtn'); btn.disabled=true; btn.textContent='Entrando…';
+    db.auth.signInWithPassword({ email:email, password:pass }).then(function(r){
+      btn.disabled=false; btn.textContent='Entrar';
+      if(r.error){ $('gateMsg').textContent='Email o contraseña incorrectos.'; return; }
+      checkAdmin(r.data.session);
+    });
+  });
+  $('gateLogout').addEventListener('click', doLogout);
+  $('logoutBtn').addEventListener('click', doLogout);
+
+  // ---------- Cola ----------
+  function kindsOf(it){
+    var k={}; (it.flags||[]).forEach(function(f){ k[f.tipo]=1; });
+    if(!it.flags || !it.flags.length) k.atascado=1;
+    return k;
+  }
+  function load(){
+    $('modList').innerHTML='<div class="panel-loading"><div class="spinner"></div>Cargando…</div>';
+    db.rpc('admin_cola_moderacion').then(function(res){
+      if(res.error){ $('modList').innerHTML='<div class="panel-error">No pudimos cargar la cola. Si dice que falta una función, corré 19_moderacion-reportes.sql en Supabase.<br><span class="mono">'+esc(res.error.message)+'</span></div>'; return; }
+      ITEMS=res.data||[];
+      var n={ denuncia:0, apelacion:0, atascado:0 };
+      ITEMS.forEach(function(it){ var k=kindsOf(it); Object.keys(k).forEach(function(x){ n[x]++; }); });
+      $('nTodo').textContent=ITEMS.length; $('nDen').textContent=n.denuncia; $('nApe').textContent=n.apelacion; $('nAta').textContent=n.atascado;
+      render();
+    });
+  }
+  function photosOf(it){
+    var out=[];
+    var tour=it.tour_photos; if(typeof tour==='string'){ try{ tour=JSON.parse(tour); }catch(e){ tour=null; } }
+    if(Array.isArray(tour) && tour.length) tour.forEach(function(t){ if(t && t.url) out.push({ url:t.url, cap:t.title||'' }); });
+    else {
+      if(it.photo_before_url) out.push({ url:it.photo_before_url, cap:'Antes' });
+      if(it.photo_url) out.push({ url:it.photo_url, cap:it.photo_before_url?'Después':'' });
+    }
+    return out;
+  }
+  function render(){
+    var list=ITEMS.filter(function(it){ return FILTER==='todo' || kindsOf(it)[FILTER]; });
+    var box=$('modList');
+    if(!list.length){ box.innerHTML='<div class="mod-empty">🎉 No hay nada pendiente en esta lista.</div>'; return; }
+    box.innerHTML='';
+    list.forEach(function(it){ box.appendChild(card(it)); });
+  }
+  function card(it){
+    var k=kindsOf(it), a=it.author||{};
+    var rr=it.reject_reasons; if(typeof rr==='string'){ try{ rr=JSON.parse(rr); }catch(e){ rr=null; } }
+    var el=document.createElement('article'); el.className='mod-card';
+    el.innerHTML =
+      '<div class="mod-photos">'+(photosOf(it).map(function(p){ return '<figure style="margin:0"><a href="'+esc(p.url)+'" target="_blank" rel="noopener"><img src="'+esc(p.url)+'" alt="Foto del reporte" loading="lazy"></a>'+(p.cap?'<figcaption>'+esc(p.cap)+'</figcaption>':'')+'</figure>'; }).join('') || '<div class="mod-empty" style="padding:20px">Sin foto</div>')+'</div>'+
+      '<div>'+
+        '<div class="mod-head"><span class="mod-id">#'+it.id+'</span>'+
+          (k.denuncia?'<span class="mod-pill denuncia">🚩 Denuncia</span>':'')+
+          (k.apelacion?'<span class="mod-pill apelacion">🛟 Segunda opinión</span>':'')+
+          (k.atascado?'<span class="mod-pill atascado">⏳ Atascado</span>':'')+
+          '<span class="mod-pill st">'+esc(ESTADOS[it.status]||it.status)+'</span></div>'+
+        '<div class="mod-title">'+esc(it.action_title||it.action_type||'Acción')+'</div>'+
+        '<div class="mod-meta">'+fmtDate(it.created_at)+' · '+esc(it.city||'Sin municipio')+(it.sector?' · Sector '+esc(it.sector):'')+
+          ' · Votos: '+(it.votos?it.votos.si:0)+' a favor, '+(it.votos?it.votos.no:0)+' en contra'+
+          (Array.isArray(rr)&&rr.length?' · Motivos de rechazo: '+esc(rr.map(function(x){ return REJECT[x]||x; }).join(', ')):'')+
+          ' · '+(it.points_awarded||0)+' pts</div>'+
+        (it.note?'<div class="mod-note">“'+esc(it.note)+'”</div>':'')+
+        '<div class="mod-flags">'+(it.flags||[]).map(function(f){
+          return '<div class="mod-flag '+esc(f.tipo)+'"><b>'+(f.tipo==='denuncia'?'🚩 Denuncia de '+esc(f.quien||'un revisor')+': '+esc(MOTIVOS[f.motivo]||f.motivo||''):'🛟 El autor pide segunda opinión')+'</b>'+
+            (f.comentario?'<br>“'+esc(f.comentario)+'”':'')+'<br><span style="color:var(--muted-2)">'+fmtDate(f.created_at)+'</span></div>';
+        }).join('')+'</div>'+
+        '<div class="mod-author">Autor: <b>'+esc(a.username||'—')+'</b> · '+(a.reportes||0)+' reportes, '+(a.descartados||0)+' descartados, '+(a.avisos_mal_uso||0)+' avisos de mal uso'+
+          (a.bloqueado?' · <b style="color:var(--coral)">BLOQUEADO</b>'+(a.bloqueado_motivo?' ('+esc(a.bloqueado_motivo)+')':''):'')+'</div>'+
+        '<textarea class="mod-msg" maxlength="500" placeholder="Mensaje para el autor (opcional; si lo dejás vacío se usa un texto estándar)"></textarea>'+
+        '<div class="mod-actions">'+
+          '<button class="ok" data-a="validar">✅ Validar</button>'+
+          '<button data-a="descartar">❌ Descartar</button>'+
+          (it.status==='revision_admin'?'<button data-a="revisar">↩︎ Devolver a revisión de vecinos</button>':'')+
+          '<button class="bad" data-a="eliminar">🗑️ Eliminar reporte</button>'+
+          '<button data-a="avisar">⚠️ Enviar aviso de mal uso</button>'+
+          (a.bloqueado?'<button data-a="desbloquear">🔓 Desbloquear usuario</button>':'<button class="bad" data-a="bloquear">⛔ Bloquear usuario</button>')+
+        '</div>'+
+        '<div class="mod-res" role="status"></div>'+
+      '</div>';
+    var msgEl=el.querySelector('.mod-msg'), res=el.querySelector('.mod-res');
+    el.querySelectorAll('[data-a]').forEach(function(b){
+      b.addEventListener('click', function(){ act(it, b.getAttribute('data-a'), msgEl.value.trim(), el, res); });
+    });
+    return el;
+  }
+  function setBusy(el, on){ el.querySelectorAll('[data-a]').forEach(function(b){ b.disabled=on; }); }
+  function done(el, res, ok, txt){ res.className='mod-res '+(ok?'ok':'err'); res.textContent=txt; setBusy(el,false); }
+
+  // Quita las fotos del almacenamiento (solo si se elimina el reporte)
+  function storagePathOf(url){
+    var m=String(url||'').match(/\/storage\/v1\/object\/public\/reports\/(.+)$/);
+    return m ? decodeURIComponent(m[1].split('?')[0]) : null;
+  }
+  function act(it, a, msg, el, res){
+    var author=(it.author||{});
+    if(a==='avisar'){
+      if(!msg){ done(el,res,false,'Escribí el mensaje del aviso en el recuadro.'); return; }
+      if(!confirm('¿Enviar este aviso a '+(author.username||'el autor')+'?')) return;
+      setBusy(el,true);
+      db.rpc('admin_avisar_usuario', { p_user:author.id, p_mensaje:msg, p_report_id:it.id }).then(function(r){
+        if(r.error) return done(el,res,false,'No se pudo: '+r.error.message);
+        done(el,res,true,'Aviso enviado. Le llega en la app y por notificación.'); el.querySelector('.mod-msg').value='';
+      });
+      return;
+    }
+    if(a==='bloquear' || a==='desbloquear'){
+      var bl=(a==='bloquear');
+      if(!confirm(bl ? '¿Bloquear a '+(author.username||'este usuario')+'? No podrá reportar ni revisar hasta que lo desbloquees.' : '¿Desbloquear a '+(author.username||'este usuario')+'?')) return;
+      setBusy(el,true);
+      db.rpc('admin_bloquear_usuario', { p_user:author.id, p_bloquear:bl, p_motivo:msg||null }).then(function(r){
+        if(r.error) return done(el,res,false,'No se pudo: '+r.error.message);
+        done(el,res,true, bl?'Usuario bloqueado.':'Usuario desbloqueado.'); load();
+      });
+      return;
+    }
+    var labels={ validar:'validar', descartar:'descartar', revisar:'devolver a la revisión de vecinos', eliminar:'ELIMINAR (no se puede deshacer)' };
+    if(!confirm('¿Seguro que querés '+labels[a]+' el reporte #'+it.id+'?')) return;
+    setBusy(el,true);
+    var pre=Promise.resolve();
+    if(a==='eliminar'){
+      var paths=photosOf(it).map(function(p){ return storagePathOf(p.url); }).filter(Boolean);
+      if(paths.length) pre=db.storage.from('reports').remove(paths).then(function(){}, function(){});
+    }
+    pre.then(function(){
+      return db.rpc('admin_resolver_reporte', { p_report_id:it.id, p_accion:a, p_mensaje:msg||null });
+    }).then(function(r){
+      if(r.error) return done(el,res,false,'No se pudo: '+r.error.message);
+      done(el,res,true,'Hecho.'); setTimeout(load, 600);
+    });
+  }
+
+  document.querySelectorAll('.mod-tabs [data-f]').forEach(function(b){
+    b.addEventListener('click', function(){
+      FILTER=b.getAttribute('data-f');
+      document.querySelectorAll('.mod-tabs [data-f]').forEach(function(x){ x.setAttribute('aria-pressed', x===b?'true':'false'); });
+      render();
+    });
+  });
+  $('modRefresh').addEventListener('click', load);
+  db.auth.getSession().then(function(r){ checkAdmin(r.data && r.data.session); });
+})();
+</script>
+</body>
+</html>

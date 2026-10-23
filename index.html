@@ -613,7 +613,16 @@ svg.z1 .rm-name:not(.main){display:none}
 .myrep-date{font-size:11px;color:var(--muted);margin-top:2px}
 .myrep-note{font-size:12px;color:var(--text);margin-top:6px;line-height:1.4;font-style:italic}
 .myrep-st{font-size:12px;font-weight:800;padding:3px 8px;border-radius:999px;color:#fff}
-.myrep-st.pendiente{background:var(--warn)} .myrep-st.validado{background:var(--ok)} .myrep-st.descartado{background:var(--danger)}
+.myrep-st.pendiente{background:var(--warn)} .myrep-st.validado{background:var(--ok)} .myrep-st.descartado{background:var(--danger)} .myrep-st.revision_admin{background:var(--primary-soft)}
+.myrep-appeal{margin-top:8px}
+.myrep-appeal textarea{width:100%;min-height:60px;border:1px solid #E6DCE8;border-radius:10px;padding:8px;font-family:inherit;font-size:13px;margin-top:6px}
+.myrep-appeal-done{font-size:12px;font-weight:700;color:var(--primary);background:#F4EEF6;border-radius:8px;padding:6px 10px;display:inline-block;margin-top:8px}
+.flag-link{display:block;margin:14px auto 0;background:none;border:none;color:var(--muted);font-family:inherit;font-size:12.5px;font-weight:700;text-decoration:underline;cursor:pointer;min-height:44px}
+.flag-panel{display:none;flex-direction:column;gap:8px;margin-top:4px}
+.flag-panel.show{display:flex;animation:fade .2s ease}
+.flag-panel textarea{width:100%;min-height:56px;border:1px solid #E6DCE8;border-radius:10px;padding:8px;font-family:inherit;font-size:13px}
+.blocked-banner{background:#FBE3E1;color:#7A1F1A;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.5;margin-bottom:14px}
+.blocked-banner b{display:block;margin-bottom:2px}
 .myrep-actions{display:flex;gap:8px;margin-top:8px}
 .myrep-btn{background:#fff;border:1.5px solid #E5D9E8;color:var(--primary);font-family:inherit;font-size:12px;font-weight:700;padding:10px 14px;min-height:44px;border-radius:8px;cursor:pointer}
 .myrep-btn.danger{color:var(--danger);border-color:#F3D2CF}
@@ -908,6 +917,17 @@ svg.z1 .rm-name:not(.main){display:none}
         <button class="reject-opt" data-reason="borrosa"><b>🌫️ Borrosa o poco visible</b><span>No se llega a ver bien qué se hizo.</span></button>
         <button class="reject-cancel" id="rejectCancel">← Volver</button>
       </div>
+      <button type="button" class="flag-link" id="flagOpenBtn">🚩 Reportar como inadecuado</button>
+      <div class="flag-panel" id="flagPanel">
+        <div class="reject-title">¿Qué problema tiene este reporte?</div>
+        <button class="reject-opt" data-flag="ofensivo"><b>🤬 Ofensivo o inapropiado</b><span>Imágenes o textos que no deberían estar en la app.</span></button>
+        <button class="reject-opt" data-flag="privacidad"><b>👤 Muestra personas o datos privados</b><span>Caras, documentos, patentes o direcciones.</span></button>
+        <button class="reject-opt" data-flag="falso"><b>🎭 Engaño o foto repetida</b><span>Hecho a propósito para sumar puntos.</span></button>
+        <button class="reject-opt" data-flag="spam"><b>📢 Spam o sin relación</b><span>Publicidad o algo que no tiene nada que ver.</span></button>
+        <label class="reject-title" for="flagComment" style="margin-top:4px">Comentario para el equipo (opcional)</label>
+        <textarea id="flagComment" maxlength="500" placeholder="Contanos qué viste"></textarea>
+        <button class="reject-cancel" id="flagCancel">← Volver</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1080,6 +1100,7 @@ svg.z1 .rm-name:not(.main){display:none}
   // Convierte un error técnico en un mensaje claro: qué pasó, por qué y qué hacer.
   function humanError(e, whatFailed, whatToDo){
     var raw = (e && (e.message || e.error_description || e.msg || e.details)) || '';
+    if (S && S.profile && S.profile.bloqueado) return whatFailed + ': tu cuenta está suspendida por mal uso. Si creés que es un error, escribinos.';
     var code = e && (e.code || e.status);
     if (!navigator.onLine || /failed to fetch|networkerror|network error|fetch/i.test(raw)) {
       return whatFailed + ': parece que no hay conexión a internet. Revisá tus datos o el WiFi y volvé a intentar.';
@@ -1906,12 +1927,14 @@ svg.z1 .rm-name:not(.main){display:none}
       track('app_open', { auth_event: authEvent||'session_restore' });
       // Al abrir la app desde una notificación con ?sec=… (p. ej. riesgo), ir a esa pestaña
       try{
-        var qsSec=new URLSearchParams(window.location.search).get('sec');
-        if(qsSec && $('sec-'+qsSec)){ showSection(qsSec); history.replaceState(null,'',window.location.pathname); }
+        var qs=new URLSearchParams(window.location.search), qsSec=qs.get('sec'), qsVer=qs.get('ver');
+        openDeepLink(qsSec, qsVer);
+        if(qsSec || qsVer) history.replaceState(null,'',window.location.pathname);
       }catch(e){}
       trackScreen(S.lastSection||'reportar');
       if(S.profile && !S.profile.onboarded) startAppTour();
       else { maybeSoftAskPush(); }
+      renderBlocked();
     }).catch(function(e){
       console.error(e);
       showErr(humanError(e,'No pudimos cargar tus datos','Revisá tu conexión y recargá la app.'));
@@ -2975,6 +2998,7 @@ svg.z1 .rm-name:not(.main){display:none}
 
   function openReview(r){
     currentReview=r; var a=actionById(r.action_type)||{};
+    if($('flagPanel')) resetFlagPanel();
     var mp=$('modalPhoto');
     var tour = r.tour_photos;
     if(typeof tour==='string'){ try{ tour=JSON.parse(tour); }catch(e){ tour=null; } }
@@ -3028,6 +3052,22 @@ svg.z1 .rm-name:not(.main){display:none}
   }
   function fmtDate(iso){ try{ return new Date(iso).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return iso; } }
   function closeReviewModal(){ $('reviewModal').classList.remove('show'); closeModalFocus('reviewModal'); currentReview=null; }
+
+  function resetFlagPanel(){
+    $('flagPanel').classList.remove('show'); $('flagOpenBtn').style.display='';
+    $('flagComment').value=''; $('voteMain').style.display='flex';
+  }
+  function sendFlag(motivo){
+    if(!currentReview) return;
+    var rid=currentReview.id, txt=$('flagComment').value.trim();
+    db.rpc('denunciar_reporte', { p_report_id:rid, p_motivo:motivo, p_comentario:txt||null }).then(function(res){
+      if(res.error) throw res.error;
+      S.myReviewedReports[rid]=1;
+      closeReviewModal(); resetFlagPanel();
+      toast('Gracias. Lo va a revisar un administrador 🛡️');
+      return renderRevisar();
+    }).catch(function(e){ showErr(humanError(e,'No pudimos enviar la denuncia','Intentá de nuevo en un momento.')); });
+  }
 
   function castVote(vote, reason){
     if(!currentReview) return;
@@ -3768,12 +3808,34 @@ svg.z1 .rm-name:not(.main){display:none}
   }
 
   // ---- Mis reportes (revisar / editar / eliminar) ---------------------
+  // Cuenta suspendida: cartel en Reportar y Revisar
+  function renderBlocked(){
+    var on=!!(S.profile && S.profile.bloqueado);
+    ['sec-reportar','sec-revisar'].forEach(function(id){
+      var sec=$(id); if(!sec) return;
+      var b=sec.querySelector('.blocked-banner');
+      if(on && !b){
+        b=document.createElement('div'); b.className='blocked-banner'; b.setAttribute('role','alert');
+        b.innerHTML='<b>Tu cuenta está suspendida</b>'+esc(S.profile.bloqueado_motivo||'Por mal uso de la app.')+' Mientras tanto no podés enviar reportes ni revisar. Podés seguir aprendiendo y viendo el mapa de riesgo.';
+        sec.insertBefore(b, sec.firstChild);
+      }
+      if(!on && b) b.remove();
+    });
+  }
+
+  var MY_APPEALS = {};   // report_id → ya pidió segunda opinión
   function openMyReports(){
     $('myReportsModal').classList.add('show');
     openModal('myReportsModal', closeMyReports);
     var box=$('myReportsList'); box.innerHTML='<div class="loading">Cargando…</div>';
     db.from('reports').select('id,action_type,status,note,photo_url,photo_before_url,created_at,review_count,points_awarded,reject_reasons,tour_photos')
       .eq('user_id', S.user.id).order('created_at',{ascending:false}).limit(50)
+      .then(function(res){
+        return db.from('report_flags').select('report_id').eq('user_id', S.user.id).eq('tipo','apelacion').then(function(fl){
+          MY_APPEALS={}; if(fl && !fl.error) (fl.data||[]).forEach(function(x){ MY_APPEALS[x.report_id]=1; });
+          return res;
+        }, function(){ return res; });
+      })
       .then(function(res){
         if(res.error){ loadError(box,'No pudimos cargar tus reportes. Revisá tu conexión.', openMyReports); return; }
         var rows=res.data||[];
@@ -3783,7 +3845,7 @@ svg.z1 .rm-name:not(.main){display:none}
       }, function(){ loadError(box,'No pudimos cargar tus reportes. Revisá tu conexión.', openMyReports); });
   }
 
-  function statusLabel(s){ return s==='validado'?'✅ Validado':s==='descartado'?'❌ Descartado':'⏳ En revisión'; }
+  function statusLabel(s){ return s==='validado'?'✅ Validado':s==='descartado'?'❌ Descartado':s==='revision_admin'?'🛡️ Lo revisa el equipo':'⏳ En revisión'; }
   var REJECT_LABELS={ falso:'Falso', incorrecto:'Incorrecto', borrosa:'Borrosa/poco visible', no_corresponde:'No corresponde', dudoso:'Dudoso' };
   function rejectReasonsText(rr){
     if(typeof rr==='string'){ try{ rr=JSON.parse(rr); }catch(e){ rr=null; } }
@@ -3800,14 +3862,33 @@ svg.z1 .rm-name:not(.main){display:none}
       '<div class="myrep-body">'+
         '<div class="myrep-top"><span class="myrep-action">'+esc(a.icon||'')+' '+esc(a.title||'Acción')+'</span>'+
         '<span class="myrep-st '+esc(r.status||'pendiente')+'">'+statusLabel(r.status)+'</span></div>'+
-        '<div class="myrep-date">'+fmtDate(r.created_at)+' · 🗳️ '+(r.review_count||0)+'/3</div>'+
+        '<div class="myrep-date">'+fmtDate(r.created_at)+' · 🗳️ '+(r.review_count||0)+' voto'+((r.review_count||0)===1?'':'s')+'</div>'+
         '<div class="myrep-note">'+(r.note?('“'+esc(r.note)+'”'):'<span style="color:var(--muted);font-style:normal">Sin nota</span>')+'</div>'+
-        (r.status==='descartado' ? '<div class="myrep-reasons">❌ Motivos: '+rejectReasonsText(r.reject_reasons)+'</div>' : '')+
+        (r.status==='descartado' ? '<div class="myrep-reasons">❌ Motivos: '+rejectReasonsText(r.reject_reasons)+'</div>'+
+          (MY_APPEALS[r.id] ? '<div class="myrep-appeal-done">🛟 Pediste una segunda opinión: la revisa el equipo</div>'
+            : '<div class="myrep-appeal"><button class="myrep-btn" data-act="appeal">🛟 Pedir segunda opinión</button>'+
+              '<div class="myrep-appeal-form" style="display:none"><textarea maxlength="500" placeholder="Contanos por qué creés que tu reporte es válido (opcional)"></textarea>'+
+              '<div class="myrep-actions"><button class="myrep-btn" data-act="appealsend">Enviar</button><button class="myrep-btn" data-act="appealcancel">Cancelar</button></div></div></div>') : '')+
         '<div class="myrep-edit"><textarea maxlength="300">'+esc(r.note||'')+'</textarea>'+
           '<div class="myrep-actions"><button class="myrep-btn" data-act="save">Guardar</button><button class="myrep-btn" data-act="canceledit">Cancelar</button></div></div>'+
         '<div class="myrep-actions myrep-mainactions"><button class="myrep-btn" data-act="edit">✏️ Editar nota</button><button class="myrep-btn danger" data-act="delete">🗑️ Eliminar</button></div>'+
       '</div>';
     var editBox=wrap.querySelector('.myrep-edit'), mainActions=wrap.querySelector('.myrep-mainactions');
+    var apBtn=wrap.querySelector('[data-act="appeal"]');
+    if(apBtn){
+      var apForm=wrap.querySelector('.myrep-appeal-form');
+      apBtn.addEventListener('click', function(){ apBtn.style.display='none'; apForm.style.display='block'; });
+      wrap.querySelector('[data-act="appealcancel"]').addEventListener('click', function(){ apForm.style.display='none'; apBtn.style.display=''; });
+      wrap.querySelector('[data-act="appealsend"]').addEventListener('click', function(){
+        var txt=apForm.querySelector('textarea').value.trim();
+        db.rpc('pedir_segunda_opinion', { p_report_id:r.id, p_comentario:txt||null }).then(function(res){
+          if(res.error) throw res.error;
+          MY_APPEALS[r.id]=1;
+          wrap.querySelector('.myrep-appeal').outerHTML='<div class="myrep-appeal-done">🛟 Pediste una segunda opinión: la revisa el equipo</div>';
+          toast('Listo: un administrador va a revisar tu reporte');
+        }).catch(function(e){ showErr(humanError(e,'No pudimos enviar tu pedido','Intentá de nuevo en un momento.')); });
+      });
+    }
     var noteEl=wrap.querySelector('.myrep-note'), ta=wrap.querySelector('textarea');
     wrap.querySelector('[data-act="edit"]').addEventListener('click', function(){ editBox.classList.add('show'); mainActions.style.display='none'; });
     wrap.querySelector('[data-act="canceledit"]').addEventListener('click', function(){ editBox.classList.remove('show'); mainActions.style.display='flex'; ta.value=r.note||''; });
@@ -3838,6 +3919,12 @@ svg.z1 .rm-name:not(.main){display:none}
   // =====================================================================
   //  NAV
   // =====================================================================
+  // Enlaces de las notificaciones: ?sec=… abre una pestaña, ?ver=mis-reportes abre «Mis reportes»
+  function openDeepLink(sec, ver){
+    if(sec && $('sec-'+sec)) showSection(sec);
+    if(ver==='mis-reportes'){ showSection('reportar'); openMyReports(); }
+  }
+
   function showSection(sec){
     S.lastSection = sec;
     trackScreen(sec);
@@ -3894,6 +3981,9 @@ svg.z1 .rm-name:not(.main){display:none}
         if(ev.data && ev.data.type==='notif-click'){
           track('push_notification_click', { section: ev.data.section||null });
           if(ev.data.section) showSection(ev.data.section);
+          if(ev.data.url){
+            try{ var u=new URL(ev.data.url, window.location.href); openDeepLink(u.searchParams.get('sec'), u.searchParams.get('ver')); }catch(e){}
+          }
         }
       });
     }
@@ -3924,6 +4014,12 @@ svg.z1 .rm-name:not(.main){display:none}
     document.querySelector('.vote-btn[data-vote="correcto"]').addEventListener('click', function(){ castVote('correcto', null); });
     $('voteRejectBtn').addEventListener('click', function(){ $('voteMain').style.display='none'; $('rejectReasons').classList.add('show'); });
     $('rejectCancel').addEventListener('click', function(){ $('rejectReasons').classList.remove('show'); $('voteMain').style.display='flex'; });
+    $('flagOpenBtn').addEventListener('click', function(){
+      $('voteMain').style.display='none'; $('rejectReasons').classList.remove('show');
+      $('flagOpenBtn').style.display='none'; $('flagPanel').classList.add('show');
+    });
+    $('flagCancel').addEventListener('click', resetFlagPanel);
+    document.querySelectorAll('#flagPanel [data-flag]').forEach(function(b){ b.addEventListener('click', function(){ sendFlag(b.dataset.flag); }); });
     document.querySelectorAll('.reject-opt').forEach(function(b){ b.addEventListener('click', function(){ castVote('rechazado', b.dataset.reason); }); });
     $('reviewModal').addEventListener('click', function(e){ if(e.target.id==='reviewModal') closeReviewModal(); });
     $('privacyCloseBtn').addEventListener('click', closePrivacy);

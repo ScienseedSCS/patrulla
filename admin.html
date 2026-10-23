@@ -258,7 +258,8 @@ body.locked .wrap{display:none}
 
   <div class="session-bar">
     <span id="sessionWho">—</span>
-    <button type="button" class="ghost-btn" id="logoutBtn">Cerrar sesión</button>
+    <span><a href="admin-reportes.html" id="modLink" style="color:var(--teal);font-weight:700;margin-right:12px">🛡️ Moderación de reportes<span id="modCount"></span></a>
+    <button type="button" class="ghost-btn" id="logoutBtn">Cerrar sesión</button></span>
   </div>
 
   <div class="panel wide" id="panel-ovi" style="margin-bottom:22px">
@@ -728,6 +729,9 @@ body.locked .wrap{display:none}
     setPreset(30);
     loadAll();
     oviLoadState();
+    db.rpc('admin_pendientes_moderacion').then(function(r){
+      if(!r.error && r.data>0) $('modCount').innerHTML=' <span style="background:var(--coral);color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;margin-left:4px">'+r.data+' por revisar</span>';
+    }, function(){});
   }
   function checkAdmin(session){
     if(!session){ showGate('', false); return; }

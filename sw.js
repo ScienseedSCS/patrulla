@@ -5,7 +5,7 @@
    Resto de archivos (íconos, imágenes) → caché primero (carga rápida).
    Supabase (datos/fotos/auth) → siempre red, nunca se cachea.
 */
-const VERSION = 'patrulla-v8';
+const VERSION = 'patrulla-v9';
 const SHELL = [
   './',
   './index.html',
@@ -89,8 +89,15 @@ self.addEventListener('notificationclick', (event) => {
   const target = (event.notification.data && event.notification.data.url) || './';
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
-      for (const c of list) {
-        if ('focus' in c) { c.postMessage({ type: 'notif-click', section: event.notification.data && event.notification.data.section }); return c.focus(); }
+      // Las páginas de administración se abren aparte; el resto, en la app abierta
+      const esAdmin = /admin/.test(target);
+      if (!esAdmin) {
+        for (const c of list) {
+          if ('focus' in c) {
+            c.postMessage({ type: 'notif-click', section: event.notification.data && event.notification.data.section, url: target });
+            return c.focus();
+          }
+        }
       }
       if (self.clients.openWindow) return self.clients.openWindow(target);
     })
