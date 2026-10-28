@@ -5,7 +5,7 @@
    Resto de archivos (íconos, imágenes) → caché primero (carga rápida).
    Supabase (datos/fotos/auth) → siempre red, nunca se cachea.
 */
-const VERSION = 'patrulla-v9';
+const VERSION = 'patrulla-v10';
 const SHELL = [
   './',
   './index.html',
@@ -86,7 +86,13 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const target = (event.notification.data && event.notification.data.url) || './';
+  // Solo se abren enlaces de la propia app (mismo origen). Cualquier otro → inicio.
+  let target = './';
+  try {
+    const raw = (event.notification.data && event.notification.data.url) || './';
+    const u = new URL(raw, self.registration.scope);
+    if (u.origin === self.location.origin) target = u.href;
+  } catch (e) { target = './'; }
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
       // Las páginas de administración se abren aparte; el resto, en la app abierta
