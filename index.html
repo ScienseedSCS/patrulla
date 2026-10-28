@@ -1550,7 +1550,7 @@ svg.z1 .rm-name:not(.main){display:none}
     { emoji:'📸', title:'Reportá y sumá puntos',
       text:'Cada acción que hacés y reportás con una foto suma puntos, te sube de nivel y ayuda a mapear dónde están los focos. Tu granito de arena cuenta un montón.' },
     { emoji:'🏆', title:'Comunidad y ranking',
-      text:'Cuando juntás puntos te volvés Revisor y validás los reportes de tus vecinos. Y competís sano en el ranking de tu comunidad. ¡Vamos que se puede!' },
+      text:'Tus reportes los revisa el equipo de Patrulla Antimosquito. Sumá puntos, subí de nivel y competí sano en el ranking de tu comunidad. ¡Vamos que se puede!' },
     { type:'install', emoji:'📲', title:'Instalá la app',
       text:'Agregala a tu pantalla de inicio para abrirla como cualquier otra app, con notificaciones incluidas.' }
   ];
@@ -1616,7 +1616,6 @@ svg.z1 .rm-name:not(.main){display:none}
     { sec:'incidencia', selector:'.navbtn[data-sec="incidencia"]', title:'📍 Nivel de riesgo', text:'Acá ves el nivel de riesgo de dengue en tu municipio y en tu sector, según las ovitrampas de Mundo Sano, semana a semana.' },
     { sec:'aprender',   selector:'.navbtn[data-sec="aprender"]',   title:'🧠 Aprender',   text:'Tips para leer con calma, y quizzes cortos para poner a prueba lo que sabés.' },
     { sec:'reportar',   selector:'.navbtn[data-sec="reportar"]',   title:'📸 Reportar',   text:'El corazón de la Patrulla: reportá con una foto cada acción contra el mosquito.' },
-    { sec:'revisar',    selector:'.navbtn[data-sec="revisar"]',    title:'🔍 Revisar',    text:'Cuando sumes puntos, vas a poder validar los reportes de tus vecinos acá.' },
     { sec:'progreso',   selector:'.navbtn[data-sec="progreso"]',   title:'🏆 Progreso',   text:'Tu nivel, tus estadísticas, y el ranking de tu municipio y tu región.' }
   ];
   var tourIdx=0;
@@ -1932,6 +1931,7 @@ svg.z1 .rm-name:not(.main){display:none}
         if(qsSec || qsVer) history.replaceState(null,'',window.location.pathname);
       }catch(e){}
       trackScreen(S.lastSection||'reportar');
+      updateReviewNav();
       if(S.profile && !S.profile.onboarded) startAppTour();
       else { maybeSoftAskPush(); }
       renderBlocked();
@@ -2029,14 +2029,10 @@ svg.z1 .rm-name:not(.main){display:none}
     var newPts = (S.profile.points||0) + delta;
     var lvl = currentLevel(newPts);
     var patch = { points:newPts, level:lvl.lvl };
-    if(newPts>=REVIEWER_MIN && !S.profile.is_reviewer) patch.is_reviewer=true;
     return db.from('profiles').update(patch).eq('id', S.user.id).then(function(res){
       if(res.error) throw res.error;
-      if(patch.is_reviewer) S.profile.is_reviewer=true;
       S.profile.level=lvl.lvl;
-      var wasLocked = (S.profile.points<REVIEWER_MIN);
       applyPoints(newPts);
-      if(wasLocked && newPts>=REVIEWER_MIN) renderRevisar(); // desbloquea revisar
     });
   }
 
@@ -2885,8 +2881,9 @@ svg.z1 .rm-name:not(.main){display:none}
   }
   function checkDuplicate(hash){
     if(!hash) return;
-    db.from('reports').select('id',{count:'exact',head:true}).eq('photo_hash', hash).then(function(r){
-      if(!r.error && (r.count||0)>1) toast('⚠️ Esta foto ya figura en otro reporte');
+    // Solo se puede leer los reportes propios: se pregunta a la base si la foto ya existe en otro
+    db.rpc('foto_repetida', { p_hash:hash, p_min:2 }).then(function(r){   // el reporte recién enviado cuenta como 1
+      if(!r.error && r.data===true) toast('⚠️ Esta foto ya figura en otro reporte');
     }, function(){});
   }
 
@@ -2935,40 +2932,46 @@ svg.z1 .rm-name:not(.main){display:none}
   // =====================================================================
   var currentReview=null;
 
+  // Solo revisan las personas autorizadas por la organización (o admins).
+  // La base de datos lo aplica igual: un vecino no puede leer ni votar reportes ajenos.
+  function canReview(){ return !!(S.profile && (S.profile.is_reviewer || S.profile.is_admin) && !S.profile.bloqueado); }
+  function updateReviewNav(){
+    var b=document.querySelector('.navbtn[data-sec="revisar"]'); if(b) b.classList.toggle('hide', !canReview());
+    if(!canReview() && S.lastSection==='revisar') showSection('reportar');
+  }
+
+  var REVIEW_CITY = '';   // filtro de municipio en la cola de revisión ('' = todos)
   function renderRevisar(){
     var body=$('revisarBody');
-    var points=S.profile.points||0;
-    if(points < REVIEWER_MIN){
-      var pct=Math.min(100, Math.round(points/REVIEWER_MIN*100));
+    if(!canReview()){
       body.innerHTML =
-        '<div class="lock-card"><div class="lock-emoji">🔒</div>'+
-        '<div class="lock-title">Rol Revisor bloqueado</div>'+
-        '<div class="lock-text">La revisión comunitaria se desbloquea al llegar a <b>'+REVIEWER_MIN+' pts</b> (nivel 🛡️ Guardián del Barrio). Seguí reportando y aprendiendo para llegar.</div>'+
-        '<div class="lock-bar-outer"><div class="lock-bar-inner" style="width:'+pct+'%"></div></div>'+
-        '<div class="lock-text">'+points+' / '+REVIEWER_MIN+' pts</div></div>';
+        '<div class="lock-card"><div class="lock-emoji">🛡️</div>'+
+        '<div class="lock-title">Revisión a cargo del equipo</div>'+
+        '<div class="lock-text">Para cuidar los datos de los vecinos, los reportes los revisan solo personas autorizadas de Patrulla Antimosquito. Vos seguí reportando: te avisamos cuando revisen el tuyo.</div></div>';
       return Promise.resolve();
     }
-
+    var cities=(CITY_LIST||[]).slice();
     body.innerHTML =
-      '<span class="role-badge">🛡️ Rol Revisor</span>'+
+      '<span class="role-badge">🛡️ Revisor/a autorizado/a</span>'+
       '<div class="review-info"><div class="review-info-title">🗳️ Cómo funciona</div>'+
-      '<div class="review-info-text">Revisás reportes de <b>'+(S.profile.city||'tu municipio')+'</b>. Mirá la foto y la nota, y votá si es correcto o rechazalo con un motivo. Con 2 votos iguales se decide: 2 aprobaciones lo validan y 2 rechazos lo descartan. Si hay empate, decide el tercer voto. Ganás <b>+3 pts</b> por revisión.</div></div>'+
+      '<div class="review-info-text">Mirá la foto y la nota, y votá si el reporte es correcto o rechazalo con un motivo. Con 2 votos iguales se decide; si hay empate, decide el tercero. Si un reporte es inadecuado (ofensivo, con personas o datos privados), marcalo con 🚩 y lo ve un administrador.</div></div>'+
+      '<div class="field" style="margin:10px 0 4px"><label for="reviewCity">Municipio</label>'+
+        '<select id="reviewCity"><option value="">Todos los municipios</option>'+
+        cities.map(function(c){ return '<option value="'+esc(c)+'"'+(c===REVIEW_CITY?' selected':'')+'>'+esc(c)+'</option>'; }).join('')+
+        '</select></div>'+
       '<div id="reviewList"><div class="loading">Cargando…</div></div>';
+    $('reviewCity').addEventListener('change', function(){ REVIEW_CITY=this.value; renderRevisar(); });
 
-    if(!S.profile.city){
-      $('reviewList').innerHTML='<div class="empty">Elegí tu municipio en tu perfil para revisar los reportes de tu zona.</div>';
-      return Promise.resolve();
-    }
-
-    return db.from('reports')
+    var q=db.from('reports')
       .select('id,note,photo_url,photo_before_url,city,action_type,user_id,lat,lng,captured_at,photo_hash,review_count,tour_photos')
-      .eq('status','pendiente').eq('city', S.profile.city).neq('user_id', S.user.id)
-      .order('created_at',{ascending:true}).limit(40)
+      .eq('status','pendiente').neq('user_id', S.user.id);
+    if(REVIEW_CITY) q=q.eq('city', REVIEW_CITY);
+    return q.order('created_at',{ascending:true}).limit(60)
       .then(function(res){
         var list=$('reviewList'); if(!list) return;
         if(res.error){ loadError(list,'No pudimos cargar los reportes para revisar. Revisá tu conexión.', renderRevisar); throw res.error; }
         var pend=(res.data||[]).filter(function(r){ return !S.myReviewedReports[r.id]; });
-        if(!pend.length){ list.innerHTML=''; list.appendChild(el('div','empty','🎉 ¡No hay reportes pendientes por ahora!<br>Volvé más tarde para seguir sumando revisiones.')); return; }
+        if(!pend.length){ list.innerHTML=''; list.appendChild(el('div','empty','🎉 ¡No hay reportes pendientes por ahora!')); return; }
 
         // Traer nombres de los autores (sin FK embed, para no depender del esquema)
         var ids={}; pend.forEach(function(r){ ids[r.user_id]=1; });
@@ -3042,8 +3045,8 @@ svg.z1 .rm-name:not(.main){display:none}
     // Flag de imagen reutilizada
     var dup=$('modalDup'); dup.style.display='none';
     if(r.photo_hash){
-      db.from('reports').select('id',{count:'exact',head:true}).eq('photo_hash', r.photo_hash).then(function(c){
-        if(!c.error && (c.count||0)>1) dup.style.display='flex';
+      db.rpc('foto_repetida', { p_hash:r.photo_hash, p_excluir:r.id }).then(function(c){
+        if(!c.error && c.data===true) dup.style.display='flex';
       }, function(){});
     }
 
@@ -3075,8 +3078,9 @@ svg.z1 .rm-name:not(.main){display:none}
     db.from('report_reviews').insert({ report_id:rid, reviewer_id:S.user.id, vote:vote, reason:reason||null }).then(function(ins){
       if(ins.error){ if(ins.error.code==='23505') return; throw ins.error; }
       S.myReviewedReports[rid]=1; S.stats.reviews+=1; $('statReviews').textContent=S.stats.reviews;
-      return awardPoints(PTS_REVIEW).then(function(){ return renderRevisar(); }).then(function(){
-        toast((vote==='correcto'?'✅ Aprobado':'❌ Rechazado')+' · +'+PTS_REVIEW+' pts');
+      // Las revisiones son tarea del equipo: no suman puntos ni ranking
+      return renderRevisar().then(function(){
+        toast(vote==='correcto'?'✅ Aprobado':'❌ Rechazado');
       });
     }).catch(function(e){ console.error(e); showErr(humanError(e,'No pudimos registrar tu voto','Abrí el reporte de nuevo e intentá otra vez.')); });
   }
@@ -3720,7 +3724,7 @@ svg.z1 .rm-name:not(.main){display:none}
     LEVELS.forEach(function(l){
       var range = l.max===Infinity ? (l.min+'+') : (l.min+'–'+l.max);
       var row=el('div','level-row'); row.dataset.level=l.name;
-      row.innerHTML='<div class="level-row-emoji">'+l.emoji+'</div><div class="level-row-name">'+esc(l.name)+(l.lvl===4?' · Revisor':'')+'</div><div class="level-row-range">'+range+'</div>';
+      row.innerHTML='<div class="level-row-emoji">'+l.emoji+'</div><div class="level-row-name">'+esc(l.name)+'</div><div class="level-row-range">'+range+'</div>';
       list.appendChild(row);
     });
     $('statReports').textContent=S.stats.reports; $('statApproved').textContent=S.stats.approved||0;
