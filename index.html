@@ -2975,7 +2975,7 @@ svg.z1 .rm-name:not(.main){display:none}
 
         // Traer nombres de los autores (sin FK embed, para no depender del esquema)
         var ids={}; pend.forEach(function(r){ ids[r.user_id]=1; });
-        return db.from('profiles').select('id,username').in('id', Object.keys(ids)).then(function(p){
+        return db.rpc('nombres_autores', { p_ids: Object.keys(ids) }).then(function(p){
           var names={}; (p.data||[]).forEach(function(x){ names[x.id]=x.username; });
           list.innerHTML='';
           pend.forEach(function(r){
@@ -3797,13 +3797,11 @@ svg.z1 .rm-name:not(.main){display:none}
   function renderLeaderboard(){
     var list=$('lbList'), city=S.profile.city;
     var t=$('lbTitle'); if(t) t.textContent = '🏆 Ranking'+(city?(' de '+city):' general');
-    var q=db.from('profiles').select('id,username,points').order('points',{ascending:false}).limit(20);
-    if(city) q=q.eq('city', city);
-    return q.then(function(res){
+    return db.rpc('ranking_vecinos', { p_city: city||null }).then(function(res){
       list.innerHTML='';
       if(res.error || !res.data || !res.data.length){ list.appendChild(el('div','empty','Todavía no hay ranking. ¡Sé el primero en sumar puntos!')); return; }
       res.data.forEach(function(p,i){
-        var me=p.id===S.user.id;
+        var me=!!p.es_yo;
         var row=el('div','lb-row'+(me?' me':''));
         row.innerHTML='<div class="lb-rank">'+(i+1)+'</div><div class="lb-name">'+esc(p.username||'Vecino/a')+(me?' (vos)':'')+'</div><div class="lb-pts">'+(p.points||0)+'</div>';
         list.appendChild(row);
