@@ -1193,6 +1193,41 @@ svg.z1 .rm-name:not(.main){display:none}
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   // Solo fotos del Storage del proyecto (defensa extra; la base ya lo exige desde el SQL 23)
   function fotoOk(u){ u=String(u||''); return u.indexOf(SUPABASE_URL+'/storage/v1/object/')===0 && !/[\s"'<>\\]/.test(u) ? u : ''; }
+
+  // Fotos privadas (SQL 25): las <img>/<a> con data-foto reciben un enlace
+  // firmado de 1 hora. photo_url sigue guardando la dirección de siempre,
+  // que aquí solo sirve para saber qué archivo pedir.
+  var FOTO_PREFIX = SUPABASE_URL + '/storage/v1/object/public/reports/';
+  var FOTO_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  var FOTO_CACHE = {}, FOTO_PEND = null;
+  function fotoPath(u){ u=fotoOk(u); if(u.indexOf(FOTO_PREFIX)!==0) return ''; try{ return decodeURIComponent(u.slice(FOTO_PREFIX.length).split('?')[0]); }catch(e){ return ''; } }
+  function aplicarFotos(){
+    var els=document.querySelectorAll('[data-foto]'), now=Date.now(), falta={};
+    for(var i=0;i<els.length;i++){
+      var el=els[i], p=fotoPath(el.getAttribute('data-foto')), c=p&&FOTO_CACHE[p];
+      if(!p){ el.removeAttribute('data-foto'); continue; }
+      if(c && c.exp>now){ if(c.url){ if(el.tagName==='A') el.href=c.url; else el.src=c.url; } el.removeAttribute('data-foto'); }
+      else falta[p]=true;
+    }
+    return Object.keys(falta);
+  }
+  function firmarFotos(){
+    FOTO_PEND=null;
+    var paths=aplicarFotos(); if(!paths.length) return;
+    db.storage.from('reports').createSignedUrls(paths, 3600).then(function(r){
+      var ok={}, exp=Date.now()+50*60*1000;
+      ((r && r.data) || []).forEach(function(x){ if(x && x.path && x.signedUrl && !x.error){ FOTO_CACHE[x.path]={ url:x.signedUrl, exp:exp }; ok[x.path]=1; } });
+      // Las que no se pudieron firmar quedan en blanco 5 minutos (sin reintentos en bucle)
+      paths.forEach(function(p){ if(!ok[p]) FOTO_CACHE[p]={ url:'', exp:Date.now()+5*60*1000 }; });
+      aplicarFotos();
+    }, function(){ paths.forEach(function(p){ FOTO_CACHE[p]={ url:'', exp:Date.now()+60*1000 }; }); aplicarFotos(); });
+  }
+  function programarFirma(){ if(!FOTO_PEND) FOTO_PEND=setTimeout(firmarFotos, 0); }
+  (function iniciarFotos(){
+    if(!document.body){ document.addEventListener('DOMContentLoaded', iniciarFotos); return; }
+    if(window.MutationObserver) new MutationObserver(programarFirma).observe(document.body, { childList:true, subtree:true });
+    programarFirma();
+  })();
   function el(tag, cls, html){ var e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; }
   function cap(s){ return s? s.charAt(0).toUpperCase()+s.slice(1): s; }
   function isoDaysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
@@ -2982,7 +3017,7 @@ svg.z1 .rm-name:not(.main){display:none}
           list.innerHTML='';
           pend.forEach(function(r){
             var a=actionById(r.action_type)||{};
-            var thumb = r.photo_url ? '<img src="'+esc(fotoOk(r.photo_url))+'" alt="">' : (a.icon||'📷');
+            var thumb = r.photo_url ? '<img src="'+FOTO_PIXEL+'" data-foto="'+esc(fotoOk(r.photo_url))+'" alt="">' : (a.icon||'📷');
             var baBadge = r.photo_before_url ? '<span class="ba-badge">A/D</span>' : '';
             var votes = r.review_count||0; var almost = votes>=1;
             var votesTxt = votes>=2 ? '🗳️ '+votes+' votos · empate, ¡tu voto decide!' : (votes===1 ? '🗳️ 1/2 · ¡falta 1!' : '🗳️ 0/2 votos');
@@ -3013,18 +3048,18 @@ svg.z1 .rm-name:not(.main){display:none}
       mp.innerHTML =
         '<div class="modal-tour"><div class="modal-tour-label">🏠 Recorrido · '+tour.length+' lugares</div>'+
         '<div class="modal-tour-grid">'+ tour.map(function(t){
-          return '<figure><img src="'+esc(fotoOk(t.url))+'" alt="Foto del lugar: '+esc(t.title||'')+'"><figcaption>'+esc(t.title||'')+'</figcaption></figure>';
+          return '<figure><img src="'+FOTO_PIXEL+'" data-foto="'+esc(fotoOk(t.url))+'" alt="Foto del lugar: '+esc(t.title||'')+'"><figcaption>'+esc(t.title||'')+'</figcaption></figure>';
         }).join('') +'</div></div>';
     } else if(r.photo_before_url){
       mp.className='modal-photo';
       mp.innerHTML =
         '<div class="modal-ba">'+
-          '<figure><img src="'+esc(fotoOk(r.photo_before_url))+'" alt="Foto antes de la acción: '+esc(a.title||'')+'"><figcaption>Antes</figcaption></figure>'+
-          '<figure><img src="'+esc(fotoOk(r.photo_url))+'" alt="Foto después de la acción: '+esc(a.title||'')+'"><figcaption>Después</figcaption></figure>'+
+          '<figure><img src="'+FOTO_PIXEL+'" data-foto="'+esc(fotoOk(r.photo_before_url))+'" alt="Foto antes de la acción: '+esc(a.title||'')+'"><figcaption>Antes</figcaption></figure>'+
+          '<figure><img src="'+FOTO_PIXEL+'" data-foto="'+esc(fotoOk(r.photo_url))+'" alt="Foto después de la acción: '+esc(a.title||'')+'"><figcaption>Después</figcaption></figure>'+
         '</div>';
     } else {
       mp.className='modal-photo';
-      mp.innerHTML = r.photo_url ? '<img src="'+esc(fotoOk(r.photo_url))+'" alt="Foto del reporte: '+esc(a.title||'')+'">' : (a.icon||'📷');
+      mp.innerHTML = r.photo_url ? '<img src="'+FOTO_PIXEL+'" data-foto="'+esc(fotoOk(r.photo_url))+'" alt="Foto del reporte: '+esc(a.title||'')+'">' : (a.icon||'📷');
     }
     // reset del panel de rechazo
     var rr=$('rejectReasons'), vm=$('voteMain');
@@ -3859,7 +3894,7 @@ svg.z1 .rm-name:not(.main){display:none}
 
   function buildMyRepItem(r){
     var a=actionById(r.action_type)||{};
-    var thumb = r.photo_url ? '<img class="myrep-thumb" src="'+esc(fotoOk(r.photo_url))+'" alt="">' : '<div class="myrep-thumb">'+esc(a.icon||'📷')+'</div>';
+    var thumb = r.photo_url ? '<img class="myrep-thumb" src="'+FOTO_PIXEL+'" data-foto="'+esc(fotoOk(r.photo_url))+'" alt="">' : '<div class="myrep-thumb">'+esc(a.icon||'📷')+'</div>';
     var wrap=el('div','myrep');
     wrap.innerHTML =
       thumb +
