@@ -1201,6 +1201,15 @@ svg.z1 .rm-name:not(.main){display:none}
   var FOTO_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
   var FOTO_CACHE = {}, FOTO_PEND = null;
   function fotoPath(u){ u=fotoOk(u); if(u.indexOf(FOTO_PREFIX)!==0) return ''; try{ return decodeURIComponent(u.slice(FOTO_PREFIX.length).split('?')[0]); }catch(e){ return ''; } }
+  // Borra de Storage las fotos de un reporte propio (SQL 27). Sin bloquear: si
+  // falla, el reporte ya está borrado y la foto queda inaccesible para otros.
+  function borrarFotosDe(r){
+    var urls=[r.photo_url, r.photo_before_url], tp=r.tour_photos;
+    if(typeof tp==='string'){ try{ tp=JSON.parse(tp); }catch(e){ tp=null; } }
+    if(Array.isArray(tp)) tp.forEach(function(t){ if(t && t.url) urls.push(t.url); });
+    var paths=urls.map(fotoPath).filter(function(p,i,a){ return p && a.indexOf(p)===i; });
+    if(paths.length) db.storage.from('reports').remove(paths).then(function(){}, function(){});
+  }
   function aplicarFotos(){
     var els=document.querySelectorAll('[data-foto]'), now=Date.now(), falta={};
     for(var i=0;i<els.length;i++){
@@ -3954,6 +3963,7 @@ svg.z1 .rm-name:not(.main){display:none}
       if(!window.confirm('¿Eliminar este reporte? Se descuentan los puntos que te dio.')) return;
       db.rpc('delete_my_report', { p_id:r.id }).then(function(res){
         if(res.error) throw res.error;
+        borrarFotosDe(r);
         wrap.remove();
         S.stats.reports=Math.max(0,S.stats.reports-1);
         if(r.status==='validado') S.stats.approved=Math.max(0,(S.stats.approved||0)-1);
