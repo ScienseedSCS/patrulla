@@ -1191,6 +1191,8 @@ svg.z1 .rm-name:not(.main){display:none}
   };
 
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  // Solo fotos del Storage del proyecto (defensa extra; la base ya lo exige desde el SQL 23)
+  function fotoOk(u){ u=String(u||''); return u.indexOf(SUPABASE_URL+'/storage/v1/object/')===0 && !/[\s"'<>\\]/.test(u) ? u : ''; }
   function el(tag, cls, html){ var e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; }
   function cap(s){ return s? s.charAt(0).toUpperCase()+s.slice(1): s; }
   function isoDaysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
@@ -2980,7 +2982,7 @@ svg.z1 .rm-name:not(.main){display:none}
           list.innerHTML='';
           pend.forEach(function(r){
             var a=actionById(r.action_type)||{};
-            var thumb = r.photo_url ? '<img src="'+esc(r.photo_url)+'" alt="">' : (a.icon||'📷');
+            var thumb = r.photo_url ? '<img src="'+esc(fotoOk(r.photo_url))+'" alt="">' : (a.icon||'📷');
             var baBadge = r.photo_before_url ? '<span class="ba-badge">A/D</span>' : '';
             var votes = r.review_count||0; var almost = votes>=1;
             var votesTxt = votes>=2 ? '🗳️ '+votes+' votos · empate, ¡tu voto decide!' : (votes===1 ? '🗳️ 1/2 · ¡falta 1!' : '🗳️ 0/2 votos');
@@ -3011,18 +3013,18 @@ svg.z1 .rm-name:not(.main){display:none}
       mp.innerHTML =
         '<div class="modal-tour"><div class="modal-tour-label">🏠 Recorrido · '+tour.length+' lugares</div>'+
         '<div class="modal-tour-grid">'+ tour.map(function(t){
-          return '<figure><img src="'+esc(t.url||'')+'" alt="Foto del lugar: '+esc(t.title||'')+'"><figcaption>'+esc(t.title||'')+'</figcaption></figure>';
+          return '<figure><img src="'+esc(fotoOk(t.url))+'" alt="Foto del lugar: '+esc(t.title||'')+'"><figcaption>'+esc(t.title||'')+'</figcaption></figure>';
         }).join('') +'</div></div>';
     } else if(r.photo_before_url){
       mp.className='modal-photo';
       mp.innerHTML =
         '<div class="modal-ba">'+
-          '<figure><img src="'+esc(r.photo_before_url)+'" alt="Foto antes de la acción: '+esc(a.title||'')+'"><figcaption>Antes</figcaption></figure>'+
-          '<figure><img src="'+esc(r.photo_url||'')+'" alt="Foto después de la acción: '+esc(a.title||'')+'"><figcaption>Después</figcaption></figure>'+
+          '<figure><img src="'+esc(fotoOk(r.photo_before_url))+'" alt="Foto antes de la acción: '+esc(a.title||'')+'"><figcaption>Antes</figcaption></figure>'+
+          '<figure><img src="'+esc(fotoOk(r.photo_url))+'" alt="Foto después de la acción: '+esc(a.title||'')+'"><figcaption>Después</figcaption></figure>'+
         '</div>';
     } else {
       mp.className='modal-photo';
-      mp.innerHTML = r.photo_url ? '<img src="'+esc(r.photo_url)+'" alt="Foto del reporte: '+esc(a.title||'')+'">' : (a.icon||'📷');
+      mp.innerHTML = r.photo_url ? '<img src="'+esc(fotoOk(r.photo_url))+'" alt="Foto del reporte: '+esc(a.title||'')+'">' : (a.icon||'📷');
     }
     // reset del panel de rechazo
     var rr=$('rejectReasons'), vm=$('voteMain');
@@ -3857,7 +3859,7 @@ svg.z1 .rm-name:not(.main){display:none}
 
   function buildMyRepItem(r){
     var a=actionById(r.action_type)||{};
-    var thumb = r.photo_url ? '<img class="myrep-thumb" src="'+esc(r.photo_url)+'" alt="">' : '<div class="myrep-thumb">'+esc(a.icon||'📷')+'</div>';
+    var thumb = r.photo_url ? '<img class="myrep-thumb" src="'+esc(fotoOk(r.photo_url))+'" alt="">' : '<div class="myrep-thumb">'+esc(a.icon||'📷')+'</div>';
     var wrap=el('div','myrep');
     wrap.innerHTML =
       thumb +

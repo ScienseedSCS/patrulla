@@ -302,6 +302,8 @@ body.locked .wrap{display:none}
   'use strict';
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  // Solo fotos del Storage del proyecto (defensa extra; la base ya lo exige desde el SQL 23)
+  function fotoOk(u){ u=String(u||''); return u.indexOf(SUPABASE_URL+'/storage/v1/object/')===0 && !/[\s"'<>\\]/.test(u) ? u : ''; }
   function fmtDate(iso){ try{ return new Date(iso).toLocaleString('es-AR',{ day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }); }catch(e){ return iso; } }
   if (typeof SUPABASE_URL === 'undefined'){ document.body.innerHTML='<p style="padding:40px;color:#fff">Falta config.js junto a esta página.</p>'; return; }
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -384,7 +386,7 @@ body.locked .wrap{display:none}
     var rr=it.reject_reasons; if(typeof rr==='string'){ try{ rr=JSON.parse(rr); }catch(e){ rr=null; } }
     var el=document.createElement('article'); el.className='mod-card';
     el.innerHTML =
-      '<div class="mod-photos">'+(photosOf(it).map(function(p){ return '<figure style="margin:0"><a href="'+esc(p.url)+'" target="_blank" rel="noopener"><img src="'+esc(p.url)+'" alt="Foto del reporte" loading="lazy"></a>'+(p.cap?'<figcaption>'+esc(p.cap)+'</figcaption>':'')+'</figure>'; }).join('') || '<div class="mod-empty" style="padding:20px">Sin foto</div>')+'</div>'+
+      '<div class="mod-photos">'+(photosOf(it).filter(function(p){ return fotoOk(p.url); }).map(function(p){ return '<figure style="margin:0"><a href="'+esc(p.url)+'" target="_blank" rel="noopener"><img src="'+esc(p.url)+'" alt="Foto del reporte" loading="lazy"></a>'+(p.cap?'<figcaption>'+esc(p.cap)+'</figcaption>':'')+'</figure>'; }).join('') || '<div class="mod-empty" style="padding:20px">Sin foto</div>')+'</div>'+
       '<div>'+
         '<div class="mod-head"><span class="mod-id">#'+it.id+'</span>'+
           (k.denuncia?'<span class="mod-pill denuncia">🚩 Denuncia</span>':'')+
