@@ -962,7 +962,7 @@ svg.z1 .rm-name:not(.main){display:none}
       <p>Pedí que agreguemos tu municipio. Un administrador lo revisa y, si corresponde, lo habilita.</p>
       <div class="field" style="margin-bottom:10px"><label for="reqMuni">Municipio</label><input type="text" id="reqMuni" placeholder="Ej: Clorinda" maxlength="60"></div>
       <div class="field" style="margin-bottom:10px"><label for="reqProv">Provincia (opcional)</label><input type="text" id="reqProv" placeholder="Ej: Formosa" maxlength="60"></div>
-      <div class="field" style="margin-bottom:10px"><label for="reqEmail">Tu email (opcional, para avisarte)</label><input type="email" id="reqEmail" placeholder="tu@email.com"></div>
+      <div class="field" style="margin-bottom:10px"><label for="reqEmail">Tu email (opcional, para avisarte)</label><input type="email" id="reqEmail" maxlength="200" placeholder="tu@email.com"></div>
       <div class="auth-msg ok" id="reqMsg"></div>
       <div class="btn-row">
         <button class="btn btn-secondary" id="cityReqCancel">Cancelar</button>
@@ -1164,9 +1164,6 @@ svg.z1 .rm-name:not(.main){display:none}
   // Correo del admin que recibe las solicitudes de municipio nuevo.
   // (Aún por establecer: dejalo vacío y las solicitudes igual se guardan en Supabase.)
   var ADMIN_EMAIL = '';
-  // Opcional: clave de https://web3forms.com para que la solicitud llegue por email
-  // automáticamente (creá una clave gratis asociada a ADMIN_EMAIL y pegala acá).
-  var WEB3FORMS_KEY = '';
   // Clave PÚBLICA VAPID para notificaciones push (es pública por diseño).
   var VAPID_PUBLIC_KEY = 'BELljIGjXsC84vSK6GGmctOSQnai1qY2Auvwm23h8C5yOaV7aH-ijw-qpn0IHSEOn9SNPqrbMZZfrMVxHwl9pP4';
   // ====================================================================
@@ -1455,16 +1452,10 @@ svg.z1 .rm-name:not(.main){display:none}
   // --- Solicitud de municipio nuevo ------------------------------------
   function submitCityRequest(muni, prov, email, name, doneMsg){
     var payload={ municipality:muni, province:prov||null, requester_email:email||null, requester_name:name||null, status:'pendiente' };
-    var tasks=[ db.from('city_requests').insert(payload) ];
-    // Email opcional automático vía web3forms (si hay clave configurada)
-    if(WEB3FORMS_KEY){
-      tasks.push(fetch('https://api.web3forms.com/submit',{
-        method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify({ access_key:WEB3FORMS_KEY, subject:'Nuevo municipio solicitado: '+muni,
-          from_name:'Patrulla Antimosquito', municipio:muni, provincia:prov||'', solicita:(name||'')+' '+(email||'') })
-      }).catch(function(){}));
-    }
-    return Promise.all(tasks).then(function(){ if(doneMsg) toast(doneMsg); });
+    return db.from('city_requests').insert(payload).then(function(res){
+      if(res.error) throw res.error;
+      if(doneMsg) toast(doneMsg);
+    });
   }
   function openCityReq(){ $('reqMuni').value=''; $('reqProv').value=''; $('reqEmail').value=($('inEmail')&&$('inEmail').value)||''; $('reqMsg').classList.remove('show'); $('cityReqModal').classList.add('show'); openModal('cityReqModal', closeCityReq); }
   function closeCityReq(){ $('cityReqModal').classList.remove('show'); closeModalFocus('cityReqModal'); }
@@ -2710,7 +2701,7 @@ svg.z1 .rm-name:not(.main){display:none}
       '<div class="meta-card"><div class="meta-row"><div><div class="meta-label">📍 Adjuntar ubicación</div><div class="meta-sub">Opcional. Se guarda con precisión aproximada (~100 m).</div></div>'+
         '<label class="switch"><input type="checkbox" id="tourGeo"><span class="slider"></span></label></div>'+
         '<button class="privacy-link" id="tourPrivacy">¿Qué datos se recogen?</button></div>'+
-      '<textarea class="txt-area" id="tourNote" placeholder="Nota opcional sobre el recorrido…"></textarea>'+
+      '<textarea class="txt-area" id="tourNote" maxlength="1000" placeholder="Nota opcional sobre el recorrido…"></textarea>'+
       '<button class="btn btn-accent" id="suSubmit">Enviar recorrido (+'+tourTotal()+' pts)</button></div>';
     $('suBack').onclick=function(){ renderTourStation(tourList.length-1); };
     var gt=$('tourGeo'); gt.checked=tourAttachLoc;
@@ -2805,7 +2796,7 @@ svg.z1 .rm-name:not(.main){display:none}
           '<label class="switch"><input type="checkbox" id="geoToggle"><span class="slider"></span></label>'+
         '</div><button class="privacy-link" id="privacyOpen">¿Qué datos se recogen?</button></div>'+
         '<div class="step-desc" style="text-align:left;font-size:13px;margin:12px 0 8px"><b>Contá algo sobre este reporte (opcional):</b></div>'+
-        '<textarea class="txt-area" id="reportNote" placeholder="Ej: Lavé y guardé bajo techo 3 baldes del patio"></textarea>'+
+        '<textarea class="txt-area" id="reportNote" maxlength="1000" placeholder="Ej: Lavé y guardé bajo techo 3 baldes del patio"></textarea>'+
         '<button class="btn btn-accent" id="fSubmit">Enviar reporte (+'+reportPoints()+' pts)</button></div>';
       $('fB3').onclick=function(){renderStep(2);}; $('fSubmit').onclick=submitReport;
       var gt=$('geoToggle'); gt.checked=attachLocation;
