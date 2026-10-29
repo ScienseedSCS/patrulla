@@ -2032,7 +2032,7 @@ svg.z1 .rm-name:not(.main){display:none}
       S.stats.reports = rc.count||0;
       S.stats.approved = (ap && ap.count) || 0;
       S.stats.tips = Object.keys(S.myCorrectQuestions).length;
-      S.stats.quizzes = Object.keys(S.testProgress).filter(function(b){ return S.testProgress[b].completed; }).length;
+      S.stats.quizzes = Object.keys(S.testProgress).filter(function(b){ return b!=='repaso' && S.testProgress[b].completed; }).length;
       S.stats.reviews = Object.keys(S.myReviewedReports).length;
 
       $('brandUser').textContent = S.profile.city ? ('📍 '+S.profile.city) : 'Prevención en tu barrio';
@@ -2061,16 +2061,14 @@ svg.z1 .rm-name:not(.main){display:none}
     document.querySelectorAll('.level-row').forEach(function(row){ row.classList.toggle('current', row.dataset.level===lvl.name); });
   }
 
-  // Suma puntos en el server (persistente) y refleja en UI + nivel/rol.
+  // Los puntos los suma el servidor (SQL 26) al guardar el reporte, el
+  // desafío, la pregunta o el test. Aquí solo se relee el total y el nivel.
   function awardPoints(delta){
-    var newPts = (S.profile.points||0) + delta;
-    var lvl = currentLevel(newPts);
-    var patch = { points:newPts, level:lvl.lvl };
-    return db.from('profiles').update(patch).eq('id', S.user.id).then(function(res){
-      if(res.error) throw res.error;
-      S.profile.level=lvl.lvl;
-      applyPoints(newPts);
-    });
+    return db.from('profiles').select('points,level').eq('id', S.user.id).single().then(function(res){
+      if(res.error || !res.data){ applyPoints((S.profile.points||0)+(delta||0)); return; }
+      S.profile.level=res.data.level;
+      applyPoints(res.data.points||0);
+    }, function(){ applyPoints((S.profile.points||0)+(delta||0)); });
   }
 
   // =====================================================================
@@ -3700,7 +3698,7 @@ svg.z1 .rm-name:not(.main){display:none}
   }
 
   function finishTest(){
-    var n=TS.questions.length, correct=TS.correctCount, block=TS.block, pct=n?correct/n:0;
+    var n=TS.questions.length, correct=TS.correctCount, block=TS.block, pct=n?correct/n:0, saveP=null;
     var bonus=0, alreadyHadBonus=false;
     if(block==='repaso'){
       if(correct===n) bonus=REPASO_BONUS_FULL;
@@ -3716,11 +3714,11 @@ svg.z1 .rm-name:not(.main){display:none}
       prog.completed=true;
       if(bonus>0) prog.bonus_awarded=true;
       S.testProgress[block]=prog;
-      db.from('learn_test_progress').upsert({
+      saveP = db.from('learn_test_progress').upsert({
         user_id:S.user.id, block:block, best_score:prog.best_score, attempts:prog.attempts,
         completed:true, bonus_awarded:prog.bonus_awarded
       }, { onConflict:'user_id,block' }).then(function(res){ if(res.error) console.error(res.error); });
-      S.stats.quizzes = Object.keys(S.testProgress).filter(function(b){ return S.testProgress[b].completed; }).length;
+      S.stats.quizzes = Object.keys(S.testProgress).filter(function(b){ return b!=='repaso' && S.testProgress[b].completed; }).length;
       $('statQuizzes').textContent = S.stats.quizzes;
     }
     track('test_finish', { block:block, score:correct, total:n, bonus:bonus });
@@ -3743,7 +3741,20 @@ svg.z1 .rm-name:not(.main){display:none}
       '<button class="btn btn-accent" id="testBackBtn" type="button">Volver a los tests</button></div>';
     $('testProgBar').style.width='100%'; $('testProgPill').textContent=n+' de '+n;
     $('testBackBtn').addEventListener('click', function(){ showLearnView('tests'); });
-    if(bonus>0) awardPoints(bonus).then(function(){ toast('+'+bonus+' pts de bonus 🎉'); });
+    if(bonus>0 && block==='repaso'){
+      // El bonus del repaso lo da el servidor, como máximo una vez al día
+      db.rpc('cobrar_bonus_repaso').then(function(r){
+        if(r && r.data && r.data.ok){ return awardPoints(bonus).then(function(){ toast('+'+bonus+' pts de bonus 🎉'); }); }
+        var b=document.querySelector('#testQuestionBody .tq-summary-bonus');
+        var t=document.querySelector('#testQuestionBody .tq-summary-total');
+        var sp=TS.sessionPoints||0;
+        if(t){ if(sp>0) t.innerHTML='🎉 Ganaste <b>+'+sp+' pts</b> en este quiz'; else t.remove(); }
+        if(b) b.textContent='El bonus del repaso se gana una vez por día — mañana podés volver a sumarlo 🙂';
+        return awardPoints(0);
+      }, function(){ awardPoints(0); });
+    } else if(bonus>0){
+      (saveP || Promise.resolve()).then(function(){ return awardPoints(bonus); }).then(function(){ toast('+'+bonus+' pts de bonus 🎉'); });
+    }
   }
 
   function exitTest(){
