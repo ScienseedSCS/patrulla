@@ -881,6 +881,7 @@ svg.z1 .rm-name:not(.main){display:none}
           <div class="setting-panel" id="acc-push"></div>
 
           <div class="setting-row" id="rowPriv"><span>📍 Privacidad y ubicación</span><span class="chev">▸</span></div>
+          <div class="setting-row" id="rowExport" role="button" tabindex="0"><span>📦 Descargar mis datos</span><span class="chev">▸</span></div>
           <div class="setting-row" id="rowTutorial"><span>👋 Ver el tutorial de nuevo</span><span class="chev">▸</span></div>
 
           <div class="setting-row" data-acc="borrar"><span>🗑️ Borrar mi cuenta</span><span class="chev">▸</span></div>
@@ -1964,6 +1965,39 @@ svg.z1 .rm-name:not(.main){display:none}
       $('pfPass').value=''; setMsg('msgPass','ok','¡Contraseña actualizada!');
       btn.disabled=false; btn.textContent='Cambiar contraseña';
     }).catch(function(e){ setMsg('msgPass','err', traducir(e.message)); btn.disabled=false; btn.textContent='Cambiar contraseña'; });
+  }
+
+  // Descargar mis datos (SQL 32): un JSON con todo lo que la app guarda de la persona.
+  // Las fotos van como enlaces firmados válidos 7 días.
+  var exportando=false;
+  function exportarDatos(){
+    if(exportando) return; exportando=true;
+    toast('Preparando tus datos…');
+    var datos;
+    db.rpc('exportar_mis_datos').then(function(r){
+      if(r.error) throw r.error;
+      datos=r.data||{};
+      var paths=[];
+      (datos.reportes||[]).forEach(function(rep){
+        [rep.photo_url, rep.photo_before_url].forEach(function(u){ var p=fotoPath(u); if(p) paths.push(p); });
+        var tp=rep.tour_photos; if(typeof tp==='string'){ try{ tp=JSON.parse(tp); }catch(e){ tp=null; } }
+        if(Array.isArray(tp)) tp.forEach(function(t){ var p=t&&fotoPath(t.url); if(p) paths.push(p); });
+      });
+      paths=paths.filter(function(p,i,a){ return a.indexOf(p)===i; });
+      if(!paths.length) return [];
+      return db.storage.from('reports').createSignedUrls(paths, 7*24*3600).then(function(x){ return (x&&x.data)||[]; }, function(){ return []; });
+    }).then(function(firmadas){
+      datos.fotos=(firmadas||[]).filter(function(f){ return f && f.signedUrl; })
+        .map(function(f){ return { archivo:f.path, enlace_valido_7_dias:f.signedUrl }; });
+      var blob=new Blob([JSON.stringify(datos, null, 2)], { type:'application/json' });
+      var a=document.createElement('a'), d=new Date();
+      a.href=URL.createObjectURL(blob);
+      a.download='patrulla-mis-datos-'+d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)+'.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 60000);
+      toast('Listo: se descargó el archivo con tus datos 📦');
+    }).catch(function(e){ toast('No se pudieron descargar tus datos: '+(e && e.message ? e.message : 'error')); })
+      .then(function(){ exportando=false; });
   }
 
   // Borrar mi cuenta (SQL 30): fotos primero, luego la cuenta (todo lo demás cae en cascada)
@@ -4072,6 +4106,8 @@ svg.z1 .rm-name:not(.main){display:none}
     $('saveEmail').addEventListener('click', saveEmail);
     $('savePass').addEventListener('click', savePass);
     $('delAccount').addEventListener('click', borrarCuenta);
+    $('rowExport').addEventListener('click', exportarDatos);
+    $('rowExport').addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); exportarDatos(); } });
     $('rowPriv').addEventListener('click', function(){ openPrivacy(false); });
     $('rowTutorial').addEventListener('click', showOnboarding);
     $('onbNext').addEventListener('click', onbNext);
