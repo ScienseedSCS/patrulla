@@ -371,6 +371,15 @@ body.locked .wrap{display:none}
   </div>
 
   <div class="grid">
+    <div class="panel wide" id="panel-participantes">
+      <div class="panel-head">
+        <div><div class="panel-title">👥 Dinámica por participante</div><div class="panel-sub">Una fila por participante y semana. Cada participante es un seudónimo aleatorio: aquí no figura ni su nombre ni su cuenta</div></div>
+      </div>
+      <div class="panel-body"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
+    </div>
+  </div>
+
+  <div class="grid">
     <div class="panel wide" id="panel-citytable">
       <div class="panel-head">
         <div><div class="panel-title">🏙️ Detalle por municipio</div><div class="panel-sub">Usuarios registrados y uso en el período, filtrable y descargable</div></div>
@@ -679,6 +688,52 @@ body.locked .wrap{display:none}
         '</div>';
       panelBody('panel-push').innerHTML=html;
     }).catch(function(){ setError('panel-push', loadPush); });
+  }
+
+  // Dinámica por participante (SQL 33)
+  var _partRows=[];
+  var PART_COLS=[
+    ['participante','Participante'],['municipio','Municipio'],['sector','Sector'],['semana_alta','Semana de alta'],['semana','Semana'],
+    ['sesiones','Sesiones'],['minutos_totales','Minutos'],['minutos_por_sesion','Min/sesión'],['acciones_por_sesion','Acciones/sesión'],
+    ['aperturas','Aperturas'],['reportes','Reportes'],['reportes_validados','Validados'],['recorridos','Recorridos'],
+    ['tests_terminados','Tests'],['preguntas_correctas','Preguntas'],['desafios','Desafíos'],
+    ['vistas_mapa','Mapa'],['vistas_ranking','Ranking'],['consejos_abiertos','Consejos']];
+  function loadParticipantes(){
+    setLoading('panel-participantes');
+    db.rpc('analytics_participantes', RPC_ARGS()).then(function(res){
+      if(res.error) throw res.error;
+      _partRows = res.data||[];
+      if(!_partRows.length) return setEmpty('panel-participantes');
+      var n=_partRows.map(function(r){ return r.participante; }).filter(function(v,i,a){ return a.indexOf(v)===i; }).length;
+      panelBody('panel-participantes').innerHTML =
+        '<div class="table-toolbar"><input class="table-filter" id="partFilter" placeholder="Filtrar por municipio, sector o participante…">'+
+        '<span class="panel-sub" style="margin:0 8px">'+fmtNum(n)+' participantes · '+fmtNum(_partRows.length)+' filas</span>'+
+        '<button class="csv-btn" id="partCsvBtn">⬇ CSV completo</button></div>'+
+        '<div class="table-scroll"><table class="data-table"><thead><tr>'+
+        PART_COLS.map(function(c){ return '<th>'+esc(c[1])+'</th>'; }).join('')+
+        '</tr></thead><tbody id="partTableBody"></tbody></table></div>';
+      $('partFilter').addEventListener('input', renderPartRows);
+      $('partCsvBtn').addEventListener('click', function(){
+        downloadCSV('patrulla_participantes_'+STATE.start+'_a_'+STATE.end+'.csv',
+          PART_COLS.map(function(c){ return c[0]; }),
+          _partRows.map(function(r){ return PART_COLS.map(function(c){ return r[c[0]]; }); }));
+      });
+      renderPartRows();
+    }).catch(function(){ setError('panel-participantes', loadParticipantes); });
+  }
+  function renderPartRows(){
+    var q=(($('partFilter')&&$('partFilter').value)||'').toLowerCase();
+    var rows=_partRows.filter(function(r){ return ((r.municipio||'')+' '+(r.sector||'')+' '+r.participante).toLowerCase().indexOf(q)>=0; });
+    var body=$('partTableBody'); if(!body) return;
+    if(!rows.length){ body.innerHTML='<tr><td colspan="'+PART_COLS.length+'" class="table-empty">Sin resultados para ese filtro.</td></tr>'; return; }
+    body.innerHTML = rows.slice(0,500).map(function(r){
+      return '<tr>'+PART_COLS.map(function(c,i){
+        var v=r[c[0]];
+        if(i===0) return '<td title="'+esc(v)+'"><code>'+esc(String(v).slice(0,8))+'</code></td>';
+        if(i<5) return '<td>'+esc(v==null?'—':v)+'</td>';
+        return '<td class="num">'+fmtNum(v)+'</td>';
+      }).join('')+'</tr>';
+    }).join('') + (rows.length>500 ? '<tr><td colspan="'+PART_COLS.length+'" class="table-empty">Se muestran 500 de '+fmtNum(rows.length)+' filas. El CSV las incluye todas.</td></tr>' : '');
   }
 
   var _cityRows=[];
@@ -1184,7 +1239,7 @@ body.locked .wrap{display:none}
 
   function loadAll(){
     loadKpis(); loadActivity(); loadSignups(); loadMapViews(); loadRanking();
-    loadScreenTime(); loadReportTypes(); loadHouseTour(); loadPush(); loadCityBreakdown();
+    loadScreenTime(); loadReportTypes(); loadHouseTour(); loadPush(); loadCityBreakdown(); loadParticipantes();
     $('updatedAt').textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
     $('rangeLabel').textContent = 'Mostrando del ' + fmtDateShort(STATE.start) + ' al ' + fmtDateShort(STATE.end);
   }

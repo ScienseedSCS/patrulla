@@ -1326,7 +1326,9 @@ svg.z1 .rm-name:not(.main){display:none}
   }
   function track(event, props){
     if(!ANALYTICS_ENABLED || !S.user) return;
-    try{ db.from('events').insert({ user_id:S.user.id, session_id:sessionId(), event:event, props:props||{} }).then(function(){}, function(){}); }catch(e){}
+    // Analítica seudonimizada (SQL 33): la app no envía quién es; el servidor
+    // asigna el seudónimo de estudio y guarda el evento sin usuario.
+    try{ db.rpc('registrar_evento', { p_event:event, p_props:props||{}, p_session:sessionId() }).then(function(){}, function(){}); }catch(e){}
   }
   // Tiempo por pantalla: al cambiar de pantalla, cierra la anterior con su duración.
   var _screen=null, _screenAt=0;
@@ -3874,7 +3876,7 @@ svg.z1 .rm-name:not(.main){display:none}
     progTab=tab;
     ['me','city','region'].forEach(function(t){ $('prog-'+t).classList.toggle('hide', t!==tab); });
     document.querySelectorAll('.prog-tab').forEach(function(b){ b.classList.toggle('active', b.dataset.ptab===tab); });
-    track('ranking_view', { tab:tab, city:(tab==='city'?(S.profile.city||null):null) });
+    track('ranking_view', { tab:tab });
     if(tab==='city') renderCityTab();
     if(tab==='region') renderRegionTab();
   }
