@@ -883,6 +883,14 @@ svg.z1 .rm-name:not(.main){display:none}
           <div class="setting-row" id="rowPriv"><span>📍 Privacidad y ubicación</span><span class="chev">▸</span></div>
           <div class="setting-row" id="rowTutorial"><span>👋 Ver el tutorial de nuevo</span><span class="chev">▸</span></div>
 
+          <div class="setting-row" data-acc="borrar"><span>🗑️ Borrar mi cuenta</span><span class="chev">▸</span></div>
+          <div class="setting-panel" id="acc-borrar">
+            <p style="font-size:13px;margin:0 0 10px">Se borran para siempre tu perfil, tus reportes y sus fotos, tus puntos, tu progreso, tus notificaciones y tus solicitudes de municipio. No se puede deshacer.</p>
+            <div class="field"><label for="pfDelPass">Escribí tu contraseña para confirmar</label><input type="password" id="pfDelPass" autocomplete="current-password"></div>
+            <div class="setting-msg" id="msgBorrar"></div>
+            <button class="btn" id="delAccount" style="background:var(--danger);color:#fff">Borrar mi cuenta para siempre</button>
+          </div>
+
           <button class="btn btn-secondary" id="profLogout" style="margin-top:16px">🚪 Cerrar sesión</button>
         </div>
       </section>
@@ -1907,7 +1915,7 @@ svg.z1 .rm-name:not(.main){display:none}
     // cerrar paneles y limpiar mensajes
     document.querySelectorAll('#sec-profile .setting-panel').forEach(function(pl){ pl.classList.remove('open'); });
     document.querySelectorAll('#sec-profile .setting-row').forEach(function(r){ r.classList.remove('open'); });
-    ['msgPerfil','msgEmail','msgPass'].forEach(function(id){ var m=$(id); if(m){ m.className='setting-msg'; m.textContent=''; } });
+    ['msgPerfil','msgEmail','msgPass','msgBorrar'].forEach(function(id){ var m=$(id); if(m){ m.className='setting-msg'; m.textContent=''; } });
   }
 
   function toggleAcc(key){
@@ -1956,6 +1964,42 @@ svg.z1 .rm-name:not(.main){display:none}
       $('pfPass').value=''; setMsg('msgPass','ok','¡Contraseña actualizada!');
       btn.disabled=false; btn.textContent='Cambiar contraseña';
     }).catch(function(e){ setMsg('msgPass','err', traducir(e.message)); btn.disabled=false; btn.textContent='Cambiar contraseña'; });
+  }
+
+  // Borrar mi cuenta (SQL 30): fotos primero, luego la cuenta (todo lo demás cae en cascada)
+  function borrarCuenta(){
+    var pass=$('pfDelPass').value, btn=$('delAccount');
+    if(!pass) return setMsg('msgBorrar','err','Escribí tu contraseña para confirmar.');
+    if(!window.confirm('¿Seguro? Tu cuenta y todos tus datos se borran para siempre.')) return;
+    btn.disabled=true; btn.textContent='Borrando…';
+    var uid=S.user.id, carpeta=db.storage.from('reports');
+    function borrarFotos(vuelta){
+      return carpeta.list(uid, { limit:1000 }).then(function(r){
+        if(r.error) throw r.error;
+        var paths=(r.data||[]).filter(function(f){ return f && f.name; }).map(function(f){ return uid+'/'+f.name; });
+        if(!paths.length || vuelta>=5) return;
+        return carpeta.remove(paths).then(function(x){ if(x.error) throw x.error; return borrarFotos(vuelta+1); });
+      });
+    }
+    db.auth.signInWithPassword({ email:S.user.email, password:pass }).then(function(r){
+      if(r.error) throw new Error('La contraseña no es correcta.');
+      return borrarFotos(0);
+    }).then(function(){
+      // Quitar la suscripción push de este navegador (si la hay); no bloquea
+      if('serviceWorker' in navigator){
+        navigator.serviceWorker.ready.then(function(reg){ return reg.pushManager.getSubscription(); })
+          .then(function(sub){ if(sub) sub.unsubscribe(); }).catch(function(){});
+      }
+      return db.rpc('borrar_mi_cuenta');
+    }).then(function(r){
+      if(r.error) throw r.error;
+      try{ Object.keys(localStorage).forEach(function(k){ if(/^pa_|^sb-/.test(k)) localStorage.removeItem(k); }); }catch(e){}
+      setMsg('msgBorrar','ok','Tu cuenta se borró. ¡Gracias por haber sido parte de la Patrulla!');
+      setTimeout(function(){ db.auth.signOut().catch(function(){}).then(function(){ location.reload(); }); }, 2500);
+    }).catch(function(e){
+      setMsg('msgBorrar','err', e && e.message ? traducir(e.message) : 'No se pudo borrar la cuenta.');
+      btn.disabled=false; btn.textContent='Borrar mi cuenta para siempre';
+    });
   }
 
   // =====================================================================
@@ -4027,6 +4071,7 @@ svg.z1 .rm-name:not(.main){display:none}
     $('inCity').addEventListener('change', function(){ setupSectorPicker($('fieldSector'), $('inCity').value, null, REG_SECTOR); });
     $('saveEmail').addEventListener('click', saveEmail);
     $('savePass').addEventListener('click', savePass);
+    $('delAccount').addEventListener('click', borrarCuenta);
     $('rowPriv').addEventListener('click', function(){ openPrivacy(false); });
     $('rowTutorial').addEventListener('click', showOnboarding);
     $('onbNext').addEventListener('click', onbNext);
