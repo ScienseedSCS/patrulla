@@ -702,7 +702,7 @@ svg.z1 .rm-name:not(.main){display:none}
       </div>
       <div class="field" id="fieldPass">
         <label for="inPass">Contraseña</label>
-        <input type="password" id="inPass" autocomplete="current-password" placeholder="Mínimo 6 caracteres">
+        <input type="password" id="inPass" autocomplete="current-password" placeholder="Tu contraseña">
       </div>
       <button class="btn btn-accent" id="authSubmit">Entrar</button>
     </div>
@@ -874,7 +874,7 @@ svg.z1 .rm-name:not(.main){display:none}
 
           <div class="setting-row" data-acc="pass"><span>🔒 Cambiar contraseña</span><span class="chev">▸</span></div>
           <div class="setting-panel" id="acc-pass">
-            <div class="field"><label for="pfPass">Nueva contraseña</label><input type="password" id="pfPass" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+            <div class="field"><label for="pfPass">Nueva contraseña</label><input type="password" id="pfPass" placeholder="Mínimo 8, con letras y números" autocomplete="new-password"></div>
             <div class="setting-msg" id="msgPass"></div>
             <button class="btn btn-accent" id="savePass">Cambiar contraseña</button>
           </div>
@@ -1358,6 +1358,7 @@ svg.z1 .rm-name:not(.main){display:none}
     $('forgotBtn').classList.toggle('hide', isReg || isRec);
     $('authSubmit').textContent = isReg ? 'Crear cuenta' : isRec ? 'Enviar enlace' : 'Entrar';
     $('inPass').setAttribute('autocomplete', isReg ? 'new-password' : 'current-password');
+    $('inPass').setAttribute('placeholder', isReg ? 'Mínimo 8, con letras y números' : 'Tu contraseña');
     $('switchText').textContent = isReg ? '¿Ya tenés cuenta?' : '¿Todavía no tenés cuenta?';
     $('switchBtn').textContent = isReg ? 'Iniciá sesión' : 'Registrate';
     $('authIntro').textContent = isReg
@@ -1368,12 +1369,17 @@ svg.z1 .rm-name:not(.main){display:none}
     authMsg();
   }
 
+  // Contraseñas nuevas (registro, recuperación, cambio): mínimo 8, con letras y números.
+  // Al iniciar sesión no se exige: las cuentas antiguas pueden tener 6.
+  var PASS_REGLA = 'La contraseña debe tener al menos 8 caracteres, con letras y números.';
+  function passNuevaError(p){ p=p||''; return (p.length<8 || !/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(p) || !/[0-9]/.test(p)) ? PASS_REGLA : ''; }
+
   function traducir(msg){
     var m=(msg||'').toLowerCase();
     if(m.indexOf('invalid login')>=0) return 'Email o contraseña incorrectos.';
     if(m.indexOf('already registered')>=0||m.indexOf('already been registered')>=0) return 'Ese email ya tiene una cuenta. Iniciá sesión.';
     if(m.indexOf('email not confirmed')>=0) return 'Todavía no confirmaste tu email.';
-    if(m.indexOf('password')>=0) return 'La contraseña debe tener al menos 6 caracteres.';
+    if(m.indexOf('password')>=0) return PASS_REGLA;
     if(m.indexOf('rate limit')>=0||m.indexOf('too many')>=0) return 'Demasiados intentos. Esperá unos minutos.';
     return msg || 'No se pudo completar la acción.';
   }
@@ -1458,8 +1464,7 @@ svg.z1 .rm-name:not(.main){display:none}
 
   // --- Solicitud de municipio nuevo ------------------------------------
   function submitCityRequest(muni, prov, email, name, doneMsg){
-    var payload={ municipality:muni, province:prov||null, requester_email:email||null, requester_name:name||null, status:'pendiente' };
-    return db.from('city_requests').insert(payload).then(function(res){
+    return db.rpc('pedir_municipio', { p_municipio:muni, p_provincia:prov||null, p_email:email||null, p_nombre:name||null }).then(function(res){
       if(res.error) throw res.error;
       if(doneMsg) toast(doneMsg);
     });
@@ -1493,7 +1498,7 @@ svg.z1 .rm-name:not(.main){display:none}
     }
 
     if(!email||!pass) return authMsg('err','Completá email y contraseña.');
-    if(pass.length<6) return authMsg('err','La contraseña debe tener al menos 6 caracteres.');
+    if(authMode==='register' && passNuevaError(pass)) return authMsg('err', passNuevaError(pass));
     btn.disabled=true; btn.textContent='Un momento…';
 
     if(authMode==='register'){
@@ -1537,7 +1542,7 @@ svg.z1 .rm-name:not(.main){display:none}
     $('fieldName').classList.add('hide'); $('fieldCity').classList.add('hide');
     $('fieldEmail').classList.add('hide'); $('fieldPass').classList.remove('hide');
     $('forgotBtn').classList.add('hide');
-    $('inPass').value=''; $('inPass').setAttribute('autocomplete','new-password');
+    $('inPass').value=''; $('inPass').setAttribute('autocomplete','new-password'); $('inPass').setAttribute('placeholder','Mínimo 8, con letras y números');
     $('authSubmit').textContent='Guardar contraseña';
     $('switchText').textContent=''; $('switchBtn').classList.add('hide');
     authMsg('ok','Escribí tu nueva contraseña y guardala.');
@@ -1545,7 +1550,7 @@ svg.z1 .rm-name:not(.main){display:none}
     var btn=$('authSubmit');
     btn.onclick = function(){
       var pass=$('inPass').value;
-      if(pass.length<6) return authMsg('err','Mínimo 6 caracteres.');
+      if(passNuevaError(pass)) return authMsg('err', passNuevaError(pass));
       btn.disabled=true; btn.textContent='Guardando…';
       db.auth.updateUser({ password: pass }).then(function(res){
         if(res.error){ authMsg('err', traducir(res.error.message)); btn.disabled=false; btn.textContent='Guardar contraseña'; return; }
@@ -1946,7 +1951,7 @@ svg.z1 .rm-name:not(.main){display:none}
 
   function savePass(){
     var pass=$('pfPass').value;
-    if(pass.length<6) return setMsg('msgPass','err','Mínimo 6 caracteres.');
+    if(passNuevaError(pass)) return setMsg('msgPass','err', passNuevaError(pass));
     var btn=$('savePass'); btn.disabled=true; btn.textContent='Guardando…';
     db.auth.updateUser({ password:pass }).then(function(res){
       if(res.error) throw res.error;
