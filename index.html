@@ -686,7 +686,8 @@ svg.z1 .rm-name:not(.main){display:none}
     <div class="auth-form">
       <div class="field hide" id="fieldName">
         <label for="inName">Cómo querés que te vean</label>
-        <input type="text" id="inName" autocomplete="nickname" placeholder="Ej: Camila F." maxlength="40">
+        <input type="text" id="inName" autocomplete="nickname" placeholder="Ej: Camila F." maxlength="40" aria-describedby="inNameHint">
+        <div class="meta-sub" id="inNameHint" style="margin-top:4px">Este nombre lo verán otros participantes en el ranking. Podés usar un apodo: no hace falta tu nombre real.</div>
       </div>
       <div class="field hide" id="fieldCity">
         <label for="inCity">Tu ciudad</label>
@@ -854,7 +855,10 @@ svg.z1 .rm-name:not(.main){display:none}
         <div class="settings">
           <div class="setting-row" data-acc="perfil"><span>✏️ Editar perfil</span><span class="chev">▸</span></div>
           <div class="setting-panel" id="acc-perfil">
-            <div class="field"><label for="pfName">Nombre de usuario</label><input type="text" id="pfName" maxlength="40"></div>
+            <div class="field"><label for="pfName">Nombre de usuario</label><input type="text" id="pfName" maxlength="40" aria-describedby="pfNameHint">
+              <div class="meta-sub" id="pfNameHint" style="margin-top:4px">Este nombre lo verán otros participantes en el ranking. Podés usar un apodo: no hace falta tu nombre real.</div></div>
+            <div class="meta-row" style="padding:4px 0 12px"><div><div class="meta-label" style="font-size:13px">Mostrarme en el ranking</div><div class="meta-sub">Si lo apagás, seguís sumando puntos y viendo el ranking, pero los demás no te ven.</div></div>
+              <label class="switch"><input type="checkbox" id="pfRanking" aria-label="Mostrarme en el ranking"><span class="slider"></span></label></div>
             <div class="field"><label for="pfCity">Ciudad</label><select id="pfCity"></select>
               <button type="button" class="privacy-link" id="pfReqCity" style="padding-top:6px">¿No está tu municipio? Solicitá agregarlo</button></div>
             <div class="field hide" id="pfSectorField"></div>
@@ -1912,6 +1916,7 @@ svg.z1 .rm-name:not(.main){display:none}
     var lvl=currentLevel(p.points||0);
     $('profMeta').innerHTML = (p.city?('📍 '+esc(p.city)+(p.sector?' · Sector '+esc(p.sector):'')+' · '):'')+lvl.emoji+' '+esc(lvl.name)+' · '+(p.points||0)+' pts';
     $('pfName').value=name;
+    $('pfRanking').checked = (p.en_ranking !== false);
     fillCitySelect($('pfCity'), p.city);
     setupSectorPicker($('pfSectorField'), p.city, p.sector, PF_SECTOR);
     var ce=$('curEmail'); if(ce) ce.innerHTML='Tu email actual: <b>'+esc(maskEmail(S.user&&S.user.email))+'</b>';
@@ -1937,9 +1942,10 @@ svg.z1 .rm-name:not(.main){display:none}
     if(!name) return setMsg('msgPerfil','err','Escribí un nombre.');
     var btn=$('savePerfil'); btn.disabled=true; btn.textContent='Guardando…';
     var sector = PF_SECTOR.available ? PF_SECTOR.value : null;
-    db.from('profiles').update({ username:name, city:city||null, sector:sector }).eq('id', S.user.id).then(function(res){
+    var enRanking = $('pfRanking').checked;
+    db.from('profiles').update({ username:name, city:city||null, sector:sector, en_ranking:enRanking }).eq('id', S.user.id).then(function(res){
       if(res.error) throw res.error;
-      S.profile.username=name; S.profile.city=city||null; S.profile.sector=sector;
+      S.profile.username=name; S.profile.city=city||null; S.profile.sector=sector; S.profile.en_ranking=enRanking;
       renderIncidencia();
       updateUserChip(); $('brandUser').textContent = city ? ('📍 '+city) : 'Prevención en tu barrio';
       renderProfile(); renderLeaderboard();
@@ -3941,7 +3947,7 @@ svg.z1 .rm-name:not(.main){display:none}
       res.data.forEach(function(p,i){
         var me=!!p.es_yo;
         var row=el('div','lb-row'+(me?' me':''));
-        row.innerHTML='<div class="lb-rank">'+(i+1)+'</div><div class="lb-name">'+esc(p.username||'Vecino/a')+(me?' (vos)':'')+'</div><div class="lb-pts">'+(p.points||0)+'</div>';
+        row.innerHTML='<div class="lb-rank">'+(i+1)+'</div><div class="lb-name">'+esc(p.username||'Vecino/a')+(me?(S.profile && S.profile.en_ranking===false ? ' (vos · oculto para los demás)' : ' (vos)'):'')+'</div><div class="lb-pts">'+(p.points||0)+'</div>';
         list.appendChild(row);
       });
     });
