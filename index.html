@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <!-- Seguridad (SAST-013): qué puede cargar esta página. Si se añade un servicio
      externo nuevo (fuentes, mapas, analítica…), hay que añadir su dominio aquí. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://levdxusiudrtutmkyomn.supabase.co; connect-src 'self' https://levdxusiudrtutmkyomn.supabase.co wss://levdxusiudrtutmkyomn.supabase.co; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://levdxusiudrtutmkyomn.supabase.co; connect-src 'self' https://levdxusiudrtutmkyomn.supabase.co wss://levdxusiudrtutmkyomn.supabase.co; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>/* Evita que otra web muestre esta página dentro de un marco (clickjacking) */
 if(window.top!==window.self){document.documentElement.style.display='none';try{window.top.location=window.self.location.href;}catch(e){}}</script>
@@ -21,9 +21,7 @@ if(window.top!==window.self){document.documentElement.style.display='none';try{w
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="fuentes/fuentes.css" rel="stylesheet">
 
 <style>
 :root{

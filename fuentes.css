@@ -1,0 +1,13 @@
+/* Fuentes alojadas en el propio sitio (antes se cargaban de Google Fonts).
+   Origen: paquetes @fontsource 5.3.0 de npm, subconjunto latino (cubre todo el español).
+   Licencia: SIL Open Font License 1.1 (ver LICENCIA-*.txt en esta carpeta). */
+
+@font-face{font-family:'DM Serif Display';font-style:normal;font-weight:400;font-display:swap;src:url(dm-serif-display-latin-400-normal.woff2) format('woff2');}
+@font-face{font-family:'Raleway';font-style:normal;font-weight:400;font-display:swap;src:url(raleway-latin-400-normal.woff2) format('woff2');}
+@font-face{font-family:'Raleway';font-style:normal;font-weight:500;font-display:swap;src:url(raleway-latin-500-normal.woff2) format('woff2');}
+@font-face{font-family:'Raleway';font-style:normal;font-weight:600;font-display:swap;src:url(raleway-latin-600-normal.woff2) format('woff2');}
+@font-face{font-family:'Raleway';font-style:normal;font-weight:700;font-display:swap;src:url(raleway-latin-700-normal.woff2) format('woff2');}
+@font-face{font-family:'Raleway';font-style:normal;font-weight:800;font-display:swap;src:url(raleway-latin-800-normal.woff2) format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url(jetbrains-mono-latin-400-normal.woff2) format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url(jetbrains-mono-latin-500-normal.woff2) format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url(jetbrains-mono-latin-700-normal.woff2) format('woff2');}
