@@ -275,6 +275,10 @@ body.locked .wrap{display:none}
 .md-actions2{margin-top:8px;padding-top:10px;border-top:1px solid var(--border)}
 .mod-actions button.armed{background:var(--coral);border-color:var(--coral);color:#fff}
 kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1;padding:3px 5px;border-radius:5px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--cream);margin-left:4px}
+.md-vote{background:rgba(63,187,160,.07);border:1px solid rgba(63,187,160,.3);border-radius:12px;padding:10px 12px;margin-top:12px}
+.md-reasons{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.md-reasons button{font-family:inherit;font-size:12.5px;font-weight:700;border-radius:9px;padding:8px 10px;cursor:pointer;border:1px solid rgba(226,105,95,.4);background:rgba(226,105,95,.12);color:var(--cream)}
+.md-adm{margin-top:4px}
 .md-keys{font-size:12px;color:var(--muted);margin-top:10px}
 .md-keys kbd{margin:0 1px}
 .md-zoom{position:fixed;inset:0;z-index:50;background:rgba(10,6,12,.94);display:flex;align-items:center;justify-content:center;cursor:zoom-out;outline:none}
@@ -294,8 +298,8 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
 <div class="gate" id="gate">
   <div class="panel">
     <div class="brand"><div class="brand-logo">🦟</div><div class="brand-tx"><h1>Centro de Monitoreo</h1><span>PATRULLA ANTIMOSQUITO · FUNDACIÓN MUNDO SANO</span></div></div>
-    <h2>Moderación de reportes</h2>
-    <p>Entrá con tu cuenta de la app. Solo pueden pasar las cuentas habilitadas como administradoras.</p>
+    <h2>Revisión y moderación de reportes</h2>
+    <p>Entrá con tu cuenta de la app. Solo pueden pasar las cuentas de revisores autorizados y administradores.</p>
     <form id="gateForm" novalidate>
       <label for="gateEmail">Email</label>
       <input type="email" id="gateEmail" autocomplete="username" required>
@@ -311,26 +315,27 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
 <div class="wrap">
   <div class="session-bar">
     <span id="sessionWho">—</span>
-    <span><a href="admin.html" style="color:var(--teal);font-weight:700;margin-right:12px">← Centro de monitoreo</a>
+    <span><a href="admin.html" class="solo-admin" style="color:var(--teal);font-weight:700;margin-right:12px">← Centro de monitoreo</a>
     <button type="button" class="ghost-btn" id="logoutBtn">Cerrar sesión</button></span>
   </div>
 
   <div class="mod-top">
-    <h1>🛡️ Moderación de reportes</h1>
+    <h1 id="modH1">🛡️ Revisión y moderación de reportes</h1>
     <button class="ghost-btn" id="modRefresh">↻ Actualizar</button>
   </div>
   <div class="mod-tabs" role="group" aria-label="Filtrar">
-    <button data-f="todo" aria-pressed="true">Todo<span class="n" id="nTodo">0</span></button>
-    <button data-f="denuncia" aria-pressed="false">🚩 Denuncias<span class="n" id="nDen">0</span></button>
-    <button data-f="apelacion" aria-pressed="false">🛟 Segundas opiniones<span class="n" id="nApe">0</span></button>
-    <button data-f="atascado" aria-pressed="false">⏳ Atascados +7 días<span class="n" id="nAta">0</span></button>
-    <button data-f="revisores" aria-pressed="false">👥 Revisores<span class="n" id="nRev">0</span></button>
+    <button data-f="revisar" aria-pressed="true">🗳️ Por revisar<span class="n" id="nRevisar">0</span></button>
+    <button data-f="denuncia" class="solo-admin" aria-pressed="false">🚩 Denuncias<span class="n" id="nDen">0</span></button>
+    <button data-f="apelacion" class="solo-admin" aria-pressed="false">🛟 Segundas opiniones<span class="n" id="nApe">0</span></button>
+    <button data-f="atascado" class="solo-admin" aria-pressed="false">⏳ Atascados +7 días<span class="n" id="nAta">0</span></button>
+    <button data-f="todo" class="solo-admin" aria-pressed="false">Todo<span class="n" id="nTodo">0</span></button>
+    <button data-f="revisores" class="solo-admin" aria-pressed="false">👥 Revisores<span class="n" id="nRev">0</span></button>
   </div>
   <div class="mod-work" id="modWork">
     <div class="mod-list" id="modList" role="listbox" aria-label="Reportes que necesitan atención"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
     <section class="mod-detail" id="modDetail" aria-label="Reporte seleccionado"></section>
   </div>
-  <div class="md-keys" aria-hidden="true">Atajos: <kbd>↑</kbd><kbd>↓</kbd> o <kbd>J</kbd><kbd>K</kbd> moverse · <kbd>V</kbd> validar · <kbd>D</kbd> descartar · <kbd>R</kbd> devolver a vecinos · <kbd>Z</kbd> ampliar foto · <kbd>M</kbd> escribir mensaje · <kbd>Esc</kbd> salir del mensaje</div>
+  <div class="md-keys" aria-hidden="true">Atajos: <kbd>↑</kbd><kbd>↓</kbd> o <kbd>J</kbd><kbd>K</kbd> moverse · <kbd>A</kbd> es correcto · <kbd>X</kbd> rechazar y <kbd>1</kbd>–<kbd>5</kbd> motivo · <kbd>Z</kbd> ampliar foto<span class="solo-admin"> · <kbd>V</kbd> validar ya · <kbd>D</kbd> descartar ya · <kbd>R</kbd> devolver a vecinos · <kbd>M</kbd> escribir mensaje · <kbd>Esc</kbd> salir del mensaje</span></div>
   <div id="revPanel" class="hide">
     <div class="mod-card" style="grid-template-columns:1fr">
       <div>
@@ -402,7 +407,7 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
   function fmtDate(iso){ try{ return new Date(iso).toLocaleString('es-AR',{ day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }); }catch(e){ return iso; } }
   if (typeof SUPABASE_URL === 'undefined'){ document.body.innerHTML='<p style="padding:40px;color:#fff">Falta config.js junto a esta página.</p>'; return; }
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  var ME = null, ITEMS = [], FILTER = 'todo';
+  var ME = null, ADMIN = false, ITEMS = [], FILTER = 'revisar';
 
   var MOTIVOS = { ofensivo:'Ofensivo o inapropiado', privacidad:'Muestra personas o datos privados', falso:'Engaño o foto repetida', spam:'Spam o sin relación', otro:'Otro' };
   var REJECT = { falso:'Falso', incorrecto:'Incorrecto', borrosa:'Borrosa', no_corresponde:'No corresponde', dudoso:'Dudoso' };
@@ -418,12 +423,17 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
   function checkAdmin(session){
     if(!session){ showGate('', false); return; }
     var email=(session.user && session.user.email) || '';
-    db.from('profiles').select('id,username,is_admin').eq('id', session.user.id).single().then(function(r){
+    db.from('profiles').select('id,username,is_admin,is_reviewer,bloqueado').eq('id', session.user.id).single().then(function(r){
       if(r.error || !r.data){ showGate('No encontramos el perfil de '+email+'.', true); return; }
-      if(!r.data.is_admin){ showGate('La cuenta '+email+' no tiene permisos de administrador.', true); return; }
-      ME=r.data;
+      if(!(r.data.is_admin || r.data.is_reviewer) || r.data.bloqueado){ showGate('La cuenta '+email+' no está autorizada para revisar reportes.', true); return; }
+      ME=r.data; ADMIN=!!r.data.is_admin;
       document.body.classList.remove('locked'); $('gate').classList.add('hide');
-      $('sessionWho').innerHTML='Sesión de administrador: <b>'+esc(r.data.username||email)+'</b>';
+      $('sessionWho').innerHTML=(ADMIN?'Sesión de administrador: ':'Sesión de revisor/a: ')+'<b>'+esc(r.data.username||email)+'</b>';
+      // Revisores: solo la cola de revisión (sin moderación ni gestión de revisores)
+      document.querySelectorAll('.solo-admin').forEach(function(x){ x.classList.toggle('hide', !ADMIN); });
+      if(!ADMIN){ document.title='Revisión de reportes · Patrulla Antimosquito'; $('modH1').textContent='🗳️ Revisión de reportes'; }
+      FILTER='revisar';
+      document.querySelectorAll('.mod-tabs [data-f]').forEach(function(x){ x.setAttribute('aria-pressed', x.getAttribute('data-f')==='revisar'?'true':'false'); });
       load();
     }, function(){ showGate('No pudimos verificar la cuenta. Revisá la conexión.', true); });
   }
@@ -443,9 +453,15 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
   $('logoutBtn').addEventListener('click', doLogout);
 
   // ---------- Cola ----------
+  // revisar = pendiente de votos (sin denuncias ni segunda opinión)
+  // atascado = pendiente desde hace más de 7 días
   function kindsOf(it){
     var k={}; (it.flags||[]).forEach(function(f){ k[f.tipo]=1; });
-    if(!it.flags || !it.flags.length) k.atascado=1;
+    var pend=(it.status||'pendiente')==='pendiente';
+    if(pend && !(it.flags||[]).length){
+      if(!it.ya_vote) k.revisar=1;
+      if(Date.now()-new Date(it.created_at).getTime() > 7*86400000) k.atascado=1;
+    }
     return k;
   }
   // ---------- Cola: lista a la izquierda, detalle a la derecha ----------
@@ -456,22 +472,59 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
   var ARMED = null;        // acción peligrosa esperando el segundo clic
   var ZOOM = null;         // { fotos:[...], i:n } si el visor está abierto
 
+  // Carga: todos los pendientes (lo que ve un revisor en la app, de todos los
+  // municipios) + lo que necesita al admin (denuncias, segundas opiniones).
   function load(keepSel){
     var first=!ITEMS.length && !$('modList').querySelector('.mq-item');
     if(first) $('modList').innerHTML='<div class="panel-loading"><div class="spinner"></div>Cargando…</div>';
     $('modRefresh').disabled=true;
-    db.rpc('admin_cola_moderacion').then(function(res){
-      $('modRefresh').disabled=false;
-      if(res.error){ $('modList').innerHTML='<div class="panel-error">No pudimos cargar la cola. Si dice que falta una función, corré 19_moderacion-reportes.sql en Supabase.<br><span class="mono">'+esc(res.error.message)+'</span></div>'; return; }
-      ITEMS=res.data||[];
-      if(!keepSel || !ITEMS.some(function(x){ return x.id===SEL; })) SEL=null;
-      render();
-    }, function(){ $('modRefresh').disabled=false; toast('No pudimos actualizar la cola. Revisá la conexión.', true); });
+    var fail=function(msg){ $('modRefresh').disabled=false; $('modList').innerHTML='<div class="panel-error">No pudimos cargar los reportes.<br><span class="mono">'+esc(msg||'Revisá la conexión.')+'</span></div>'; };
+    Promise.all([
+      db.from('reports').select('id,note,photo_url,photo_before_url,tour_photos,city,sector,action_type,user_id,created_at,review_count,points_awarded,status')
+        .eq('status','pendiente').neq('user_id', ME.id).order('created_at',{ ascending:true }).limit(500),
+      db.from('report_reviews').select('report_id').eq('reviewer_id', ME.id),
+      db.from('action_types').select('id,title'),
+      ADMIN ? db.rpc('admin_cola_moderacion') : Promise.resolve({ data:[] })
+    ]).then(function(r){
+      if(r[0].error) return fail(r[0].error.message);
+      if(r[3].error) return fail(r[3].error.message);
+      var voted={}; (r[1].data||[]).forEach(function(x){ voted[x.report_id]=1; });
+      var titles={}; (r[2].data||[]).forEach(function(x){ titles[x.id]=x.title; });
+      var byId={};
+      (r[3].data||[]).forEach(function(it){ byId[it.id]=it; });
+      (r[0].data||[]).forEach(function(p){
+        var it=byId[p.id];
+        if(!it){ it=byId[p.id]={ id:p.id, status:p.status, created_at:p.created_at, city:p.city, sector:p.sector, action_type:p.action_type,
+                                 action_title:titles[p.action_type], note:p.note, photo_url:p.photo_url, photo_before_url:p.photo_before_url,
+                                 tour_photos:p.tour_photos, points_awarded:p.points_awarded, flags:[], author:{ id:p.user_id } }; }
+        it.ya_vote=!!voted[p.id];
+      });
+      var items=Object.keys(byId).map(function(k){ return byId[k]; });
+      // Nombres de autor y votos (si/no) de los pendientes que no vinieron de la cola del admin
+      var sinNombre=items.filter(function(it){ return !it.author.username; }).map(function(it){ return it.author.id; });
+      var ids=items.map(function(it){ return it.id; });
+      return Promise.all([
+        sinNombre.length ? db.rpc('nombres_autores', { p_ids: sinNombre.filter(function(v,i,a){ return a.indexOf(v)===i; }) }) : Promise.resolve({ data:[] }),
+        ids.length ? db.from('report_reviews').select('report_id,vote').in('report_id', ids) : Promise.resolve({ data:[] })
+      ]).then(function(x){
+        var names={}; (x[0].data||[]).forEach(function(n){ names[n.id]=n.username; });
+        var v={}; (x[1].data||[]).forEach(function(rv){ v[rv.report_id]=v[rv.report_id]||{ si:0, no:0 }; if(rv.vote==='correcto') v[rv.report_id].si++; else v[rv.report_id].no++; });
+        items.forEach(function(it){
+          if(!it.author.username) it.author.username=names[it.author.id]||'Vecino/a';
+          if(!it.votos) it.votos=v[it.id]||{ si:0, no:0 };
+        });
+        items.sort(function(a,b){ return new Date(a.created_at)-new Date(b.created_at); });
+        ITEMS=items;
+        $('modRefresh').disabled=false;
+        if(!keepSel || !ITEMS.some(function(it){ return it.id===SEL; })) SEL=null;
+        render();
+      });
+    }).catch(function(e){ fail(e && e.message); });
   }
   function counts(){
-    var n={ denuncia:0, apelacion:0, atascado:0 };
+    var n={ revisar:0, denuncia:0, apelacion:0, atascado:0 };
     ITEMS.forEach(function(it){ var k=kindsOf(it); Object.keys(k).forEach(function(x){ n[x]++; }); });
-    $('nTodo').textContent=ITEMS.length; $('nDen').textContent=n.denuncia; $('nApe').textContent=n.apelacion; $('nAta').textContent=n.atascado;
+    $('nRevisar').textContent=n.revisar; $('nTodo').textContent=ITEMS.length; $('nDen').textContent=n.denuncia; $('nApe').textContent=n.apelacion; $('nAta').textContent=n.atascado;
   }
   function visible(){ return ITEMS.filter(function(it){ return FILTER==='todo' || kindsOf(it)[FILTER]; }); }
   function photosOf(it){
@@ -493,7 +546,7 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
     counts();
     var list=visible(), box=$('modList');
     if(!list.length){
-      box.innerHTML='<div class="mod-empty" style="margin:0">🎉 No hay nada pendiente en esta lista.</div>';
+      box.innerHTML='<div class="mod-empty" style="margin:0">🎉 '+(FILTER==='revisar'?'No hay reportes esperando tu voto.':'No hay nada pendiente en esta lista.')+'</div>';
       SEL=null; renderDetail(); return;
     }
     if(SEL===null || !list.some(function(x){ return x.id===SEL; })) SEL=list[0].id;
@@ -502,7 +555,7 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
       return '<button type="button" class="mq-item'+(it.id===SEL?' sel':'')+'" role="option" aria-selected="'+(it.id===SEL)+'" data-id="'+it.id+'">'+
         '<span class="mq-thumb">'+(f?'<img src="'+FOTO_PIXEL+'" data-foto="'+esc(f.url)+'" alt="">':'📷')+'</span>'+
         '<span class="mq-tx"><span class="mq-l1">'+(k.denuncia?'🚩 ':'')+(k.apelacion?'🛟 ':'')+(k.atascado?'⏳ ':'')+esc(it.action_title||it.action_type||'Acción')+'</span>'+
-        '<span class="mq-l2">'+esc(a.username||'—')+' · '+esc(it.city||'—')+' · '+ago(it.created_at)+'</span></span>'+
+        '<span class="mq-l2">'+esc(a.username||'—')+' · '+esc(it.city||'—')+' · '+ago(it.created_at)+' · 🗳️ '+((it.votos&&it.votos.si)||0)+'/'+((it.votos&&it.votos.no)||0)+'</span></span>'+
         '<span class="mq-id">#'+it.id+'</span></button>';
     }).join('');
     box.querySelectorAll('.mq-item').forEach(function(b){
@@ -559,18 +612,27 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
           }).join('')+'</div>' : '')+
           '<div class="mod-author">Autor: <b>'+esc(a.username||'—')+'</b> · '+(a.reportes||0)+' reportes, '+(a.descartados||0)+' descartados, '+(a.avisos_mal_uso||0)+' avisos de mal uso'+
             (a.bloqueado?' · <b style="color:var(--coral)">BLOQUEADO</b>'+(a.bloqueado_motivo?' ('+esc(a.bloqueado_motivo)+')':''):'')+'</div>'+
+          (k.revisar ?
+            '<div class="md-vote"><div class="md-lbl" style="margin-top:4px">Tu voto como revisor/a <span>(con 2 votos iguales se decide)</span></div>'+
+            '<div class="mod-actions md-actions">'+
+              '<button class="ok" data-v="correcto">👍 Es correcto <kbd>A</kbd></button>'+
+              '<button data-v="rechazar">👎 Rechazar <kbd>X</kbd></button>'+
+            '</div>'+
+            '<div class="md-reasons hide" id="mdReasons">'+REASONS.map(function(rz,i){ return '<button type="button" data-reason="'+rz[0]+'"><kbd>'+(i+1)+'</kbd> '+esc(rz[1])+'</button>'; }).join('')+'</div></div>' : '')+
+          (ADMIN ?
+          '<div class="md-adm">'+(k.revisar?'<div class="md-lbl">O decidí directamente como admin</div>':'')+
           '<label class="md-lbl" for="mdMsg">Mensaje para el autor <span>(opcional; si lo dejás vacío se usa un texto estándar)</span></label>'+
           '<textarea class="mod-msg" id="mdMsg" maxlength="500"></textarea>'+
           '<div class="mod-actions md-actions">'+
-            '<button class="ok" data-a="validar">✅ Validar <kbd>V</kbd></button>'+
-            '<button data-a="descartar">❌ Descartar <kbd>D</kbd></button>'+
+            '<button class="ok" data-a="validar">✅ Validar'+(k.revisar?' ya':'')+' <kbd>V</kbd></button>'+
+            '<button data-a="descartar">❌ Descartar'+(k.revisar?' ya':'')+' <kbd>D</kbd></button>'+
             (it.status==='revision_admin'?'<button data-a="revisar">↩︎ Devolver a vecinos <kbd>R</kbd></button>':'')+
           '</div>'+
           '<div class="mod-actions md-actions2">'+
             '<button data-a="avisar">⚠️ Enviar aviso de mal uso</button>'+
             (a.bloqueado?'<button data-a="desbloquear">🔓 Desbloquear usuario</button>':'<button class="bad" data-a="bloquear">⛔ Bloquear usuario</button>')+
             '<button class="bad" data-a="eliminar">🗑️ Eliminar reporte</button>'+
-          '</div>'+
+          '</div></div>' : '')+
           '<div class="mod-res" id="mdRes" role="status"></div>'+
         '</div>'+
       '</div>';
@@ -588,6 +650,29 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
     box.querySelectorAll('[data-a]').forEach(function(b){
       b.addEventListener('click', function(){ act(it, b.getAttribute('data-a'), b); });
     });
+    var bv=box.querySelector('[data-v="correcto"]'), br=box.querySelector('[data-v="rechazar"]');
+    if(bv) bv.addEventListener('click', function(){ vote(it, 'correcto'); });
+    if(br) br.addEventListener('click', function(){ showReasons(); });
+    box.querySelectorAll('[data-reason]').forEach(function(b){ b.addEventListener('click', function(){ vote(it, 'rechazado', b.getAttribute('data-reason')); }); });
+  }
+
+  // ---------- Votar como revisor/a (igual que en la app) ----------
+  var REASONS=[['falso','Foto falsa o de internet'],['incorrecto','No muestra la acción'],['borrosa','Foto borrosa o confusa'],['no_corresponde','No corresponde a la categoría'],['dudoso','Dudoso']];
+  function showReasons(){ var r=$('mdReasons'); if(r){ r.classList.remove('hide'); var f=r.querySelector('button'); if(f) f.focus(); } }
+  function vote(it, v, reason){
+    busy(true);
+    var row={ report_id:it.id, reviewer_id:ME.id, vote:v }; if(reason) row.reason=reason;
+    db.from('report_reviews').insert(row).then(function(r){
+      if(r.error){ busy(false); return res(false,'No se pudo votar: '+r.error.message); }
+      it.ya_vote=true;
+      return db.from('reports').select('status').eq('id', it.id).maybeSingle().then(function(s2){
+        var st=s2 && s2.data && s2.data.status;
+        var txt = st==='validado' ? '✅ #'+it.id+' validado con tu voto' : st==='descartado' ? '❌ #'+it.id+' descartado con tu voto' : '🗳️ Voto guardado en #'+it.id+' · falta otro voto';
+        toast(txt);
+        if(st && st!=='pendiente') quitar(it.id);
+        else { var cur=SEL; quitar(it.id); }
+      });
+    }, function(){ busy(false); res(false,'No se pudo votar: revisá la conexión.'); });
   }
 
   // ---------- Visor de fotos (dentro de la página, sin abrir pestañas) ----------
@@ -644,6 +729,7 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
     render();
   }
   function act(it, a, btn){
+    if(!ADMIN) return;
     var author=(it.author||{}), msgEl=$('mdMsg'), msg=msgEl ? msgEl.value.trim() : '';
     if(a==='avisar'){
       if(!msg){ res(false,'Escribí el mensaje del aviso en el recuadro.'); msgEl.focus(); return; }
@@ -701,6 +787,10 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
     if(k==='arrowdown' || k==='j'){ move(1); e.preventDefault(); }
     else if(k==='arrowup' || k==='k'){ move(-1); e.preventDefault(); }
     else if(!it) return;
+    else if(k==='a' && kindsOf(it).revisar){ vote(it,'correcto'); e.preventDefault(); }
+    else if(k==='x' && kindsOf(it).revisar){ showReasons(); e.preventDefault(); }
+    else if(/^[1-5]$/.test(k) && $('mdReasons') && !$('mdReasons').classList.contains('hide')){ vote(it,'rechazado',REASONS[+k-1][0]); e.preventDefault(); }
+    else if(!ADMIN) return;
     else if(k==='v'){ act(it,'validar'); e.preventDefault(); }
     else if(k==='d'){ act(it,'descartar'); e.preventDefault(); }
     else if(k==='r' && it.status==='revision_admin'){ act(it,'revisar'); e.preventDefault(); }
