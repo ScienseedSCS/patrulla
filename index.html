@@ -3085,7 +3085,7 @@ svg.z1 .rm-name:not(.main){display:none}
     body.innerHTML =
       '<span class="role-badge">🛡️ Revisor/a autorizado/a</span>'+
       '<div class="review-info"><div class="review-info-title">🗳️ Cómo funciona</div>'+
-      '<div class="review-info-text">Mirá la foto y la nota, y votá si el reporte es correcto o rechazalo con un motivo. Con 2 votos iguales se decide; si hay empate, decide el tercero. Si un reporte es inadecuado (ofensivo, con personas o datos privados), marcalo con 🚩 y lo ve un administrador.</div></div>'+
+      '<div class="review-info-text">Mirá la foto y la nota, y votá si el reporte es correcto o rechazalo con un motivo. Tu voto decide: si lo aprobás se valida y si lo rechazás se descarta, y se le avisa al autor. Si un reporte es inadecuado (ofensivo, con personas o datos privados), marcalo con 🚩 y lo ve un administrador.</div></div>'+
       '<div class="field" style="margin:10px 0 4px"><label for="reviewCity">Municipio</label>'+
         '<select id="reviewCity"><option value="">Todos los municipios</option>'+
         cities.map(function(c){ return '<option value="'+esc(c)+'"'+(c===REVIEW_CITY?' selected':'')+'>'+esc(c)+'</option>'; }).join('')+
@@ -3114,7 +3114,7 @@ svg.z1 .rm-name:not(.main){display:none}
             var thumb = r.photo_url ? '<img src="'+FOTO_PIXEL+'" data-foto="'+esc(fotoOk(r.photo_url))+'" alt="">' : (a.icon||'📷');
             var baBadge = r.photo_before_url ? '<span class="ba-badge">A/D</span>' : '';
             var votes = r.review_count||0; var almost = votes>=1;
-            var votesTxt = votes>=2 ? '🗳️ '+votes+' votos · empate, ¡tu voto decide!' : (votes===1 ? '🗳️ 1/2 · ¡falta 1!' : '🗳️ 0/2 votos');
+            almost=false; var votesTxt = '🗳️ Pendiente';
             var item=el('div','review-item'+(almost?' almost':''));
             item.innerHTML =
               '<div class="review-thumb" style="position:relative">'+baBadge+thumb+'</div>'+
@@ -3211,7 +3211,7 @@ svg.z1 .rm-name:not(.main){display:none}
       S.myReviewedReports[rid]=1; S.stats.reviews+=1; $('statReviews').textContent=S.stats.reviews;
       // Las revisiones son tarea del equipo: no suman puntos ni ranking
       return renderRevisar().then(function(){
-        toast(vote==='correcto'?'✅ Aprobado':'❌ Rechazado');
+        toast(vote==='correcto'?'✅ Validado':'❌ Rechazado');
       });
     }).catch(function(e){ console.error(e); showErr(humanError(e,'No pudimos registrar tu voto','Abrí el reporte de nuevo e intentá otra vez.')); });
   }

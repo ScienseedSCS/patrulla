@@ -335,7 +335,7 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
     <div class="mod-list" id="modList" role="listbox" aria-label="Reportes que necesitan atención"><div class="panel-loading"><div class="spinner"></div>Cargando…</div></div>
     <section class="mod-detail" id="modDetail" aria-label="Reporte seleccionado"></section>
   </div>
-  <div class="md-keys" aria-hidden="true">Atajos: <kbd>↑</kbd><kbd>↓</kbd> o <kbd>J</kbd><kbd>K</kbd> moverse · <kbd>A</kbd> es correcto · <kbd>X</kbd> rechazar y <kbd>1</kbd>–<kbd>5</kbd> motivo · <kbd>Z</kbd> ampliar foto<span class="solo-admin"> · <kbd>V</kbd> validar ya · <kbd>D</kbd> descartar ya · <kbd>R</kbd> devolver a vecinos · <kbd>M</kbd> escribir mensaje · <kbd>Esc</kbd> salir del mensaje</span></div>
+  <div class="md-keys" aria-hidden="true">Atajos: <kbd>↑</kbd><kbd>↓</kbd> o <kbd>J</kbd><kbd>K</kbd> moverse · <kbd>V</kbd> validar · <kbd>D</kbd> rechazar/descartar (y <kbd>1</kbd>–<kbd>5</kbd> motivo) · <kbd>Z</kbd> ampliar foto<span class="solo-admin"> · <kbd>R</kbd> devolver a revisión · <kbd>M</kbd> escribir mensaje · <kbd>Esc</kbd> salir del mensaje</span></div>
   <div id="revPanel" class="hide">
     <div class="mod-card" style="grid-template-columns:1fr">
       <div>
@@ -411,7 +411,7 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
 
   var MOTIVOS = { ofensivo:'Ofensivo o inapropiado', privacidad:'Muestra personas o datos privados', falso:'Engaño o foto repetida', spam:'Spam o sin relación', otro:'Otro' };
   var REJECT = { falso:'Falso', incorrecto:'Incorrecto', borrosa:'Borrosa', no_corresponde:'No corresponde', dudoso:'Dudoso' };
-  var ESTADOS = { pendiente:'⏳ En revisión de vecinos', revision_admin:'🛡️ Retirado de la cola (denuncia)', validado:'✅ Validado', descartado:'❌ Descartado' };
+  var ESTADOS = { pendiente:'⏳ Pendiente de revisión', revision_admin:'🛡️ Retirado de la cola (denuncia)', validado:'✅ Validado', descartado:'❌ Descartado' };
 
   // ---------- Login (igual que admin.html) ----------
   function showGate(msg, canLogout){
@@ -555,7 +555,7 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
       return '<button type="button" class="mq-item'+(it.id===SEL?' sel':'')+'" role="option" aria-selected="'+(it.id===SEL)+'" data-id="'+it.id+'">'+
         '<span class="mq-thumb">'+(f?'<img src="'+FOTO_PIXEL+'" data-foto="'+esc(f.url)+'" alt="">':'📷')+'</span>'+
         '<span class="mq-tx"><span class="mq-l1">'+(k.denuncia?'🚩 ':'')+(k.apelacion?'🛟 ':'')+(k.atascado?'⏳ ':'')+esc(it.action_title||it.action_type||'Acción')+'</span>'+
-        '<span class="mq-l2">'+esc(a.username||'—')+' · '+esc(it.city||'—')+' · '+ago(it.created_at)+' · 🗳️ '+((it.votos&&it.votos.si)||0)+'/'+((it.votos&&it.votos.no)||0)+'</span></span>'+
+        '<span class="mq-l2">'+esc(a.username||'—')+' · '+esc(it.city||'—')+' · '+ago(it.created_at)+'</span></span>'+
         '<span class="mq-id">#'+it.id+'</span></button>';
     }).join('');
     box.querySelectorAll('.mq-item').forEach(function(b){
@@ -613,21 +613,22 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
           '<div class="mod-author">Autor: <b>'+esc(a.username||'—')+'</b> · '+(a.reportes||0)+' reportes, '+(a.descartados||0)+' descartados, '+(a.avisos_mal_uso||0)+' avisos de mal uso'+
             (a.bloqueado?' · <b style="color:var(--coral)">BLOQUEADO</b>'+(a.bloqueado_motivo?' ('+esc(a.bloqueado_motivo)+')':''):'')+'</div>'+
           (k.revisar ?
-            '<div class="md-vote"><div class="md-lbl" style="margin-top:4px">Tu voto como revisor/a <span>(con 2 votos iguales se decide)</span></div>'+
+            '<div class="md-vote"><div class="md-lbl" style="margin-top:4px">Tu decisión <span>(se aplica en el momento y se avisa al autor)</span></div>'+
             '<div class="mod-actions md-actions">'+
-              '<button class="ok" data-v="correcto">👍 Es correcto <kbd>A</kbd></button>'+
-              '<button data-v="rechazar">👎 Rechazar <kbd>X</kbd></button>'+
+              '<button class="ok" data-v="correcto">✅ Validar <kbd>V</kbd></button>'+
+              '<button data-v="rechazar">❌ Rechazar <kbd>D</kbd></button>'+
             '</div>'+
             '<div class="md-reasons hide" id="mdReasons">'+REASONS.map(function(rz,i){ return '<button type="button" data-reason="'+rz[0]+'"><kbd>'+(i+1)+'</kbd> '+esc(rz[1])+'</button>'; }).join('')+'</div></div>' : '')+
           (ADMIN ?
-          '<div class="md-adm">'+(k.revisar?'<div class="md-lbl">O decidí directamente como admin</div>':'')+
-          '<label class="md-lbl" for="mdMsg">Mensaje para el autor <span>(opcional; si lo dejás vacío se usa un texto estándar)</span></label>'+
+          '<div class="md-adm">'+
+          '<label class="md-lbl" for="mdMsg">'+(k.revisar?'Mensaje para el autor <span>(para el aviso de mal uso)</span>':'Mensaje para el autor <span>(opcional; si lo dejás vacío se usa un texto estándar)</span>')+'</label>'+
           '<textarea class="mod-msg" id="mdMsg" maxlength="500"></textarea>'+
+          (k.revisar ? '' :
           '<div class="mod-actions md-actions">'+
-            '<button class="ok" data-a="validar">✅ Validar'+(k.revisar?' ya':'')+' <kbd>V</kbd></button>'+
-            '<button data-a="descartar">❌ Descartar'+(k.revisar?' ya':'')+' <kbd>D</kbd></button>'+
-            (it.status==='revision_admin'?'<button data-a="revisar">↩︎ Devolver a vecinos <kbd>R</kbd></button>':'')+
-          '</div>'+
+            '<button class="ok" data-a="validar">✅ Validar <kbd>V</kbd></button>'+
+            '<button data-a="descartar">❌ Descartar <kbd>D</kbd></button>'+
+            (it.status==='revision_admin'?'<button data-a="revisar">↩︎ Devolver a revisión <kbd>R</kbd></button>':'')+
+          '</div>')+
           '<div class="mod-actions md-actions2">'+
             '<button data-a="avisar">⚠️ Enviar aviso de mal uso</button>'+
             (a.bloqueado?'<button data-a="desbloquear">🔓 Desbloquear usuario</button>':'<button class="bad" data-a="bloquear">⛔ Bloquear usuario</button>')+
@@ -667,7 +668,7 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
       it.ya_vote=true;
       return db.from('reports').select('status').eq('id', it.id).maybeSingle().then(function(s2){
         var st=s2 && s2.data && s2.data.status;
-        var txt = st==='validado' ? '✅ #'+it.id+' validado con tu voto' : st==='descartado' ? '❌ #'+it.id+' descartado con tu voto' : '🗳️ Voto guardado en #'+it.id+' · falta otro voto';
+        var txt = st==='validado' ? '✅ #'+it.id+' validado' : st==='descartado' ? '❌ #'+it.id+' rechazado' : '🗳️ Voto guardado en #'+it.id;
         toast(txt);
         if(st && st!=='pendiente') quitar(it.id);
         else { var cur=SEL; quitar(it.id); }
@@ -765,7 +766,7 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
       return db.rpc('admin_resolver_reporte', { p_report_id:it.id, p_accion:a, p_mensaje:msg||null });
     }).then(function(r){
       if(r.error){ busy(false); return res(false,'No se pudo: '+r.error.message); }
-      var txt={ validar:'✅ #'+it.id+' validado', descartar:'❌ #'+it.id+' descartado', revisar:'↩︎ #'+it.id+' devuelto a los vecinos', eliminar:'🗑️ #'+it.id+' eliminado' }[a];
+      var txt={ validar:'✅ #'+it.id+' validado', descartar:'❌ #'+it.id+' descartado', revisar:'↩︎ #'+it.id+' devuelto a la cola de revisión', eliminar:'🗑️ #'+it.id+' eliminado' }[a];
       toast(txt); quitar(it.id);
     }, function(){ busy(false); res(false,'No se pudo: revisá la conexión.'); });
   }
@@ -787,8 +788,8 @@ kbd{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px
     if(k==='arrowdown' || k==='j'){ move(1); e.preventDefault(); }
     else if(k==='arrowup' || k==='k'){ move(-1); e.preventDefault(); }
     else if(!it) return;
-    else if(k==='a' && kindsOf(it).revisar){ vote(it,'correcto'); e.preventDefault(); }
-    else if(k==='x' && kindsOf(it).revisar){ showReasons(); e.preventDefault(); }
+    else if((k==='v' || k==='a') && kindsOf(it).revisar){ vote(it,'correcto'); e.preventDefault(); }
+    else if((k==='d' || k==='x') && kindsOf(it).revisar){ showReasons(); e.preventDefault(); }
     else if(/^[1-5]$/.test(k) && $('mdReasons') && !$('mdReasons').classList.contains('hide')){ vote(it,'rechazado',REASONS[+k-1][0]); e.preventDefault(); }
     else if(!ADMIN) return;
     else if(k==='v'){ act(it,'validar'); e.preventDefault(); }
