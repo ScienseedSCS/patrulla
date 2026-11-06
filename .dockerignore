@@ -1,0 +1,15 @@
+.git
+.gitignore
+.fallow
+dist
+node_modules
+coverage
+playwright-report
+test-results
+README.md
+ADMIN.md
+caso1.png
+logo.png
+.env
+.env.*
+supabase

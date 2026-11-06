@@ -1,0 +1,21 @@
+# Dependencias y artefactos de build
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+
+# Entornos y secretos locales
+.env
+.env.*
+!.env.example
+*.local
+
+# Herramientas locales
+.fallow/
+.DS_Store
+*.log
+
+# Supabase CLI
+supabase/.temp/
+supabase/.branches/
