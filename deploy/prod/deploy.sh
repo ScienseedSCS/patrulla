@@ -41,7 +41,7 @@ die() { log "ERROR: $*"; exit 1; }
 
 # --- 0. candado: nunca dos deploys a la vez -------------------------------
 exec 9>"$LOCK"
-flock -n 9 || die "ya hay un deploy en curso ($LOCK)"
+flock -w 300 9 || die "timeout esperando al deploy en curso"
 
 # --- log acotado ---------------------------------------------------------
 if [ -f "$LOG" ] && [ "$(stat -c %s "$LOG")" -gt 5242880 ]; then
