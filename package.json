@@ -1,0 +1,20 @@
+{
+  "name": "patrulla-antimosquito",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Suite de tests de Patrulla Antimosquito (PWA estática + Supabase).",
+  "scripts": {
+    "test": "bun test",
+    "test:static": "bun test tests/static",
+    "test:app": "bun test tests/app",
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "happy-dom": "21.0.4"
+  },
+  "engines": {
+    "bun": ">=1.3.0"
+  },
+  "packageManager": "bun@1.3.14"
+}

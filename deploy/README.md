@@ -94,24 +94,49 @@ Antes de usar login en `https://patrulla-staging.server.brobert.net`:
 La app es estática: no necesita PHP, Node ni Docker en el servidor de Mundo Sano.
 Se puede servir con un vhost Apache normal, sin tocar Laravel ni WordPress.
 
-Estructura recomendada:
+Estructura en producción (`/var/www/html/patrulla-antimosquitos.com`):
 
 ```text
-/var/www/patrulla/
-  releases/
-    20261106T120000/
-    20261107T090000/
-  current -> releases/20261107T090000
+/var/www/html/patrulla-antimosquitos.com/
+  repo/                     # clone de este repo, lo actualiza el deploy
+  releases/<UTC>-<sha>/     # una carpeta por deploy
+  current -> releases/...   # lo sirve Apache (DocumentRoot)
+  config.js                 # credenciales Supabase, fuera de releases
+  deploy.log                # log del deploy
 ```
 
-Deploy:
+## Deploy pull-based (producción)
+
+El servidor tiene el repo y se actualiza solo. No se suben artefactos por
+rsync desde CI: allá solo se ejecutan los tests.
+
+- `deploy/prod/bootstrap.sh` — setup inicial (dirs, clone por HTTPS, `config.js`).
+- `deploy/prod/deploy.sh` — comprueba `main` con `git ls-remote`, y solo si el SHA
+  cambió: fetch, build, release nueva, swap atómico, smoke y **rollback automático**
+  si el smoke falla; poda las releases viejas.
+- `.github/workflows/deploy-prod.yml` — corre los tests y hace de **timbre**: una
+  sola orden SSH que ejecuta `deploy.sh` en el servidor (inerte hasta activar la
+  variable de repo `PROD_DEPLOY_ENABLED=true`).
+- `deploy/prod/patrulla-deploy.{service,timer}` — alternativa sin GitHub Actions:
+  sondea `main` cada 15 minutos y despliega si el SHA cambió.
+
+El repo es público, así que el servidor clona por HTTPS y **no hace falta Deploy
+Key** (solo si algún día pasa a privado: `REPO_URL=git@github.com:... bootstrap.sh`).
 
 ```bash
-RELEASE="/var/www/patrulla/releases/$(date -u +%Y%m%dT%H%M%S)"
-ssh deploy@patrulla.example.org "mkdir -p '$RELEASE'"
-rsync -az --delete dist/ deploy@patrulla.example.org:"$RELEASE/"
-ssh deploy@patrulla.example.org "ln -sfn '$RELEASE' /var/www/patrulla/current"
+# en el servidor, una vez
+sudo bash /var/www/html/patrulla-antimosquitos.com/repo/deploy/prod/bootstrap.sh
+
+# manual
+sudo -u www-data bash /var/www/html/patrulla-antimosquitos.com/repo/deploy/prod/deploy.sh
+
+# o modo sondeo, sin depender de Actions
+sudo INSTALL_TIMER=1 bash /var/www/html/patrulla-antimosquitos.com/repo/deploy/prod/bootstrap.sh
 ```
+
+El deploy es **idempotente**: si `origin/main` ya está publicado, sale sin tocar
+nada (de ahí que el timer pueda correr cada 15 minutos sin coste: un `ls-remote`
+de unos pocos bytes, ni un objeto descargado).
 
 El vhost de ejemplo está en `deploy/apache.conf.example`. Requiere
 `mod_ssl`, `mod_headers`, `mod_deflate`, `mod_expires` y, si se usa HTTP/2,

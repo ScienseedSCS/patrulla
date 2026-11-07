@@ -1,0 +1,65 @@
+name: deploy-prod
+
+# Deploy pull-based: el servidor hace git fetch + build + swap.
+# Este workflow solo valida (tests) y hace de timbre por SSH.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: bun install --frozen-lockfile
+      - run: bun test
+
+  deploy:
+    needs: test
+    # Se activa poniendo la variable de repo PROD_DEPLOY_ENABLED=true
+    # (o lanzándolo a mano). Así los pushs a main solo corren tests hasta que
+    # el servidor esté listo.
+    if: ${{ github.event_name == 'workflow_dispatch' || vars.PROD_DEPLOY_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: https://patrulla-antimosquitos.com
+    steps:
+      - name: Preparar SSH
+        env:
+          SSH_KEY: ${{ secrets.PROD_SSH_KEY }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/patrulla_prod_deploy
+          chmod 600 ~/.ssh/patrulla_prod_deploy
+          ssh-keyscan -t ed25519 patrulla-antimosquitos.com >> ~/.ssh/known_hosts 2>/dev/null
+          wc -l ~/.ssh/known_hosts
+
+      - name: Disparar deploy en el servidor
+        run: |
+          ssh -i ~/.ssh/patrulla_prod_deploy \
+              -o IdentitiesOnly=yes -o BatchMode=yes \
+              www-data@patrulla-antimosquitos.com \
+              'bash /var/www/html/patrulla-antimosquitos.com/repo/deploy/prod/deploy.sh'
+
+      - name: Verificar lo publicado
+        run: |
+          curl -fsS https://patrulla-antimosquitos.com/build-info.json
+          curl -fsS -o /dev/null -w 'home: %{http_code}\n' https://patrulla-antimosquitos.com/
+          curl -fsS -o /dev/null -w 'healthz: %{http_code}\n' https://patrulla-antimosquitos.com/healthz

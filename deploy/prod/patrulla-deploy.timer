@@ -1,0 +1,11 @@
+[Unit]
+Description=Comprueba si main tiene cambios y deploya (cada 15 min)
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=15min
+AccuracySec=1min
+Unit=patrulla-deploy.service
+
+[Install]
+WantedBy=timers.target

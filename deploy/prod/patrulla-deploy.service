@@ -1,0 +1,14 @@
+[Unit]
+Description=Deploy Patrulla Antimosquitos (git pull + build + swap)
+Documentation=https://github.com/ScienseedSCS/patrulla/blob/main/deploy/prod/deploy.sh
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/html/patrulla-antimosquitos.com
+ExecStart=/usr/bin/env bash /var/www/html/patrulla-antimosquitos.com/repo/deploy/prod/deploy.sh
+TimeoutStartSec=300
+Nice=10
