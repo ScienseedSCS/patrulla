@@ -8,6 +8,9 @@ playwright-report
 test-results
 README.md
 ADMIN.md
+TESTING.md
+tests
+.github
 caso1.png
 logo.png
 .env

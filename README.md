@@ -111,6 +111,22 @@ Para ajustar la precisión, cambiá `GEO_PRECISION` en `index.html` (3 = ~110 m;
 
 ---
 
+## Tests y desarrollo
+
+La app tiene una suite de tests que corre **sin navegador** (Bun + happy-dom),
+con un Supabase falso en memoria. Sirve como red de seguridad para, más
+adelante, dejar de servir todo desde un único `index.html`.
+
+```bash
+bun install
+bun test
+```
+
+El mapa de cobertura, cómo agregar casos y el plan de modularización están en
+[`TESTING.md`](TESTING.md).
+
+---
+
 ## Mejoras que quedan anotadas (opcionales)
 
 - Puntos server-side con triggers (blindaje anti-trampa).
