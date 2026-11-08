@@ -34,18 +34,19 @@ va marcado como tal. El estado operativo de producción vive en [`DEPLOY.md`](DE
 | `www` no existe: apex only | es una app de móvil |
 | Repo público, sin secretos dentro | `anon key` es pública por diseño; `service_role` nunca en el repo |
 
-## Fase 1 — Cerrar `deploy/caprover-staging`
+## Fase 1 — Cerrar `deploy/caprover-staging` ✅ hecha
 
-- [ ] Merge selectivo a `main`: `Dockerfile`, `.dockerignore`,
-      `captain-definition`, `TESTING.md`, `README.md` (+16 líneas de tests).
-- [ ] **No** mergear `docs/supabase-hardening.md` ni `docs/audit/*.sql`: el repo
+- [x] Merge selectivo a `main`: `Dockerfile`, `.dockerignore`,
+      `captain-definition`, `TESTING.md`.
+- [x] `README.md` **no** se toca: la información de tests vive sólo en
+      `TESTING.md`, que es un fichero aparte y no altera el README del equipo.
+- [x] **No** mergeado `docs/supabase-hardening.md` ni `docs/audit/*.sql`: el repo
       es público y ese documento explica cómo explotar fallos vivos.
-- [ ] Limpiar documentación en `main`: recortar `deploy/README.md` (hoy 180
-      líneas con borradores de GitLab y Apache que duplican `DEPLOY.md`), borrar
+- [x] Limpieza de documentación: `deploy/README.md` de 180 → 68 líneas, borrados
       `deploy/gitlab-ci.example.yml` y `deploy/apache.conf.example`.
-- [ ] Añadir sección **Staging** a `DEPLOY.md`.
-- [ ] `docs/` del audit pasa a la rama nueva (Fase 7), no a `main`.
-- [ ] Borrar la rama: `git branch -d` + `git push origin --delete`.
+- [x] Sección **Staging** en `DEPLOY.md`.
+- [x] `docs/` movido a `refactor/maintainability` (no está en `main`).
+- [x] Rama `deploy/caprover-staging` borrada en local y en el remoto.
 
 ## Fase 2 — Supabase: propiedad y plan
 
@@ -135,7 +136,7 @@ endpoints de FCM y APNs ya vienen en cada suscripción y se autentican con VAPID
 
 ## Fase 7 — Modularización
 
-Rama nueva: `refactor/tests-modularidad`.
+Rama: `refactor/maintainability` (ya creada desde `main`, con `docs/` dentro).
 
 - [ ] **Capa de datos primero**: todas las queries y RPC detrás de un único
       módulo (`src/data.js`). Es la condición que hace barata cualquier migración
