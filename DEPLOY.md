@@ -55,6 +55,22 @@ No reinicia Apache: sólo cambia el symlink.
 (`patrulla-deploy.timer`), así que un push acaba publicado aunque Actions esté
 caído. Es idempotente y usa `flock`: si se solapan, uno espera al otro.
 
+## Staging
+
+| | |
+|---|---|
+| URL | https://patrulla-staging.server.brobert.net |
+| Dónde | CapRover (máquina personal), app `patrulla-staging` |
+| Sirve | imagen Docker con el `Dockerfile` de la raíz (nginx) |
+| Supabase | proyecto **de staging**, nunca el de producción |
+
+`config.js` no va en la imagen: el contenedor lo genera al arrancar desde
+`SUPABASE_URL` y `SUPABASE_ANON_KEY` (*App Settings → Environment Variables*).
+
+Hoy se despliega a mano; el objetivo es que CapRover construya desde `main` en
+cada push (ver `PLAN.md`, Fase 3). El detalle de build y Docker está en
+[`deploy/README.md`](deploy/README.md).
+
 ## Repo y ramas
 
 - `origin` → `https://github.com/ScienseedSCS/patrulla.git`, **público**.
