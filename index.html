@@ -646,7 +646,7 @@ svg.z1 .rm-name:not(.main){display:none}
 .lb-name{flex:1}
 .lb-pts{font-weight:800;color:var(--primary)}
 
-.bottomnav{background:var(--primary);display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:8px 6px calc(10px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.bottomnav{background:var(--primary);display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:2px;padding:8px 6px calc(10px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
 .navbtn{background:none;border:none;color:#C3B2CB;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;padding:6px 2px;border-radius:14px;transition:color .2s,background .2s}
 .navbtn .em{font-size:21px;line-height:1}
 .navbtn:hover{color:#fff}
